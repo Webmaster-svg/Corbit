@@ -38,7 +38,7 @@ const testimonials = [
   {
     name: "Karim Hadj",
     role: "Architect, Oran",
-    text: "The portfolio templates are stunning. My clients are always impressed when I share my SiteCraft portfolio.",
+    text: "The portfolio templates are stunning. My clients are always impressed when I share my Corbit portfolio.",
     rating: 5,
   },
   {
@@ -50,7 +50,7 @@ const testimonials = [
   {
     name: "Yacine Ferhat",
     role: "Freelance designer, Annaba",
-    text: "I use SiteCraft for all my clients now. The editor is fast, the templates are professional, and support is excellent.",
+    text: "I use Corbit for all my clients now. The editor is fast, the templates are professional, and support is excellent.",
     rating: 5,
   },
 ];
@@ -433,7 +433,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {[
-                { name: t("pricing.free"), price: "Free", features: ["1 website", "5 templates", "100 MB storage", "SiteCraft subdomain"] },
+                { name: t("pricing.free"), price: "Free", features: ["1 website", "5 templates", "100 MB storage", "Corbit subdomain"] },
                 { name: t("pricing.pro"), price: "2,490 DA/mo", features: ["10 websites", "All templates", "2 GB storage", "Custom domain", "E-commerce", "Analytics"], highlight: true },
                 { name: t("pricing.business"), price: "7,900 DA/mo", features: ["Unlimited websites", "10 GB storage", "API access", "Dedicated support", "White-label"] },
               ].map((plan, i) => (
@@ -548,7 +548,7 @@ export default function Home() {
                 <span className="gradient-text">a great website.</span>
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Join 5,000+ Algerian entrepreneurs who chose SiteCraft to build their online presence.
+                Join 5,000+ Algerian entrepreneurs who chose Corbit to build their online presence.
                 Start free — no credit card required.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">

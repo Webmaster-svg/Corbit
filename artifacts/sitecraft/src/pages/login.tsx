@@ -51,7 +51,7 @@ export default function Login() {
         <div className="relative">
           <Link href="/" className="text-white font-bold text-2xl flex items-center gap-2">
             <Globe className="w-6 h-6" />
-            SiteCraft
+            Corbit
           </Link>
         </div>
         <div className="relative space-y-6">
@@ -59,7 +59,7 @@ export default function Login() {
             Launch your business online — today.
           </h2>
           <p className="text-blue-100 text-lg leading-relaxed">
-            Join thousands of Algerian entrepreneurs building stunning websites with SiteCraft.
+            Join thousands of Algerian entrepreneurs building stunning websites with Corbit.
           </p>
           <div className="flex gap-4">
             {[
@@ -87,7 +87,7 @@ export default function Login() {
           <div className="text-center lg:text-left space-y-2">
             <Link href="/" className="text-xl font-bold inline-flex items-center gap-2 text-foreground lg:hidden mb-6">
               <Globe className="w-5 h-5 text-primary" />
-              SiteCraft
+              Corbit
             </Link>
             <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
             <p className="text-muted-foreground">Sign in to your account to continue.</p>

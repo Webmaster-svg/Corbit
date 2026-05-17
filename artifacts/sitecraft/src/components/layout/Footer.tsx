@@ -10,7 +10,7 @@ export function Footer() {
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <span className="font-bold text-xl">SiteCraft</span>
+            <span className="font-bold text-xl">Corbit</span>
             <p className="text-sm text-muted-foreground">
               The easiest way to build websites for Algerian entrepreneurs.
             </p>

@@ -12,7 +12,7 @@ const translations: Translations = {
     "nav.register": "Start Free",
     "nav.dashboard": "Dashboard",
     "hero.title": "Build your dream website, effortlessly.",
-    "hero.subtitle": "SiteCraft is the easiest way for Algerian entrepreneurs to launch stunning, high-performance websites without writing a single line of code.",
+    "hero.subtitle": "Corbit is the easiest way for Algerian entrepreneurs to launch stunning, high-performance websites without writing a single line of code.",
     "hero.cta.start": "Start building for free",
     "hero.cta.templates": "Explore templates",
     "features.title": "Everything you need to succeed online",
@@ -36,7 +36,7 @@ const translations: Translations = {
     "pricing.starter": "Starter",
     "pricing.pro": "Pro",
     "pricing.business": "Business",
-    "footer.rights": "© 2024 SiteCraft. All rights reserved.",
+    "footer.rights": "© 2024 Corbit. All rights reserved.",
   },
   fr: {
     "nav.templates": "Modèles",
@@ -45,7 +45,7 @@ const translations: Translations = {
     "nav.register": "Commencer",
     "nav.dashboard": "Tableau de bord",
     "hero.title": "Créez le site de vos rêves, sans effort.",
-    "hero.subtitle": "SiteCraft est le moyen le plus simple pour les entrepreneurs algériens de lancer des sites web magnifiques et performants sans coder.",
+    "hero.subtitle": "Corbit est le moyen le plus simple pour les entrepreneurs algériens de lancer des sites web magnifiques et performants sans coder.",
     "hero.cta.start": "Commencer gratuitement",
     "hero.cta.templates": "Explorer les modèles",
     "features.title": "Tout ce dont vous avez besoin",
@@ -69,7 +69,7 @@ const translations: Translations = {
     "pricing.starter": "Starter",
     "pricing.pro": "Pro",
     "pricing.business": "Business",
-    "footer.rights": "© 2024 SiteCraft. Tous droits réservés.",
+    "footer.rights": "© 2024 Corbit. Tous droits réservés.",
   },
   ar: {
     "nav.templates": "القوالب",
@@ -78,7 +78,7 @@ const translations: Translations = {
     "nav.register": "ابدأ مجاناً",
     "nav.dashboard": "لوحة التحكم",
     "hero.title": "أنشئ موقع أحلامك، بكل سهولة.",
-    "hero.subtitle": "SiteCraft هي أسهل طريقة لرواد الأعمال الجزائريين لإطلاق مواقع إلكترونية رائعة وعالية الأداء دون كتابة سطر واحد من التعليمات البرمجية.",
+    "hero.subtitle": "Corbit هي أسهل طريقة لرواد الأعمال الجزائريين لإطلاق مواقع إلكترونية رائعة وعالية الأداء دون كتابة سطر واحد من التعليمات البرمجية.",
     "hero.cta.start": "ابدأ البناء مجاناً",
     "hero.cta.templates": "استكشف القوالب",
     "features.title": "كل ما تحتاجه للنجاح",
@@ -102,7 +102,7 @@ const translations: Translations = {
     "pricing.starter": "بداية",
     "pricing.pro": "احترافي",
     "pricing.business": "أعمال",
-    "footer.rights": "© 2024 SiteCraft. جميع الحقوق محفوظة.",
+    "footer.rights": "© 2024 Corbit. جميع الحقوق محفوظة.",
   }
 };
 

@@ -53,7 +53,7 @@ export default function Register() {
           <div className="space-y-2">
             <Link href="/" className="text-xl font-bold inline-flex items-center gap-2 text-foreground lg:hidden mb-6">
               <Globe className="w-5 h-5 text-primary" />
-              SiteCraft
+              Corbit
             </Link>
             <h1 className="text-2xl font-bold text-foreground">Create your account</h1>
             <p className="text-muted-foreground">Start building for free. No credit card needed.</p>
@@ -141,7 +141,7 @@ export default function Register() {
         <div className="relative">
           <Link href="/" className="text-white font-bold text-2xl flex items-center gap-2">
             <Globe className="w-6 h-6" />
-            SiteCraft
+            Corbit
           </Link>
         </div>
         <div className="relative space-y-8">
