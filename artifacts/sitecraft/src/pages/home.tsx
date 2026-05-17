@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useTranslation } from "@/lib/i18n";
@@ -122,7 +122,54 @@ const steps = [
 export default function Home() {
   const { t } = useTranslation();
   const { data: templates } = useListTemplates();
-  const showcaseTemplates = (templates || []).slice(0, 6);
+  const showcaseTemplates = (templates || []).slice(0, 8);
+  const sectionRef = useRef<HTMLElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [carouselProgress, setCarouselProgress] = useState(0);
+  const [isHijacking, setIsHijacking] = useState(false);
+
+  const updateProgress = useCallback(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const max = carousel.scrollWidth - carousel.clientWidth;
+    setCarouselProgress(max > 0 ? carousel.scrollLeft / max : 0);
+  }, []);
+
+  const handleWheel = useCallback((e: WheelEvent) => {
+    const carousel = carouselRef.current;
+    const section = sectionRef.current;
+    if (!carousel || !section) return;
+
+    const rect = section.getBoundingClientRect();
+    const inView = rect.top <= window.innerHeight * 0.4 && rect.bottom >= window.innerHeight * 0.4;
+    if (!inView) {
+      setIsHijacking(false);
+      return;
+    }
+
+    const scrollingDown = e.deltaY > 0;
+    const atEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 4;
+    const atStart = carousel.scrollLeft <= 4;
+
+    if (scrollingDown && atEnd) { setIsHijacking(false); return; }
+    if (!scrollingDown && atStart) { setIsHijacking(false); return; }
+
+    e.preventDefault();
+    setIsHijacking(true);
+    carousel.scrollBy({ left: e.deltaY * 2.5, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [handleWheel]);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    carousel.addEventListener("scroll", updateProgress, { passive: true });
+    return () => carousel.removeEventListener("scroll", updateProgress);
+  }, [updateProgress]);
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
@@ -320,9 +367,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── TEMPLATE SHOWCASE ── */}
-        <section className="py-24 bg-muted/20 border-y overflow-hidden">
-          <div className="container mb-12">
+        {/* ── TEMPLATE SHOWCASE (scroll-hijack carousel) ── */}
+        <section ref={sectionRef} className="relative bg-muted/20 border-y overflow-hidden py-20 md:py-28">
+          {/* Header */}
+          <div className="container mb-10">
             <FadeIn className="flex items-end justify-between">
               <div className="space-y-3">
                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full border border-primary/20">
@@ -342,44 +390,69 @@ export default function Home() {
             </FadeIn>
           </div>
 
+          {/* Carousel */}
           {showcaseTemplates.length > 0 ? (
-            <div className="flex gap-5 px-8 overflow-x-auto pb-4 scrollbar-none">
+            <div ref={carouselRef} className="flex gap-5 px-8 overflow-x-auto pb-6 scrollbar-none" style={{ scrollBehavior: "smooth" }}>
               {showcaseTemplates.map((tmpl, i) => (
-                <FadeIn key={tmpl.id} delay={i * 0.08}>
+                <FadeIn key={tmpl.id} delay={i * 0.07}>
                   <motion.div
-                    className="flex-shrink-0 w-64 md:w-72 border rounded-xl overflow-hidden bg-card hover:shadow-lg group transition-all"
-                    whileHover={{ y: -6 }}
+                    className="flex-shrink-0 w-64 md:w-80 border rounded-2xl overflow-hidden bg-card hover:shadow-xl group transition-shadow duration-300"
+                    whileHover={{ y: -8, transition: { duration: 0.2 } }}
                   >
-                    <div className="h-44 overflow-hidden relative">
+                    <div className="h-48 overflow-hidden relative">
                       <img
                         src={tmpl.thumbnailUrl}
                         alt={tmpl.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${tmpl.id + 20}/400/280`;
+                          (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${tmpl.id + 20}/400/300`;
                         }}
                       />
                       {tmpl.isPro && (
-                        <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">PRO</div>
+                        <div className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full shadow">PRO</div>
                       )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-sm">{tmpl.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-1 capitalize">{tmpl.category}</p>
+                    <div className="p-4 flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-sm">{tmpl.name}</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5 capitalize">{tmpl.category}</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </motion.div>
                 </FadeIn>
               ))}
+              {/* trailing spacer so last card doesn't hug edge */}
+              <div className="flex-shrink-0 w-8" />
             </div>
           ) : (
-            <div className="flex gap-5 px-8 overflow-x-auto pb-4">
+            <div className="flex gap-5 px-8 overflow-x-auto pb-6">
               {Array(5).fill(0).map((_, i) => (
-                <div key={i} className="flex-shrink-0 w-72 h-56 rounded-xl border bg-card" />
+                <div key={i} className="flex-shrink-0 w-80 h-60 rounded-2xl border bg-card animate-pulse" />
               ))}
             </div>
           )}
 
-          <div className="container mt-8 md:hidden">
+          {/* Progress bar + scroll hint */}
+          <div className="container mt-6 flex items-center gap-4">
+            <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
+              <motion.div
+                className="h-full bg-primary rounded-full origin-left"
+                style={{ scaleX: carouselProgress }}
+                transition={{ type: "spring", stiffness: 300, damping: 40 }}
+              />
+            </div>
+            <motion.span
+              className="text-xs text-muted-foreground whitespace-nowrap select-none"
+              animate={{ opacity: isHijacking ? 1 : 0.5 }}
+              transition={{ duration: 0.3 }}
+            >
+              {carouselProgress >= 0.98 ? "↓ Keep scrolling" : "Scroll to explore →"}
+            </motion.span>
+          </div>
+
+          <div className="container mt-6 md:hidden">
             <Link href="/templates">
               <Button variant="outline" className="w-full">
                 Browse all templates <ChevronRight className="w-4 h-4 ml-1" />
