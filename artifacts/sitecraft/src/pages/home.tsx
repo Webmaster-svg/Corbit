@@ -123,53 +123,45 @@ export default function Home() {
   const { t } = useTranslation();
   const { data: templates } = useListTemplates();
   const showcaseTemplates = (templates || []).slice(0, 8);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [carouselProgress, setCarouselProgress] = useState(0);
-  const [isHijacking, setIsHijacking] = useState(false);
+  const [extraHeight, setExtraHeight] = useState(0);
 
-  const updateProgress = useCallback(() => {
+  // Measure carousel scroll width and set wrapper height
+  useEffect(() => {
+    const measure = () => {
+      const carousel = carouselRef.current;
+      if (!carousel) return;
+      const scrollable = carousel.scrollWidth - carousel.clientWidth;
+      setExtraHeight(scrollable > 0 ? scrollable : 0);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [showcaseTemplates]);
+
+  // Map window scroll inside the wrapper to carousel scrollLeft
+  const handleScroll = useCallback(() => {
+    const wrapper = wrapperRef.current;
     const carousel = carouselRef.current;
-    if (!carousel) return;
-    const max = carousel.scrollWidth - carousel.clientWidth;
-    setCarouselProgress(max > 0 ? carousel.scrollLeft / max : 0);
-  }, []);
+    if (!wrapper || !carousel || extraHeight === 0) return;
 
-  const handleWheel = useCallback((e: WheelEvent) => {
-    const carousel = carouselRef.current;
-    const section = sectionRef.current;
-    if (!carousel || !section) return;
+    const rect = wrapper.getBoundingClientRect();
+    // How many px we've scrolled INTO the sticky zone (0 → extraHeight)
+    const scrolledIn = -rect.top;
+    if (scrolledIn < 0 || scrolledIn > extraHeight) return;
 
-    const rect = section.getBoundingClientRect();
-    const inView = rect.top <= window.innerHeight * 0.4 && rect.bottom >= window.innerHeight * 0.4;
-    if (!inView) {
-      setIsHijacking(false);
-      return;
-    }
-
-    const scrollingDown = e.deltaY > 0;
-    const atEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 4;
-    const atStart = carousel.scrollLeft <= 4;
-
-    if (scrollingDown && atEnd) { setIsHijacking(false); return; }
-    if (!scrollingDown && atStart) { setIsHijacking(false); return; }
-
-    e.preventDefault();
-    setIsHijacking(true);
-    carousel.scrollBy({ left: e.deltaY * 2.5, behavior: "smooth" });
-  }, []);
+    const progress = scrolledIn / extraHeight;
+    setCarouselProgress(progress);
+    carousel.scrollLeft = progress * (carousel.scrollWidth - carousel.clientWidth);
+  }, [extraHeight]);
 
   useEffect(() => {
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [handleWheel]);
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-    carousel.addEventListener("scroll", updateProgress, { passive: true });
-    return () => carousel.removeEventListener("scroll", updateProgress);
-  }, [updateProgress]);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
@@ -367,36 +359,57 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── TEMPLATE SHOWCASE (scroll-hijack carousel) ── */}
-        <section ref={sectionRef} className="relative bg-muted/20 border-y overflow-hidden py-20 md:py-28">
-          {/* Header */}
-          <div className="container mb-10">
-            <FadeIn className="flex items-end justify-between">
-              <div className="space-y-3">
-                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full border border-primary/20">
-                  <Layers className="w-3.5 h-3.5" />
-                  Templates
+        {/* ── TEMPLATE SHOWCASE — sticky-pin horizontal scroll ── */}
+        {/*
+          Outer wrapper is tall: 100vh (the pinned viewport) + extra scrollable height
+          that equals the carousel's overflowing content width.
+          As the user scrolls through the wrapper, the inner section stays pinned
+          at top:0 via `sticky`, and we map window scroll progress → carousel.scrollLeft.
+        */}
+        <div
+          ref={wrapperRef}
+          style={{ height: extraHeight > 0 ? `calc(100vh + ${extraHeight}px)` : "auto" }}
+        >
+          <section
+            ref={sectionRef}
+            className="sticky top-0 h-screen flex flex-col justify-center bg-muted/20 border-y overflow-hidden"
+          >
+            {/* Header */}
+            <div className="container mb-10 flex-shrink-0">
+              <FadeIn className="flex items-end justify-between">
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full border border-primary/20">
+                    <Layers className="w-3.5 h-3.5" />
+                    Templates
+                  </div>
+                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Start from a great template</h2>
+                  <p className="text-muted-foreground max-w-lg">
+                    Every template is mobile-ready, fast, and fully customizable. Pick one and make it yours in minutes.
+                  </p>
                 </div>
-                <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Start from a great template</h2>
-                <p className="text-muted-foreground max-w-lg">
-                  Every template is mobile-ready, fast, and fully customizable. Pick one and make it yours in minutes.
-                </p>
-              </div>
-              <Link href="/templates" className="hidden md:block">
-                <Button variant="outline">
-                  All templates <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
-            </FadeIn>
-          </div>
+                <Link href="/templates" className="hidden md:block">
+                  <Button variant="outline">
+                    All templates <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              </FadeIn>
+            </div>
 
-          {/* Carousel */}
-          {showcaseTemplates.length > 0 ? (
-            <div ref={carouselRef} className="flex gap-5 px-8 overflow-x-auto pb-6 scrollbar-none" style={{ scrollBehavior: "smooth" }}>
-              {showcaseTemplates.map((tmpl, i) => (
-                <FadeIn key={tmpl.id} delay={i * 0.07}>
+            {/* Carousel — overflow hidden, scrollLeft driven by window scroll */}
+            {showcaseTemplates.length > 0 ? (
+              <div
+                ref={carouselRef}
+                className="flex gap-5 px-8 overflow-hidden pb-2 flex-shrink-0"
+                style={{ willChange: "scroll-position" }}
+              >
+                {showcaseTemplates.map((tmpl, i) => (
                   <motion.div
-                    className="flex-shrink-0 w-64 md:w-80 border rounded-2xl overflow-hidden bg-card hover:shadow-xl group transition-shadow duration-300"
+                    key={tmpl.id}
+                    className="flex-shrink-0 w-64 md:w-80 border rounded-2xl overflow-hidden bg-card hover:shadow-xl group transition-shadow duration-300 cursor-pointer"
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.06, duration: 0.4 }}
                     whileHover={{ y: -8, transition: { duration: 0.2 } }}
                   >
                     <div className="h-48 overflow-hidden relative">
@@ -421,45 +434,41 @@ export default function Home() {
                       <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </motion.div>
-                </FadeIn>
-              ))}
-              {/* trailing spacer so last card doesn't hug edge */}
-              <div className="flex-shrink-0 w-8" />
-            </div>
-          ) : (
-            <div className="flex gap-5 px-8 overflow-x-auto pb-6">
-              {Array(5).fill(0).map((_, i) => (
-                <div key={i} className="flex-shrink-0 w-80 h-60 rounded-2xl border bg-card animate-pulse" />
-              ))}
-            </div>
-          )}
+                ))}
+                {/* trailing spacer */}
+                <div className="flex-shrink-0 w-16" />
+              </div>
+            ) : (
+              <div className="flex gap-5 px-8 overflow-hidden pb-2 flex-shrink-0">
+                {Array(5).fill(0).map((_, i) => (
+                  <div key={i} className="flex-shrink-0 w-80 h-60 rounded-2xl border bg-card animate-pulse" />
+                ))}
+              </div>
+            )}
 
-          {/* Progress bar + scroll hint */}
-          <div className="container mt-6 flex items-center gap-4">
-            <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
-              <motion.div
-                className="h-full bg-primary rounded-full origin-left"
-                style={{ scaleX: carouselProgress }}
-                transition={{ type: "spring", stiffness: 300, damping: 40 }}
-              />
+            {/* Progress bar */}
+            <div className="container mt-8 flex-shrink-0 flex items-center gap-4">
+              <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-transform duration-75 origin-left"
+                  style={{ transform: `scaleX(${carouselProgress})` }}
+                />
+              </div>
+              <span className="text-xs text-muted-foreground whitespace-nowrap select-none">
+                {carouselProgress >= 0.98 ? "↓ Keep scrolling" : "Scroll to explore →"}
+              </span>
             </div>
-            <motion.span
-              className="text-xs text-muted-foreground whitespace-nowrap select-none"
-              animate={{ opacity: isHijacking ? 1 : 0.5 }}
-              transition={{ duration: 0.3 }}
-            >
-              {carouselProgress >= 0.98 ? "↓ Keep scrolling" : "Scroll to explore →"}
-            </motion.span>
-          </div>
 
-          <div className="container mt-6 md:hidden">
-            <Link href="/templates">
-              <Button variant="outline" className="w-full">
-                Browse all templates <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
-          </div>
-        </section>
+            {/* Mobile CTA */}
+            <div className="container mt-5 flex-shrink-0 md:hidden">
+              <Link href="/templates">
+                <Button variant="outline" className="w-full">
+                  Browse all templates <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </section>
+        </div>
 
         {/* ── HOW IT WORKS ── */}
         <section className="py-24 md:py-32">
