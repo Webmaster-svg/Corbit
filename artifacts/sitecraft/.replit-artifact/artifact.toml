@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "SiteCraft — Website Builder"
+version = "1.0.0"
+id = "artifacts/sitecraft"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24001
+
+[services.development]
+run = "pnpm --filter @workspace/sitecraft run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/sitecraft", "run", "build" ]
+publicDir = "artifacts/sitecraft/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24001"
+BASE_PATH = "/"
