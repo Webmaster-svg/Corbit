@@ -4,13 +4,15 @@ import { Footer } from "@/components/layout/Footer";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { PlatformLoader } from "@/components/ui/platform-loader";
 import { motion, useInView } from "framer-motion";
 import {
   ArrowRight, CheckCircle2, Layout, Zap, Globe, Smartphone,
   Star, Palette, ShieldCheck, BarChart3, Layers, MousePointer2,
-  Clock, Users, TrendingUp, ChevronRight
+  Clock, Users, TrendingUp, ChevronRight, Check, X, Sparkles
 } from "lucide-react";
 import { useListTemplates } from "@workspace/api-client-react";
+import { useAuth } from "@/lib/auth";
 
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
@@ -31,26 +33,26 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
 const testimonials = [
   {
     name: "Amira Bensalem",
-    role: "Boutique owner, Alger",
-    text: "I launched my online store in one afternoon. My customers now order directly from my site — it changed everything.",
+    roleKey: "testimonial.role.1",
+    textKey: "testimonial.text.1",
     rating: 5,
   },
   {
     name: "Karim Hadj",
-    role: "Architect, Oran",
-    text: "The portfolio templates are stunning. My clients are always impressed when I share my Corbit portfolio.",
+    roleKey: "testimonial.role.2",
+    textKey: "testimonial.text.2",
     rating: 5,
   },
   {
     name: "Sonia Mebarki",
-    role: "Restaurant owner, Constantine",
-    text: "We had zero technical experience. Now our restaurant has a beautiful website with online reservations.",
+    roleKey: "testimonial.role.3",
+    textKey: "testimonial.text.3",
     rating: 5,
   },
   {
     name: "Yacine Ferhat",
-    role: "Freelance designer, Annaba",
-    text: "I use Corbit for all my clients now. The editor is fast, the templates are professional, and support is excellent.",
+    roleKey: "testimonial.role.4",
+    textKey: "testimonial.text.4",
     rating: 5,
   },
 ];
@@ -58,43 +60,43 @@ const testimonials = [
 const features = [
   {
     icon: Layout,
-    title: "Drag-and-Drop Editor",
-    desc: "Build pages visually without writing a single line of code. Move, resize, and style every element.",
+    titleKey: "features.editor",
+    descKey: "features.editor.desc",
   },
   {
     icon: Palette,
-    title: "Premium Templates",
-    desc: "50+ professionally designed templates for every industry — from restaurants to e-commerce stores.",
+    titleKey: "features.templates",
+    descKey: "features.templates.desc",
   },
   {
     icon: Zap,
-    title: "Blazing Fast Performance",
-    desc: "Sites load in under 2 seconds. Optimized hosting on global CDN keeps your visitors engaged.",
+    titleKey: "features.speed",
+    descKey: "features.speed.desc",
   },
   {
     icon: Globe,
-    title: "Custom Domain (.dz)",
-    desc: "Connect your .dz domain or use our free subdomain. SSL certificate included at no extra cost.",
+    titleKey: "features.domain",
+    descKey: "features.domain.desc",
   },
   {
     icon: Smartphone,
-    title: "Mobile-First Design",
-    desc: "Every template adapts perfectly to phones, tablets, and desktops — no extra work needed.",
+    titleKey: "features.responsive",
+    descKey: "features.responsive.desc",
   },
   {
     icon: BarChart3,
-    title: "Built-in Analytics",
-    desc: "See how many visitors you get, where they're from, and which pages they love most.",
+    titleKey: "features.analytics",
+    descKey: "features.analytics.desc",
   },
   {
     icon: ShieldCheck,
-    title: "Secure & Reliable",
-    desc: "99.9% uptime SLA, automatic backups, and enterprise-grade security included.",
+    titleKey: "features.secure",
+    descKey: "features.secure.desc",
   },
   {
     icon: Users,
-    title: "Algerian Support",
-    desc: "Our local team speaks Arabic, French, and English. We're here when you need us.",
+    titleKey: "features.support",
+    descKey: "features.support.desc",
   },
 ];
 
@@ -102,69 +104,347 @@ const steps = [
   {
     num: "01",
     icon: Layers,
-    title: "Choose a template",
-    desc: "Browse 50+ templates built for Algerian businesses. Filter by industry and pick your favourite.",
+    titleKey: "how.step1",
+    descKey: "how.step1.desc",
   },
   {
     num: "02",
     icon: MousePointer2,
-    title: "Customize everything",
-    desc: "Use our visual editor to change colours, fonts, images, and text — all in real time.",
+    titleKey: "how.step2",
+    descKey: "how.step2.desc",
   },
   {
     num: "03",
     icon: Globe,
-    title: "Publish to the world",
-    desc: "Hit publish and your site goes live instantly on fast, secure global hosting.",
+    titleKey: "how.step3",
+    descKey: "how.step3.desc",
   },
 ];
 
+const pricingLocalizations: Record<string, any> = {
+  en: {
+    title: "Simple, transparent pricing",
+    subtitle: "Start free. Scale when you're ready.",
+    freeLabel: "Free",
+    freePrice: "Free",
+    freeDesc: "Test Sitecraft isolated environments.",
+    starterLabel: "Starter",
+    starterPrice: "1,900 DA/mo",
+    starterDesc: "For local stores wanting custom branding.",
+    starterTrial: "14 Days Free Trial (Without Domain)",
+    proLabel: "Pro",
+    proPrice: "5,900 DA/mo",
+    proDesc: "For fast-growing ventures seeking maximum server power.",
+    proDiscount: "20% off first month: 4,720 DA",
+    ctaFree: "Get started",
+    ctaStarter: "Start Starter — Most popular",
+    ctaPro: "Get started",
+    features: {
+      freeTemplates: "Free templates",
+      starterTemplates: "Starter templates",
+      allTemplates: "All the templates",
+      aiSupport: "Normal support (Chatbot)",
+      managerSupport: "Support (talk with managers)",
+      adminSupport: "Support (talk with administration)",
+      writeCommunity: "Community (read and post)",
+      topCommunity: "Community (read, post & post at top)",
+      storageFree: "100 MB storage",
+      storageStarter: "2 GB storage",
+      storagePro: "10 GB storage",
+      customDomain: "Custom domain included"
+    },
+    comparison: "Compare all subscription features"
+  },
+  fr: {
+    title: "Une tarification simple et transparente",
+    subtitle: "Commencez gratuitement. Évoluez quand vous êtes prêt.",
+    freeLabel: "Gratuit",
+    freePrice: "Gratuit",
+    freeDesc: "Testez les environnements de Sitecraft.",
+    starterLabel: "Starter",
+    starterPrice: "1 900 DA/mois",
+    starterDesc: "Pour les boutiques locales souhaitant une marque personnalisée.",
+    starterTrial: "14 jours d'essai gratuit (sans domaine)",
+    proLabel: "Pro",
+    proPrice: "5,900 DA/mois",
+    proDesc: "Pour les entreprises en croissance rapide.",
+    proDiscount: "-20% le 1er mois : 4 720 DA",
+    ctaFree: "Commencer",
+    ctaStarter: "Essayer Starter — Populaire",
+    ctaPro: "Commencer",
+    features: {
+      freeTemplates: "Templates gratuits",
+      starterTemplates: "Templates starter",
+      allTemplates: "Tous les templates",
+      aiSupport: "Support normal (Chatbot)",
+      managerSupport: "Support (discuter avec les managers)",
+      adminSupport: "Support (direct avec l'administration)",
+      writeCommunity: "Communauté (lecture et écriture)",
+      topCommunity: "Communauté (lecture, écriture et posts en haut)",
+      storageFree: "100 Mo de stockage",
+      storageStarter: "2 Go de stockage",
+      storagePro: "10 Go de stockage",
+      customDomain: "Domaine personnalisé inclus"
+    },
+    comparison: "Comparer toutes les fonctionnalités"
+  },
+  ar: {
+    title: "أسعار بسيطة وشفافة",
+    subtitle: "ابدأ مجاناً. وقم بالترقية عندما تكون جاهزاً.",
+    freeLabel: "مجاني",
+    freePrice: "مجاناً",
+    freeDesc: "اختبر بيئات عمل Sitecraft المعزولة.",
+    starterLabel: "البداية",
+    starterPrice: "1,900 د.ج/شهر",
+    starterDesc: "للمتاجر المحلية التي تبحث عن هوية مخصصة.",
+    starterTrial: "تجربة مجانية 14 يوماً (بدون نطاق)",
+    proLabel: "احترافي",
+    proPrice: "5,900 د.ج/شهر",
+    proDesc: "للمشاريع سريعة النمو التي تبحث عن أقصى أداء.",
+    proDiscount: "خصم 20% للشهر الأول: 4,720 د.ج",
+    ctaFree: "ابدأ الآن",
+    ctaStarter: "ابدأ باقة البداية — الأكثر شعبية",
+    ctaPro: "ابدأ الآن",
+    features: {
+      freeTemplates: "قوالب مجانية",
+      starterTemplates: "قوالب البداية",
+      allTemplates: "جميع القوالب بلا حدود",
+      aiSupport: "دعم عادي (روبوت دردشة)",
+      managerSupport: "الدعم (التحدث مع المديرين)",
+      adminSupport: "الدعم (التحدث مع الإدارة مباشرة)",
+      writeCommunity: "المجتمع (قراءة ونشر)",
+      topCommunity: "المجتمع (قراءة ونشر وظهور منشورك في الأعلى)",
+      storageFree: "مساحة تخزين 100 ميجابايت",
+      storageStarter: "مساحة تخزين 2 جيجابايت",
+      storagePro: "مساحة تخزين 10 جيجابايت",
+      customDomain: "نطاق مخصص مشمول"
+    },
+    comparison: "قارن بين كافة ميزات الاشتراسات"
+  }
+};
+
 export default function Home() {
-  const { t } = useTranslation();
-  const { data: templates } = useListTemplates();
-  const showcaseTemplates = (templates || []).slice(0, 8);
+  const { t, language } = useTranslation();
+  const tHomeLocal = pricingLocalizations[language] || pricingLocalizations["en"];
+
+  const homePlans = [
+    {
+      key: "free",
+      name: tHomeLocal.freeLabel,
+      price: tHomeLocal.freePrice,
+      desc: tHomeLocal.freeDesc,
+      cta: tHomeLocal.ctaFree,
+      popular: false,
+      features: [
+        { label: tHomeLocal.features.freeTemplates, included: true },
+        { label: tHomeLocal.features.aiSupport, included: true },
+        { label: tHomeLocal.features.storageFree, included: true },
+        { label: tHomeLocal.features.customDomain, included: false },
+        { label: tHomeLocal.features.writeCommunity, included: false }
+      ]
+    },
+    {
+      key: "starter",
+      name: tHomeLocal.starterLabel,
+      price: tHomeLocal.starterPrice,
+      desc: tHomeLocal.starterDesc,
+      cta: tHomeLocal.ctaStarter,
+      popular: true,
+      features: [
+        { label: tHomeLocal.features.customDomain, included: true },
+        { label: tHomeLocal.features.starterTemplates, included: true },
+        { label: tHomeLocal.features.storageStarter, included: true },
+        { label: tHomeLocal.features.managerSupport, included: true },
+        { label: tHomeLocal.features.writeCommunity, included: true }
+      ]
+    },
+    {
+      key: "pro",
+      name: tHomeLocal.proLabel,
+      price: tHomeLocal.proPrice,
+      desc: tHomeLocal.proDesc,
+      cta: tHomeLocal.ctaPro,
+      popular: false,
+      features: [
+        { label: tHomeLocal.features.customDomain, included: true },
+        { label: tHomeLocal.features.allTemplates, included: true },
+        { label: tHomeLocal.features.storagePro, included: true },
+        { label: tHomeLocal.features.adminSupport, included: true },
+        { label: tHomeLocal.features.topCommunity, included: true }
+      ]
+    }
+  ];
+  const { data: templates, isLoading } = useListTemplates();
+  const { isAuthenticated } = useAuth();
+  const [bootLoading, setBootLoading] = useState(true);
+
+  useEffect(() => {
+    // Artificial delay to guarantee the premium platform loader displays
+    const bootTimer = setTimeout(() => setBootLoading(false), 3500);
+    return () => clearTimeout(bootTimer);
+  }, []);
+
+  let showcaseTemplates = Array.isArray(templates) ? templates.slice(0, 8) : [];
+  if (showcaseTemplates.length > 0 && showcaseTemplates.length < 6) {
+    // Duplicate showcase templates so they always overflow and trigger horizontal scroll-pinning on large (1920px+) viewports
+    showcaseTemplates = [
+      ...showcaseTemplates,
+      ...showcaseTemplates.map(t => ({
+        ...t,
+        id: (typeof t.id === "number" ? (t.id as number) + 100 : (t.id as string) + "_dup") as any
+      }))
+    ];
+  }
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [carouselProgress, setCarouselProgress] = useState(0);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const progressTextRef = useRef<HTMLSpanElement>(null);
+  const lastWheelTime = useRef(0);
   const [extraHeight, setExtraHeight] = useState(0);
 
-  // Measure carousel scroll width and set wrapper height
+  // Force browser scroll restoration to manual and scroll to top on fresh mount/refresh (with layout paint delay protection)
   useEffect(() => {
-    const measure = () => {
-      const carousel = carouselRef.current;
-      if (!carousel) return;
-      const scrollable = carousel.scrollWidth - carousel.clientWidth;
-      setExtraHeight(scrollable > 0 ? scrollable : 0);
+    let timer: NodeJS.Timeout | null = null;
+
+    if (typeof window !== "undefined" && !bootLoading && !isLoading) {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+
+      // Scroll immediately
+      window.scrollTo(0, 0);
+
+      // Scroll again after React finishes dynamic render paint and expansions
+      timer = setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0 });
+      }, 50);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
     };
+  }, [bootLoading, isLoading]);
+
+  // Directly update the progress bar DOM properties to prevent high-frequency React re-renders during scrolls
+  const updateProgressDOM = useCallback((progress: number) => {
+    if (progressRef.current) {
+      const isRTL = document.documentElement.dir === "rtl";
+      progressRef.current.style.transformOrigin = isRTL ? "right" : "left";
+      progressRef.current.style.transform = `scaleX(${progress})`;
+    }
+    if (progressTextRef.current) {
+      progressTextRef.current.innerText = progress >= 0.98 ? t("templates.keep") : t("templates.explore");
+    }
+  }, [t]);
+
+  // Measure carousel scroll width dynamically and set wrapper height using ResizeObserver
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    const measure = () => {
+      const scrollable = carousel.scrollWidth - carousel.clientWidth;
+      setExtraHeight(scrollable > 0 ? scrollable * 1.1 : 0); // Multiply by 1.1 for a slightly more relaxed and smooth scroll journey
+    };
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(carousel);
+
+    // Also observe all children cards to trigger refits if layout elements shift or load
+    Array.from(carousel.children).forEach(child => observer.observe(child));
+
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+
+    return () => {
+      observer.disconnect();
+    };
   }, [showcaseTemplates]);
 
-  // Map window scroll inside the wrapper to carousel scrollLeft
+  // Map window scroll inside the wrapper to carousel scrollLeft with strict boundary snaps
   const handleScroll = useCallback(() => {
     const wrapper = wrapperRef.current;
     const carousel = carouselRef.current;
     if (!wrapper || !carousel || extraHeight === 0) return;
 
+    // Prevent scroll event race conflicts by ignoring window scrolls during active wheel-scrolling
+    if (Date.now() - lastWheelTime.current < 800) {
+      return;
+    }
+
     const rect = wrapper.getBoundingClientRect();
-    // How many px we've scrolled INTO the sticky zone (0 → extraHeight)
     const scrolledIn = -rect.top;
-    if (scrolledIn < 0 || scrolledIn > extraHeight) return;
+
+    if (scrolledIn < 0) {
+      updateProgressDOM(0);
+      carousel.scrollLeft = 0;
+      return;
+    }
+
+    const isRTL = document.documentElement.dir === "rtl";
+    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+
+    if (scrolledIn > extraHeight) {
+      updateProgressDOM(1);
+      carousel.scrollLeft = isRTL ? -maxScroll : maxScroll;
+      return;
+    }
 
     const progress = scrolledIn / extraHeight;
-    setCarouselProgress(progress);
-    carousel.scrollLeft = progress * (carousel.scrollWidth - carousel.clientWidth);
-  }, [extraHeight]);
+    updateProgressDOM(progress);
+    carousel.scrollLeft = isRTL ? -(progress * maxScroll) : progress * maxScroll;
+  }, [extraHeight, updateProgressDOM]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
+  // Intercept wheel events on the templates section to freeze vertical page scrolling and translate to smooth horizontal scrolling
+  useEffect(() => {
+    const section = sectionRef.current;
+    const carousel = carouselRef.current;
+    if (!section || !carousel) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const isRTL = document.documentElement.dir === "rtl";
+      const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+      if (maxScroll <= 0) return;
+
+      const isScrollingDown = e.deltaY > 0;
+      const currentScroll = Math.abs(carousel.scrollLeft);
+
+      if (isScrollingDown) {
+        if (currentScroll < maxScroll - 1) {
+          e.preventDefault();
+          lastWheelTime.current = Date.now(); // Update wheel lock timestamp
+          const targetScroll = Math.min(maxScroll, currentScroll + e.deltaY);
+          carousel.scrollLeft = isRTL ? -targetScroll : targetScroll;
+          updateProgressDOM(targetScroll / maxScroll);
+        }
+      } else {
+        if (currentScroll > 1) {
+          e.preventDefault();
+          lastWheelTime.current = Date.now(); // Update wheel lock timestamp
+          const targetScroll = Math.max(0, currentScroll + e.deltaY);
+          carousel.scrollLeft = isRTL ? -targetScroll : targetScroll;
+          updateProgressDOM(targetScroll / maxScroll);
+        }
+      }
+    };
+
+    section.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      section.removeEventListener("wheel", handleWheel);
+    };
+  }, [showcaseTemplates, updateProgressDOM, bootLoading]);
+
+  if (isLoading || bootLoading) {
+    return <PlatformLoader fullScreen />;
+  }
+
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
+    <div className="flex flex-col min-h-screen" style={{ overflowX: "clip" }}>
       <Navbar />
       <main className="flex-1">
 
@@ -193,7 +473,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-              5,000+ Algerian businesses online
+              {t("stats.v1")} {t("hero.badge")}
             </motion.div>
 
             <motion.h1
@@ -222,13 +502,13 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <Link href="/register">
-                <Button size="lg" className="h-13 px-8 text-base font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow" data-testid="button-hero-cta">
+              <Link href={isAuthenticated ? "/dashboard" : "/register"}>
+                <Button size="lg" className="rounded-full h-13 px-8 text-base font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow" data-testid="button-hero-cta">
                   {t("hero.cta.start")} <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
               <Link href="/templates">
-                <Button size="lg" variant="outline" className="h-13 px-8 text-base font-semibold" data-testid="button-hero-templates">
+                <Button size="lg" variant="outline" className="rounded-full h-13 px-8 text-base font-semibold" data-testid="button-hero-templates">
                   {t("hero.cta.templates")}
                 </Button>
               </Link>
@@ -241,7 +521,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              {["No credit card required", "Free plan forever", "Setup in 5 minutes"].map((badge) => (
+              {[t("hero.trust.1"), t("hero.trust.2"), t("hero.trust.3")].map((badge) => (
                 <span key={badge} className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
                   {badge}
@@ -264,7 +544,7 @@ export default function Home() {
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
                   <div className="flex-1 bg-background rounded-md px-4 py-1.5 text-xs text-muted-foreground border text-left">
-                    sitecraft.dz/editor
+                    getcorbit.com/editor
                   </div>
                 </div>
                 <div className="h-64 md:h-80 bg-gradient-to-br from-primary/5 via-blue-500/3 to-transparent flex items-center justify-center relative overflow-hidden">
@@ -279,14 +559,14 @@ export default function Home() {
                         <Layout className="w-6 h-6 text-primary" />
                       </div>
                       <div className="text-left">
-                        <div className="font-bold text-lg">Site Editor</div>
-                        <div className="text-sm text-muted-foreground">Drag, drop, publish</div>
+                        <div className="font-bold text-lg">{t("hero.mockup.title")}</div>
+                        <div className="text-sm text-muted-foreground">{t("hero.mockup.desc")}</div>
                       </div>
                     </div>
                     <div className="flex gap-2 justify-center">
-                      <div className="bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 text-xs font-medium text-primary">+ Add block</div>
-                      <div className="bg-card border rounded-lg px-3 py-1.5 text-xs font-medium">Preview</div>
-                      <div className="bg-primary rounded-lg px-3 py-1.5 text-xs font-medium text-primary-foreground">Publish</div>
+                      <div className="bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 text-xs font-medium text-primary">{t("hero.mockup.add")}</div>
+                      <div className="bg-card border rounded-lg px-3 py-1.5 text-xs font-medium">{t("hero.mockup.preview")}</div>
+                      <div className="bg-primary rounded-lg px-3 py-1.5 text-xs font-medium text-primary-foreground">{t("hero.mockup.publish")}</div>
                     </div>
                   </div>
                 </div>
@@ -299,7 +579,7 @@ export default function Home() {
               >
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-400" />
-                  <span className="font-medium">Live now</span>
+                  <span className="font-medium">{t("hero.mockup.live")}</span>
                 </div>
               </motion.div>
               <motion.div
@@ -307,8 +587,8 @@ export default function Home() {
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               >
-                <div className="text-muted-foreground">New visitor</div>
-                <div className="font-bold text-primary">+1,247 today</div>
+                <div className="text-muted-foreground">{t("hero.mockup.visitor")}</div>
+                <div className="font-bold text-primary">{t("hero.mockup.today")}</div>
               </motion.div>
             </motion.div>
           </div>
@@ -317,9 +597,9 @@ export default function Home() {
         {/* ── LOGOS / TRUST BAR ── */}
         <section className="py-10 border-y bg-muted/30">
           <div className="container">
-            <p className="text-center text-sm text-muted-foreground mb-6">Trusted by businesses across Algeria's 48 wilayas</p>
+            <p className="text-center text-sm text-muted-foreground mb-6">{t("trust.title")}</p>
             <div className="flex flex-wrap justify-center items-center gap-8 opacity-50">
-              {["Alger", "Oran", "Constantine", "Annaba", "Sétif", "Tlemcen", "Béjaïa", "Blida"].map((city) => (
+              {[t("wilaya.alger"), t("wilaya.oran"), t("wilaya.constantine"), t("wilaya.annaba"), t("wilaya.setif"), t("wilaya.tlemcen"), t("wilaya.bejaia"), t("wilaya.blida")].map((city) => (
                 <span key={city} className="text-sm font-semibold text-muted-foreground">{city}</span>
               ))}
             </div>
@@ -332,17 +612,17 @@ export default function Home() {
             <FadeIn className="text-center mb-16 space-y-4">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full border border-primary/20">
                 <Zap className="w-3.5 h-3.5" />
-                Powerful platform
+                {t("features.badge")}
               </div>
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{t("features.title")}</h2>
               <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                Everything you need to build, launch, and grow your online presence in Algeria.
+                {t("features.desc")}
               </p>
             </FadeIn>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
               {features.map((feature, i) => (
-                <FadeIn key={feature.title} delay={i * 0.06}>
+                <FadeIn key={feature.titleKey} delay={i * 0.06}>
                   <motion.div
                     className="bg-card border rounded-xl p-5 space-y-3 h-full hover:border-primary/40 hover:shadow-md transition-all"
                     whileHover={{ y: -4 }}
@@ -350,8 +630,8 @@ export default function Home() {
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                       <feature.icon className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                    <h3 className="font-semibold">{t(feature.titleKey)}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{t(feature.descKey)}</p>
                   </motion.div>
                 </FadeIn>
               ))}
@@ -380,16 +660,16 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full border border-primary/20">
                     <Layers className="w-3.5 h-3.5" />
-                    Templates
+                    {t("templates.badge")}
                   </div>
-                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Start from a great template</h2>
+                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{t("templates.title")}</h2>
                   <p className="text-muted-foreground max-w-lg">
-                    Every template is mobile-ready, fast, and fully customizable. Pick one and make it yours in minutes.
+                    {t("templates.desc")}
                   </p>
                 </div>
                 <Link href="/templates" className="hidden md:block">
                   <Button variant="outline">
-                    All templates <ChevronRight className="w-4 h-4 ml-1" />
+                    {t("templates.cta.all")} <ChevronRight className="w-4 h-4 ml-1 rtl:mr-1 rtl:ml-0 rtl:rotate-180" />
                   </Button>
                 </Link>
               </FadeIn>
@@ -431,7 +711,7 @@ export default function Home() {
                         <h3 className="font-semibold text-sm">{tmpl.name}</h3>
                         <p className="text-xs text-muted-foreground mt-0.5 capitalize">{tmpl.category}</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity rtl:rotate-180" />
                     </div>
                   </motion.div>
                 ))}
@@ -450,12 +730,16 @@ export default function Home() {
             <div className="container mt-8 flex-shrink-0 flex items-center gap-4">
               <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
                 <div
-                  className="h-full bg-primary rounded-full transition-transform duration-75 origin-left"
-                  style={{ transform: `scaleX(${carouselProgress})` }}
+                  ref={progressRef}
+                  className="h-full bg-primary rounded-full origin-left"
+                  style={{ transform: "scaleX(0)" }}
                 />
               </div>
-              <span className="text-xs text-muted-foreground whitespace-nowrap select-none">
-                {carouselProgress >= 0.98 ? "↓ Keep scrolling" : "Scroll to explore →"}
+              <span
+                ref={progressTextRef}
+                className="text-xs text-muted-foreground whitespace-nowrap select-none"
+              >
+                {t("templates.explore")}
               </span>
             </div>
 
@@ -463,7 +747,7 @@ export default function Home() {
             <div className="container mt-5 flex-shrink-0 md:hidden">
               <Link href="/templates">
                 <Button variant="outline" className="w-full">
-                  Browse all templates <ChevronRight className="w-4 h-4 ml-1" />
+                  {t("templates.cta.browse")} <ChevronRight className="w-4 h-4 ml-1 rtl:mr-1 rtl:ml-0 rtl:rotate-180" />
                 </Button>
               </Link>
             </div>
@@ -476,10 +760,10 @@ export default function Home() {
             <FadeIn className="text-center mb-16 space-y-4">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full border border-primary/20">
                 <Clock className="w-3.5 h-3.5" />
-                Simple process
+                {t("how.badge")}
               </div>
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{t("how.title")}</h2>
-              <p className="text-muted-foreground text-lg">Three steps. Five minutes. Your site is live.</p>
+              <p className="text-muted-foreground text-lg">{t("how.desc")}</p>
             </FadeIn>
 
             <div className="space-y-6">
@@ -494,8 +778,8 @@ export default function Home() {
                     </div>
                     <div className="flex-1">
                       <div className="text-xs font-bold text-primary/60 mb-1">{step.num}</div>
-                      <h3 className="font-bold text-lg mb-1.5">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.desc}</p>
+                      <h3 className="font-bold text-lg mb-1.5">{t(step.titleKey)}</h3>
+                      <p className="text-muted-foreground">{t(step.descKey)}</p>
                     </div>
                     <div className="text-5xl font-black text-primary/5 hidden md:block">{step.num}</div>
                   </motion.div>
@@ -506,40 +790,98 @@ export default function Home() {
         </section>
 
         {/* ── PRICING PREVIEW ── */}
-        <section className="py-24 bg-muted/20 border-y">
+        <section className="py-24 bg-muted/20 border-y relative overflow-hidden">
+          {/* Subtle Ambient light elements */}
+          <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
+
           <div className="container max-w-5xl">
             <FadeIn className="text-center mb-16 space-y-4">
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{t("pricing.title")}</h2>
-              <p className="text-muted-foreground text-lg">Start free. Scale when you're ready.</p>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{tHomeLocal.title}</h2>
+              <p className="text-muted-foreground text-lg">{tHomeLocal.subtitle}</p>
             </FadeIn>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[
-                { name: t("pricing.free"), price: "Free", features: ["1 website", "5 templates", "100 MB storage", "Corbit subdomain"] },
-                { name: t("pricing.pro"), price: "2,490 DA/mo", features: ["10 websites", "All templates", "2 GB storage", "Custom domain", "E-commerce", "Analytics"], highlight: true },
-                { name: t("pricing.business"), price: "7,900 DA/mo", features: ["Unlimited websites", "10 GB storage", "API access", "Dedicated support", "White-label"] },
-              ].map((plan, i) => (
-                <FadeIn key={plan.name} delay={i * 0.1}>
-                  <div className={`rounded-2xl border p-6 space-y-5 h-full flex flex-col ${plan.highlight ? "bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/20" : "bg-card"}`}>
-                    <div>
-                      <h3 className="font-bold text-lg">{plan.name}</h3>
-                      <div className="text-3xl font-bold mt-1">{plan.price}</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+              {homePlans.map((plan, i) => (
+                <FadeIn key={plan.key} delay={i * 0.1}>
+                  <div
+                    className={`relative rounded-3xl border p-7.5 h-full flex flex-col justify-between gap-8 transition-all duration-300 ${
+                      plan.popular
+                        ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-650/20 scale-105 z-10"
+                        : "bg-white dark:bg-card border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-foreground shadow-sm"
+                    }`}
+                  >
+                    <div className="space-y-6">
+                      {/* Category Label */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className={`block text-xs font-bold uppercase tracking-wider ${
+                          plan.popular ? "text-blue-100" : "text-zinc-500 dark:text-zinc-400"
+                        }`}>
+                          {plan.name}
+                        </span>
+                        {plan.key === "starter" && (
+                          <span className="text-[8px] font-black px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30 tracking-wide select-none">
+                            {tHomeLocal.starterTrial}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Price Callout */}
+                      <div className="space-y-2 text-left">
+                        <h3 className="text-4xl font-extrabold tracking-tight">
+                          {plan.price}
+                        </h3>
+                        {plan.key === "pro" && (
+                          <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full w-fit select-none">
+                            <Sparkles className="w-3 h-3 fill-emerald-500 shrink-0" />
+                            <span>{tHomeLocal.proDiscount}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Divider */}
+                      <div className={`h-px ${plan.popular ? "bg-blue-500/60" : "bg-zinc-200 dark:bg-zinc-800"}`} />
+
+                      {/* Features List */}
+                      <ul className="space-y-3.5 text-left">
+                        {plan.features.map((feature, idx) => {
+                          const isIncluded = feature.included;
+                          return (
+                            <li key={idx} className="flex items-center gap-3 text-xs font-bold leading-normal">
+                              {isIncluded ? (
+                                <Check className={`w-4 h-4 rounded-full p-0.5 shrink-0 ${
+                                  plan.popular 
+                                    ? "text-blue-600 bg-white" 
+                                    : "text-blue-500 bg-blue-500/10"
+                                }`} />
+                              ) : (
+                                <X className={`w-4 h-4 rounded-full p-0.5 shrink-0 ${
+                                  plan.popular 
+                                    ? "text-blue-500 bg-blue-700" 
+                                    : "text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800"
+                                }`} />
+                              )}
+                              <span className={!isIncluded && !plan.popular ? "text-zinc-400 dark:text-zinc-500 line-through" : ""}>
+                                <span className={plan.popular ? "text-white" : "text-zinc-700 dark:text-zinc-300"}>
+                                  {feature.label}
+                                </span>
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     </div>
-                    <ul className="space-y-2 flex-1">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-sm">
-                          <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${plan.highlight ? "text-primary-foreground" : "text-primary"}`} />
-                          <span className={plan.highlight ? "text-primary-foreground/90" : ""}>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Link href={plan.highlight ? "/register" : "/pricing"}>
+
+                    {/* CTA Button */}
+                    <Link href="/pricing" className="w-full">
                       <Button
-                        variant={plan.highlight ? "secondary" : "outline"}
-                        className="w-full"
-                        data-testid={`button-pricing-${plan.name}`}
+                        className={`w-full font-bold h-11 rounded-full text-xs cursor-pointer shadow-sm transition-transform hover:-translate-y-0.5 active:translate-y-0 ${
+                          plan.popular 
+                            ? "bg-white text-blue-600 hover:bg-zinc-100" 
+                            : "bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800"
+                        }`}
                       >
-                        {plan.highlight ? "Start Pro free" : "Get started"}
+                        {plan.cta}
                       </Button>
                     </Link>
                   </div>
@@ -547,10 +889,10 @@ export default function Home() {
               ))}
             </div>
 
-            <FadeIn className="text-center mt-8">
+            <FadeIn className="text-center mt-12">
               <Link href="/pricing">
-                <Button variant="ghost" className="text-muted-foreground">
-                  See full pricing comparison <ChevronRight className="w-4 h-4 ml-1" />
+                <Button variant="ghost" className="text-muted-foreground hover:bg-transparent hover:text-foreground group text-xs font-bold">
+                  {tHomeLocal.comparison} <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
             </FadeIn>
@@ -563,30 +905,30 @@ export default function Home() {
             <FadeIn className="text-center mb-16 space-y-4">
               <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 text-sm font-medium px-4 py-1.5 rounded-full border border-yellow-200 dark:border-yellow-800">
                 <Star className="w-3.5 h-3.5 fill-current" />
-                4.9/5 average rating
+                {t("testimonials.badge")}
               </div>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Loved by Algerian entrepreneurs</h2>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{t("testimonials.title")}</h2>
               <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                Real businesses, real results. See what our customers are saying.
+                {t("testimonials.desc")}
               </p>
             </FadeIn>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {testimonials.map((t, i) => (
-                <FadeIn key={t.name} delay={i * 0.08}>
+              {testimonials.map((testi, i) => (
+                <FadeIn key={testi.name} delay={i * 0.08}>
                   <motion.div
                     className="bg-card border rounded-xl p-5 space-y-4 h-full hover:shadow-md transition-shadow"
                     whileHover={{ y: -4 }}
                   >
                     <div className="flex gap-0.5">
-                      {Array(t.rating).fill(0).map((_, j) => (
+                      {Array(testi.rating).fill(0).map((_, j) => (
                         <Star key={j} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-sm leading-relaxed text-muted-foreground">"{t.text}"</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">"{t(testi.textKey)}"</p>
                     <div>
-                      <div className="font-semibold text-sm">{t.name}</div>
-                      <div className="text-xs text-muted-foreground">{t.role}</div>
+                      <div className="font-semibold text-sm">{testi.name}</div>
+                      <div className="text-xs text-muted-foreground">{t(testi.roleKey)}</div>
                     </div>
                   </motion.div>
                 </FadeIn>
@@ -604,10 +946,10 @@ export default function Home() {
           <div className="container relative">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-primary-foreground">
               {[
-                { value: "5,000+", label: "Websites launched" },
-                { value: "48", label: "Wilayas covered" },
-                { value: "99.9%", label: "Uptime" },
-                { value: "< 5 min", label: "Average setup time" },
+                { value: t("stats.v1"), label: t("stats.l1") },
+                { value: t("stats.v2"), label: t("stats.l2") },
+                { value: t("stats.v3"), label: t("stats.l3") },
+                { value: t("stats.v4"), label: t("stats.l4") },
               ].map((stat, i) => (
                 <FadeIn key={stat.label} delay={i * 0.1}>
                   <div>
@@ -625,28 +967,27 @@ export default function Home() {
           <div className="container max-w-3xl text-center">
             <FadeIn className="space-y-6">
               <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
-                Your business deserves
+                {t("cta.final.title")}
                 <br />
-                <span className="gradient-text">a great website.</span>
+                <span className="gradient-text">{t("cta.final.subtitle")}</span>
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Join 5,000+ Algerian entrepreneurs who chose Corbit to build their online presence.
-                Start free — no credit card required.
+                {t("cta.final.desc")}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="/register">
-                  <Button size="lg" className="h-13 px-10 text-base font-semibold shadow-lg shadow-primary/25" data-testid="button-cta-final">
-                    Start building for free <ArrowRight className="ml-2 w-4 h-4" />
+                <Link href={isAuthenticated ? "/dashboard" : "/register"}>
+                  <Button size="lg" className="rounded-full h-13 px-10 text-base font-semibold shadow-lg shadow-primary/25" data-testid="button-cta-final">
+                    {t("cta.final.cta")} <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </Link>
                 <Link href="/templates">
-                  <Button size="lg" variant="outline" className="h-13 px-8 text-base">
-                    Browse templates
+                  <Button size="lg" variant="outline" className="rounded-full h-13 px-8 text-base">
+                    {t("cta.final.templates")}
                   </Button>
                 </Link>
               </div>
               <p className="text-sm text-muted-foreground">
-                Free forever plan available. No credit card required.
+                {t("cta.final.note")}
               </p>
             </FadeIn>
           </div>

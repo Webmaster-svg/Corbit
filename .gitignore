@@ -47,3 +47,18 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Environment secrets
+.env
+.env.local
+.env.*
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Local Databases and Logs
+local_db.json
+local_community_posts.json
+artifacts/api-server/local_db.json
+artifacts/api-server/local_community_posts.json
+artifacts/api-server/server_log.txt

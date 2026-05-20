@@ -14,16 +14,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Search, Globe, FileText, Trash2, ExternalLink, Loader2,
-  LayoutDashboard, FolderOpen, TrendingUp, Settings, LogOut
+  LayoutDashboard, FolderOpen, TrendingUp, Settings, LogOut,
+  Package, ShoppingCart, FileEdit
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
-} from "@/components/ui/dialog";
+import { PlatformLoader } from "@/components/ui/platform-loader";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
+import { useTranslation } from "@/lib/i18n";
 
 export default function Projects() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { setToken } = useAuth();
   const [, setLocation] = useLocation();
@@ -58,9 +60,9 @@ export default function Projects() {
     },
   });
 
-  const filtered = (projects || []).filter((p) =>
+  const filtered = Array.isArray(projects) ? projects.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
-  );
+  ) : [];
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,57 +76,26 @@ export default function Projects() {
     });
   };
 
+  if (isLoading) {
+    return <PlatformLoader fullScreen />;
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="hidden md:flex w-60 flex-col border-r bg-sidebar shrink-0">
-          <div className="flex-1 px-3 py-6 space-y-1">
-            {[
-              { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-              { icon: FolderOpen, label: "My Projects", href: "/projects", active: true },
-              { icon: Globe, label: "Templates", href: "/templates" },
-              { icon: TrendingUp, label: "Analytics", href: "#" },
-              { icon: Settings, label: "Settings", href: "#" },
-            ].map((item) => (
-              <Link key={item.label} href={item.href}>
-                <button
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    item.active
-                      ? "bg-primary text-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent"
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                </button>
-              </Link>
-            ))}
-          </div>
-          <div className="p-3 border-t">
-            <button
-              onClick={() => { setToken(null); setLocation("/"); }}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign out
-            </button>
-          </div>
-        </aside>
-
         <main className="flex-1 p-6 md:p-8 overflow-auto">
-          <div className="max-w-5xl mx-auto space-y-6">
+          <div className="w-full max-w-[1600px] mx-auto space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">My Projects</h1>
+                <h1 className="text-2xl font-bold">{t("projects.title")}</h1>
                 <p className="text-muted-foreground text-sm mt-1">
-                  {(projects || []).length} site{(projects || []).length !== 1 ? "s" : ""}
+                  {Array.isArray(projects) ? projects.length : 0} {t("projects.sites")}
                 </p>
               </div>
               <Button onClick={() => setShowCreate(true)} data-testid="button-create-project">
                 <Plus className="w-4 h-4 mr-2" />
-                New project
+                {t("dashboard.new_project")}
               </Button>
             </div>
 
@@ -133,7 +104,7 @@ export default function Projects() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search projects..."
+                placeholder={t("projects.search")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -142,29 +113,17 @@ export default function Projects() {
             </div>
 
             {/* Projects grid */}
-            {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Array(6).fill(0).map((_, i) => (
-                  <div key={i} className="bg-card border rounded-xl overflow-hidden">
-                    <Skeleton className="h-40 w-full" />
-                    <div className="p-4 space-y-2">
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filtered.length === 0 ? (
+            {filtered.length === 0 ? (
               <div className="text-center py-20 border border-dashed rounded-xl">
                 <FolderOpen className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-40" />
-                <h3 className="font-semibold mb-1">{search ? "No projects found" : "No projects yet"}</h3>
+                <h3 className="font-semibold mb-1">{search ? t("projects.empty.found") : t("dashboard.no_projects")}</h3>
                 <p className="text-muted-foreground text-sm mb-4">
-                  {search ? "Try a different search term" : "Create your first website in seconds"}
+                  {search ? t("projects.empty.search") : t("projects.empty.create")}
                 </p>
                 {!search && (
                   <Button onClick={() => setShowCreate(true)}>
                     <Plus className="w-4 h-4 mr-2" />
-                    Create project
+                    {t("templates.dialog.submit")}
                   </Button>
                 )}
               </div>
@@ -194,7 +153,7 @@ export default function Projects() {
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity gap-2">
                           <Link href={`/projects/${project.id}`}>
                             <Button size="sm" variant="secondary">
-                              <ExternalLink className="w-3 h-3 mr-1" /> Open
+                              <ExternalLink className="w-3 h-3 mr-1" /> {t("projects.open")}
                             </Button>
                           </Link>
                         </div>
@@ -215,7 +174,7 @@ export default function Projects() {
                           </span>
                         </div>
                         <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                          <span className="text-xs text-muted-foreground">{project.visitCount} visits</span>
+                          <span className="text-xs text-muted-foreground">{project.visitCount} {t("dashboard.visits")}</span>
                           <div className="flex gap-1">
                             <Link href={`/projects/${project.id}`}>
                               <Button size="sm" variant="ghost" className="h-7 px-2">
@@ -247,15 +206,15 @@ export default function Projects() {
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent className="sm:max-w-md" data-testid="dialog-create-project">
           <DialogHeader>
-            <DialogTitle>Create a new project</DialogTitle>
-            <DialogDescription>Give your site a name and optionally pick a template to start with.</DialogDescription>
+            <DialogTitle>{t("projects.dialog.title")}</DialogTitle>
+            <DialogDescription>{t("projects.dialog.desc")}</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="project-name">Project name</Label>
+              <Label htmlFor="project-name">{t("templates.dialog.label")}</Label>
               <Input
                 id="project-name"
-                placeholder="My Restaurant Website"
+                placeholder={t("projects.dialog.placeholder")}
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 required
@@ -263,18 +222,18 @@ export default function Projects() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="project-desc">Description (optional)</Label>
+              <Label htmlFor="project-desc">{t("projects.dialog.desc_label")}</Label>
               <Input
                 id="project-desc"
-                placeholder="A short description..."
+                placeholder={t("projects.dialog.desc_placeholder")}
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
                 data-testid="input-project-desc"
               />
             </div>
-            {templates && templates.length > 0 && (
+            {Array.isArray(templates) && templates.length > 0 && (
               <div className="space-y-2">
-                <Label>Template (optional)</Label>
+                <Label>{t("projects.dialog.template")}</Label>
                 <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
                   {templates.slice(0, 6).map((t) => (
                     <button
@@ -293,9 +252,9 @@ export default function Projects() {
               </div>
             )}
             <div className="flex gap-2 justify-end pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={() => setShowCreate(false)}>{t("common.cancel")}</Button>
               <Button type="submit" disabled={createMutation.isPending} data-testid="button-submit-create">
-                {createMutation.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</> : "Create project"}
+                {createMutation.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t("common.creating")}</> : t("templates.dialog.submit")}
               </Button>
             </div>
           </form>
@@ -306,18 +265,18 @@ export default function Projects() {
       <Dialog open={!!deletingId} onOpenChange={(open) => !open && setDeletingId(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Delete project?</DialogTitle>
-            <DialogDescription>This action cannot be undone. The project will be permanently deleted.</DialogDescription>
+            <DialogTitle>{t("projects.delete.title")}</DialogTitle>
+            <DialogDescription>{t("projects.delete.desc")}</DialogDescription>
           </DialogHeader>
           <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setDeletingId(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDeletingId(null)}>{t("common.cancel")}</Button>
             <Button
               variant="destructive"
               disabled={deleteMutation.isPending}
               onClick={() => { if (deletingId) deleteMutation.mutate({ id: deletingId }); }}
               data-testid="button-confirm-delete"
             >
-              {deleteMutation.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Deleting...</> : "Delete"}
+              {deleteMutation.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t("projects.delete.loading")}</> : t("projects.delete.submit")}
             </Button>
           </div>
         </DialogContent>

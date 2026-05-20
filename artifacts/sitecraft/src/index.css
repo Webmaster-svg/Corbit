@@ -69,11 +69,11 @@
 
 /* LIGHT MODE */
 :root {
-  --button-outline: rgba(0,0,0,.10);
-  --badge-outline: rgba(0,0,0,.05);
+  --button-outline: rgba(0, 0, 0, .10);
+  --badge-outline: rgba(0, 0, 0, .05);
   --opaque-button-border-intensity: -8;
-  --elevate-1: rgba(0,0,0,.03);
-  --elevate-2: rgba(0,0,0,.08);
+  --elevate-1: rgba(0, 0, 0, .03);
+  --elevate-2: rgba(0, 0, 0, .08);
 
   --background: 0 0% 100%;
   --foreground: 240 10% 4%;
@@ -114,14 +114,14 @@
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
   --radius: .625rem;
-  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.05);
-  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.07);
-  --shadow-sm: 0px 2px 6px 0px rgba(0,0,0,0.06), 0px 1px 2px -1px rgba(0,0,0,0.04);
-  --shadow: 0px 4px 12px 0px rgba(0,0,0,0.08), 0px 2px 4px -1px rgba(0,0,0,0.04);
-  --shadow-md: 0px 8px 24px 0px rgba(0,0,0,0.08), 0px 4px 8px -2px rgba(0,0,0,0.04);
-  --shadow-lg: 0px 16px 40px 0px rgba(0,0,0,0.10), 0px 8px 16px -4px rgba(0,0,0,0.04);
-  --shadow-xl: 0px 24px 60px 0px rgba(0,0,0,0.12), 0px 12px 24px -8px rgba(0,0,0,0.06);
-  --shadow-2xl: 0px 40px 80px 0px rgba(0,0,0,0.14);
+  --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+  --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.07);
+  --shadow-sm: 0px 2px 6px 0px rgba(0, 0, 0, 0.06), 0px 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.08), 0px 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0px 8px 24px 0px rgba(0, 0, 0, 0.08), 0px 4px 8px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0px 16px 40px 0px rgba(0, 0, 0, 0.10), 0px 8px 16px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0px 24px 60px 0px rgba(0, 0, 0, 0.12), 0px 12px 24px -8px rgba(0, 0, 0, 0.06);
+  --shadow-2xl: 0px 40px 80px 0px rgba(0, 0, 0, 0.14);
   --tracking-normal: -0.01em;
   --spacing: 0.25rem;
 
@@ -135,11 +135,11 @@
 }
 
 .dark {
-  --button-outline: rgba(255,255,255,.10);
-  --badge-outline: rgba(255,255,255,.05);
+  --button-outline: rgba(255, 255, 255, .10);
+  --badge-outline: rgba(255, 255, 255, .05);
   --opaque-button-border-intensity: 9;
-  --elevate-1: rgba(255,255,255,.04);
-  --elevate-2: rgba(255,255,255,.09);
+  --elevate-1: rgba(255, 255, 255, .04);
+  --elevate-2: rgba(255, 255, 255, .09);
 
   --background: 222 47% 8%;
   --foreground: 210 40% 98%;
@@ -176,14 +176,14 @@
   --chart-4: 280 65% 65%;
   --chart-5: 340 75% 60%;
 
-  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.30);
-  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.35);
-  --shadow-sm: 0px 2px 6px 0px rgba(0,0,0,0.30), 0px 1px 2px -1px rgba(0,0,0,0.20);
-  --shadow: 0px 4px 12px 0px rgba(0,0,0,0.35), 0px 2px 4px -1px rgba(0,0,0,0.20);
-  --shadow-md: 0px 8px 24px 0px rgba(0,0,0,0.40), 0px 4px 8px -2px rgba(0,0,0,0.20);
-  --shadow-lg: 0px 16px 40px 0px rgba(0,0,0,0.45), 0px 8px 16px -4px rgba(0,0,0,0.25);
-  --shadow-xl: 0px 24px 60px 0px rgba(0,0,0,0.50), 0px 12px 24px -8px rgba(0,0,0,0.30);
-  --shadow-2xl: 0px 40px 80px 0px rgba(0,0,0,0.60);
+  --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+  --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0px 2px 6px 0px rgba(0, 0, 0, 0.30), 0px 1px 2px -1px rgba(0, 0, 0, 0.20);
+  --shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.35), 0px 2px 4px -1px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0px 8px 24px 0px rgba(0, 0, 0, 0.40), 0px 4px 8px -2px rgba(0, 0, 0, 0.20);
+  --shadow-lg: 0px 16px 40px 0px rgba(0, 0, 0, 0.45), 0px 8px 16px -4px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0px 24px 60px 0px rgba(0, 0, 0, 0.50), 0px 12px 24px -8px rgba(0, 0, 0, 0.30);
+  --shadow-2xl: 0px 40px 80px 0px rgba(0, 0, 0, 0.60);
 
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
@@ -222,6 +222,7 @@
   }
 
   .no-default-hover-elevate {}
+
   .no-default-active-elevate {}
 
   .toggle-elevate::before,
@@ -291,12 +292,12 @@
   .glass-card {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    background: rgba(255,255,255,0.7);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .dark .glass-card {
-    background: rgba(15,20,40,0.7);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(15, 20, 40, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 }

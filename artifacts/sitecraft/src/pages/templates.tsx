@@ -1,294 +1,222 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { useListTemplates, useCreateProject, getListProjectsQueryKey } from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, Lock, ArrowRight, Layers, LayoutDashboard, FolderOpen, Globe, TrendingUp, Settings, LogOut, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "wouter";
+import { motion } from "framer-motion";
+import { useListTemplates } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-
-const CATEGORIES = ["all", "business", "portfolio", "ecommerce", "blog", "restaurant", "agency", "landing"];
+import { useState } from "react";
+import { Search, ExternalLink, Sparkles } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
+import { Input } from "@/components/ui/input";
 
 export default function Templates() {
-  const { setToken, isAuthenticated } = useAuth();
-  const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-  const [selectedTemplate, setSelectedTemplate] = useState<null | { id: number; name: string }>(null);
-  const [projectName, setProjectName] = useState("");
-
   const { data: templates, isLoading } = useListTemplates();
+  const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<"all" | "ecommerce" | "pro" | "free">("all");
 
-  const createMutation = useCreateProject({
-    mutation: {
-      onSuccess: (project) => {
-        queryClient.invalidateQueries({ queryKey: getListProjectsQueryKey() });
-        setSelectedTemplate(null);
-        setProjectName("");
-        setLocation(`/projects/${project.id}`);
-      },
-    },
-  });
+  const filteredTemplates = Array.isArray(templates)
+    ? templates.filter((tmpl: any) => {
+        const matchesSearch =
+          tmpl.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          tmpl.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (tmpl.tags && tmpl.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase())));
 
-  const filtered = (templates || []).filter((tmpl) => {
-    const matchSearch =
-      tmpl.name.toLowerCase().includes(search.toLowerCase()) ||
-      tmpl.description.toLowerCase().includes(search.toLowerCase());
-    const matchCategory = category === "all" || tmpl.category === category;
-    return matchSearch && matchCategory;
-  });
+        const matchesCategory =
+          selectedCategory === "all" ||
+          (selectedCategory === "ecommerce" && tmpl.category.toLowerCase() === "ecommerce") ||
+          (selectedCategory === "pro" && tmpl.isPro) ||
+          (selectedCategory === "free" && !tmpl.isPro);
 
-  const handleUseTemplate = (tmpl: { id: number; name: string }) => {
-    if (!isAuthenticated) {
-      setLocation("/register");
-      return;
-    }
-    setProjectName(tmpl.name);
-    setSelectedTemplate(tmpl);
-  };
-
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedTemplate || !projectName.trim()) return;
-    createMutation.mutate({
-      data: { name: projectName.trim(), templateId: selectedTemplate.id },
-    });
-  };
-
-  const sidebar = (
-    <aside className="hidden md:flex w-60 flex-col border-r bg-sidebar shrink-0">
-      <div className="flex-1 px-3 py-6 space-y-1">
-        {[
-          { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-          { icon: FolderOpen, label: "My Projects", href: "/projects" },
-          { icon: Layers, label: "Templates", href: "/templates", active: true },
-          { icon: TrendingUp, label: "Analytics", href: "#" },
-          { icon: Settings, label: "Settings", href: "#" },
-        ].map((item) => (
-          <Link key={item.label} href={item.href}>
-            <button
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                item.active
-                  ? "bg-primary text-primary-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent"
-              }`}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </button>
-          </Link>
-        ))}
-      </div>
-      <div className="p-3 border-t">
-        {isAuthenticated ? (
-          <button
-            onClick={() => { setToken(null); setLocation("/"); }}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign out
-          </button>
-        ) : (
-          <Link href="/login">
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors">
-              <LogOut className="w-4 h-4 rotate-180" />
-              Sign in
-            </button>
-          </Link>
-        )}
-      </div>
-    </aside>
-  );
+        return matchesSearch && matchesCategory;
+      })
+    : [];
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      <div className="flex flex-1">
-        {sidebar}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative py-20 md:py-28 text-center overflow-hidden border-b bg-muted/20">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent -z-10" />
+          {/* Neon Glow Circle */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none -z-10" />
 
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <div className="border-b bg-background/95 backdrop-blur sticky top-0 z-20">
-            <div className="px-6 md:px-8 py-4 flex items-center justify-between gap-4 flex-wrap">
-              <div>
-                <h1 className="text-xl font-bold flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-primary" />
-                  Templates
-                </h1>
-                <p className="text-muted-foreground text-sm mt-0.5">
-                  {(templates || []).length} professional templates — pick one to start your site
-                </p>
-              </div>
-              {/* Search */}
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search templates..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-9 h-9"
-                  data-testid="input-search-templates"
-                />
-              </div>
-            </div>
+          <div className="container space-y-6 max-w-4xl mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full border border-primary/20 mx-auto"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Explore Premium Themes
+            </motion.div>
+            
+            <motion.h1
+              className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              Professional Website <span className="gradient-text">Themes</span>
+            </motion.h1>
 
-            {/* Category filter */}
-            <div className="px-6 md:px-8 flex gap-2 overflow-x-auto pb-3 scrollbar-none">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`px-3.5 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-colors border flex-shrink-0 ${
-                    category === cat
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "text-muted-foreground border-transparent hover:border-border hover:text-foreground"
-                  }`}
-                  data-testid={`filter-${cat}`}
+            <motion.p
+              className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              Deploy fully responsive, lightning-fast e-commerce stores and portfolios to your isolated virtual server instantly.
+            </motion.p>
+          </div>
+        </section>
+
+        {/* Filter and Search controls */}
+        <section className="py-8 bg-card border-b sticky top-[64px] z-30 backdrop-blur-md bg-card/85">
+          <div className="container mx-auto px-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Category selection */}
+            <div className="flex flex-wrap gap-2 justify-center w-full md:w-auto">
+              {[
+                { id: "all", label: "All Themes" },
+                { id: "ecommerce", label: "E-Commerce" },
+                { id: "pro", label: "Premium (PRO)" },
+                { id: "free", label: "Free to Use" }
+              ].map((cat) => (
+                <Button
+                  key={cat.id}
+                  variant={selectedCategory === cat.id ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(cat.id as any)}
+                  className="rounded-full px-5 h-9 font-semibold text-xs cursor-pointer"
                 >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                </button>
+                  {cat.label}
+                </Button>
               ))}
             </div>
-          </div>
 
-          {/* Grid */}
-          <div className="p-6 md:p-8">
+            {/* Search Input */}
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search themes or features..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-10 rounded-full bg-muted/20 border-border text-xs focus-visible:ring-primary focus-visible:ring-1"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Templates Grid */}
+        <section className="py-16 bg-muted/10 min-h-[400px]">
+          <div className="container mx-auto px-4">
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {Array(8).fill(0).map((_, i) => (
-                  <div key={i} className="border rounded-xl overflow-hidden">
-                    <Skeleton className="h-44 w-full" />
-                    <div className="p-4 space-y-2">
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-full" />
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {Array(6).fill(0).map((_, i) => (
+                  <div key={i} className="bg-card border rounded-2xl overflow-hidden aspect-[16/14] space-y-4 p-4">
+                    <div className="w-full aspect-[16/10] bg-muted animate-pulse rounded-xl" />
+                    <div className="h-4 bg-muted animate-pulse w-3/4 rounded" />
+                    <div className="h-3 bg-muted animate-pulse w-1/2 rounded" />
                   </div>
                 ))}
               </div>
-            ) : filtered.length === 0 ? (
-              <div className="text-center py-20 text-muted-foreground border border-dashed rounded-xl">
-                <Layers className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">No templates found</p>
-                <p className="text-sm mt-1">Try a different search or category</p>
-              </div>
-            ) : (
-              <motion.div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-                initial="hidden"
-                animate="visible"
-                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
-              >
-                <AnimatePresence>
-                  {filtered.map((template) => (
-                    <motion.div
-                      key={template.id}
-                      variants={{ hidden: { opacity: 0, scale: 0.96 }, visible: { opacity: 1, scale: 1 } }}
-                      exit={{ opacity: 0, scale: 0.96 }}
-                      className="group border rounded-xl overflow-hidden bg-card hover:shadow-lg transition-all hover:-translate-y-1"
-                      data-testid={`card-template-${template.id}`}
-                    >
-                      <div className="relative overflow-hidden h-44">
-                        <img
-                          src={template.thumbnailUrl}
-                          alt={template.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${template.id + 20}/400/280`;
-                          }}
-                        />
-                        {template.isPro && (
-                          <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <Lock className="w-3 h-3" /> PRO
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => handleUseTemplate(template)}
-                          >
-                            Use template <ArrowRight className="w-3 h-3 ml-1" />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="p-4 space-y-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-semibold text-sm">{template.name}</h3>
-                          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-md capitalize flex-shrink-0">
-                            {template.category}
+            ) : filteredTemplates.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredTemplates.map((t: any, i: number) => (
+                  <motion.div
+                    key={t.id}
+                    className="group bg-card border rounded-2xl overflow-hidden shadow-2xs hover:shadow-xl transition-all duration-300 flex flex-col hover:border-primary/30"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative aspect-[16/10] bg-muted overflow-hidden">
+                      <img
+                        src={t.thumbnailUrl}
+                        alt={t.name}
+                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${t.id + 10}/600/400`;
+                        }}
+                      />
+                      
+                      {/* Overlay and badges */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex flex-col justify-between p-4.5">
+                        <div className="flex justify-between items-start">
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider bg-black/40 text-white px-2.5 py-0.5 rounded-full backdrop-blur-xs">
+                            {t.category}
                           </span>
+                          {t.isPro && (
+                            <span className="text-[9px] font-extrabold tracking-widest uppercase bg-amber-500 text-amber-950 px-2 py-0.5 rounded-full shadow-sm">
+                              PRO
+                            </span>
+                          )}
                         </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{template.description}</p>
                         <div className="flex flex-wrap gap-1">
-                          {template.tags.slice(0, 3).map((tag) => (
-                            <span key={tag} className="text-xs bg-muted/50 px-1.5 py-0.5 rounded text-muted-foreground">
-                              {tag}
+                          {t.tags && t.tags.map((tag: string) => (
+                            <span key={tag} className="text-[9px] font-semibold bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs">
+                              #{tag}
                             </span>
                           ))}
                         </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="w-full mt-1"
-                          onClick={() => handleUseTemplate(template)}
-                          data-testid={`button-use-template-${template.id}`}
-                        >
-                          Use this template
-                        </Button>
                       </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
+                    </div>
+
+                    {/* Information */}
+                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                      <div className="space-y-2">
+                        <h3 className="font-extrabold text-base text-foreground leading-tight group-hover:text-primary transition-colors text-left">
+                          {t.name}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed text-left">
+                          {t.description}
+                        </p>
+                      </div>
+
+                      {/* CTA Buttons */}
+                      <div className="flex gap-3 pt-2">
+                        <Link href={`/preview/${t.id}`} className="flex-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full h-9 rounded-xl font-bold border border-border hover:bg-accent/30 text-xs gap-1.5 cursor-pointer"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            Live Preview
+                          </Button>
+                        </Link>
+                        <Link href={isAuthenticated ? "/dashboard" : `/register?templateId=${t.id}`} className="flex-1">
+                          <Button
+                            size="sm"
+                            className="w-full h-9 rounded-xl font-bold text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm cursor-pointer"
+                          >
+                            Use Theme
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-card border rounded-2xl max-w-md mx-auto space-y-3 px-4">
+                <Search className="w-10 h-10 mx-auto text-muted-foreground animate-bounce" />
+                <h3 className="font-bold text-base text-foreground">No Themes Found</h3>
+                <p className="text-xs text-muted-foreground">
+                  We couldn't find any themes matching your search query. Try broadening your keywords!
+                </p>
+                <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setSelectedCategory("all"); }} className="cursor-pointer">
+                  Reset Filters
+                </Button>
+              </div>
             )}
           </div>
-        </main>
-      </div>
-
-      {/* Create project from template dialog */}
-      <Dialog open={!!selectedTemplate} onOpenChange={(open) => !open && setSelectedTemplate(null)}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Start with "{selectedTemplate?.name}"</DialogTitle>
-            <DialogDescription>
-              Give your new project a name to get started.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="proj-name">Project name</Label>
-              <Input
-                id="proj-name"
-                placeholder="My awesome site"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                required
-                autoFocus
-                data-testid="input-project-name-from-template"
-              />
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button type="button" variant="outline" onClick={() => setSelectedTemplate(null)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
-                ) : (
-                  "Create project"
-                )}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 }
