@@ -159,7 +159,7 @@ export default function Preview() {
           {/* Template Name & Category */}
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-xs font-black tracking-tight text-zinc-900">{template.name}</span>
-            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 uppercase scale-90">
+            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-500 uppercase scale-90">
               {template.category}
             </span>
           </div>
@@ -176,7 +176,7 @@ export default function Preview() {
                 onClick={() => setLanguage(lang)}
                 className={`px-3 py-1.5 text-[10px] font-bold rounded-full uppercase transition-all cursor-pointer ${
                   language === lang
-                    ? "bg-white text-blue-600 shadow-sm border border-zinc-300 font-extrabold"
+                    ? "bg-zinc-800 text-white shadow-sm border border-zinc-700 font-extrabold"
                     : "text-zinc-400 hover:text-zinc-900"
                 }`}
               >
@@ -198,7 +198,7 @@ export default function Preview() {
               </>
             ) : (
               <>
-                <Moon className="w-3.5 h-3.5 text-blue-400" />
+                <Moon className="w-3.5 h-3.5 text-zinc-400" />
                 <span className="hidden sm:inline">Dark Mode</span>
               </>
             )}
@@ -209,7 +209,7 @@ export default function Preview() {
             <Button
               size="sm"
               onClick={handleUseTemplate}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 rounded-full px-5.5 gap-1.5 shadow-md shadow-blue-600/10 cursor-pointer transition-transform hover:-translate-y-0.5 active:translate-y-0"
+              className="bg-white hover:bg-zinc-50 text-zinc-800 font-bold text-xs h-9 rounded-full px-5.5 gap-1.5 border border-zinc-200 shadow-sm cursor-pointer transition-transform hover:-translate-y-0.5 active:translate-y-0"
             >
               Use Template
             </Button>
@@ -217,7 +217,7 @@ export default function Preview() {
               onClick={() => setIsAppearanceOpen(!isAppearanceOpen)}
               className={`ml-1.5 p-2 rounded-full border text-zinc-400 hover:text-zinc-900 transition-all cursor-pointer ${
                 isAppearanceOpen
-                  ? "bg-blue-500/10 border-blue-500/30 text-blue-600 hover:bg-blue-500/15"
+                  ? "bg-zinc-100 border-zinc-300 text-zinc-600 hover:bg-zinc-200"
                   : "bg-white border-zinc-200 hover:bg-zinc-100"
               }`}
               title={isAppearanceOpen ? "Hide sidebar" : "Show sidebar"}
