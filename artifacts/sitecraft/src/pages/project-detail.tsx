@@ -59,6 +59,9 @@ export default function ProjectDetail() {
   const isLoading = listLoading || (!!projectId && projectLoading);
   const proj = project as any;
 
+  const projectDomain = project?.domain || (project?.name ? `${project.name.toLowerCase().replace(/\s+/g, "-")}.getcorbit.com` : null);
+  const activeDomain = proj?.customDomainStatus === "active" ? proj.customDomain : projectDomain;
+
   const [, setLocation] = useLocation();
   const { t } = useTranslation();
   const { token, setToken } = useAuth();
@@ -406,7 +409,7 @@ export default function ProjectDetail() {
 
                 {/* TAB: THEME EXPLORER */}
                 {activeTab === "theme" && (() => {
-                  const activeTheme = Array.isArray(templates) ? templates.find((t: any) => t.id === project.template_id) : null;
+                  const activeTheme = Array.isArray(templates) ? templates.find((t: any) => t.id === project.templateId) : null;
                   
                   return (
                     <div className="space-y-6 animate-in fade-in-50 duration-200">
@@ -460,15 +463,27 @@ export default function ProjectDetail() {
 
                           {/* Actions */}
                           <div className="shrink-0 flex flex-col gap-2 w-full md:w-auto z-10">
-                            <Link href={`/preview/${activeTheme.id}?project=${id}`} className="w-full">
-                              <Button 
-                                variant="outline" 
-                                className="w-full h-10 px-5 rounded-xl font-bold border border-border hover:bg-accent/30 text-xs gap-1.5 cursor-pointer"
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                                Preview Active Site
-                              </Button>
-                            </Link>
+                            {project?.status === "published" && activeDomain ? (
+                              <a href={`https://${activeDomain}`} target="_blank" rel="noopener noreferrer" className="w-full">
+                                <Button 
+                                  variant="default" 
+                                  className="w-full h-10 px-5 rounded-xl font-bold text-xs gap-1.5 cursor-pointer"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                  Visit Live Site
+                                </Button>
+                              </a>
+                            ) : (
+                              <Link href={`/preview/${activeTheme.id}?project=${projectId}&clean=true`} className="w-full">
+                                <Button 
+                                  variant="outline" 
+                                  className="w-full h-10 px-5 rounded-xl font-bold border border-border hover:bg-accent/30 text-xs gap-1.5 cursor-pointer"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                  Preview Active Site
+                                </Button>
+                              </Link>
+                            )}
                           </div>
                         </div>
                       ) : (
@@ -484,7 +499,7 @@ export default function ProjectDetail() {
                       {/* Theme Explorer Grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {Array.isArray(templates) && templates.map((t: any) => {
-                          const isActive = project.template_id === t.id;
+                          const isActive = project.templateId === t.id;
                           
                           return (
                             <div 
@@ -542,7 +557,7 @@ export default function ProjectDetail() {
                                 </div>
 
                                 <div className="flex gap-3 pt-2">
-                                  <Link href={`/preview/${t.id}?project=${id}`} className="flex-1">
+                                  <Link href={`/preview/${t.id}?project=${projectId}`} className="flex-1">
                                     <Button 
                                       variant="outline" 
                                       size="sm" 
@@ -554,11 +569,11 @@ export default function ProjectDetail() {
                                   </Link>
                                   <Button 
                                     size="sm" 
-                                    disabled={isActive || updateMutation.isPending}
-                                    onClick={() => updateMutation.mutate({ id: projectId, data: { template_id: t.id } })}
-                                    className={`flex-1 h-9 rounded-xl font-bold text-xs ${
+                                    disabled={isActive}
+                                    onClick={() => updateMutation.mutate({ id: projectId, data: { templateId: t.id } })}
+                                    className={`flex-1 h-9 rounded-xl font-bold text-xs cursor-pointer ${
                                       isActive 
-                                        ? "bg-muted text-muted-foreground border border-transparent cursor-not-allowed" 
+                                        ? "bg-muted text-muted-foreground border border-transparent" 
                                         : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
                                     }`}
                                   >

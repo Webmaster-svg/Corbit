@@ -23,6 +23,7 @@ export default function Preview() {
 
   const queryParams = new URLSearchParams(window.location.search);
   const projectParam = queryParams.get("project");
+  const cleanPreview = queryParams.get("clean") === "true";
 
   const template = TEMPLATES.find(
     (tmpl) => tmpl.id === parseInt(id || "") || tmpl.slug.toLowerCase() === id?.toLowerCase()
@@ -43,6 +44,8 @@ export default function Preview() {
   const [customBrandName, setCustomBrandName] = useState(template.name.toLowerCase());
   const [isCustomColor, setIsCustomColor] = useState(false);
   const [customColorValue, setCustomColorValue] = useState(template.schemes[0].accent);
+  const [showNewMenu, setShowNewMenu] = useState(false);
+  const newMenuRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const effectiveScheme = isCustomColor
@@ -95,6 +98,16 @@ export default function Preview() {
     };
   }, [language, effectiveScheme.name, isDark]);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (newMenuRef.current && !newMenuRef.current.contains(e.target as Node)) {
+        setShowNewMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleUseTemplate = () => {
     if (isAuthenticated) {
       setLocation("/dashboard");
@@ -131,7 +144,8 @@ export default function Preview() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans select-none dark">
       
-      {/*  TOP PLATFORM PREVIEW BAR ── */}
+      {!cleanPreview && (
+      /*  TOP PLATFORM PREVIEW BAR ── */
       <header className="h-16 border-b border-zinc-800 bg-zinc-950 text-white flex items-center justify-between px-6 z-50 shrink-0 select-none">
         
         {/* Left Side: Back Button & Template Name */}
@@ -231,10 +245,59 @@ export default function Preview() {
           </div>
         </div>
       </header>
+      )}
+
+      {cleanPreview && <nav className="flex items-center justify-between px-4 py-2.5 bg-zinc-900 border-b border-zinc-800 z-50 shrink-0">
+          <div className="flex items-center gap-2">
+            <button onClick={() => window.history.back()} className="w-7 h-7 flex items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <span className="h-4 w-px bg-zinc-700/60" />
+            <span className="text-sm font-semibold text-zinc-100">{template.name}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div ref={newMenuRef} className="relative">
+              <button
+                onClick={() => setShowNewMenu(!showNewMenu)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                New
+              </button>
+              {showNewMenu && (
+                <div className="absolute right-0 top-full mt-1.5 w-40 py-1.5 bg-zinc-900 border border-zinc-700/60 rounded-xl shadow-xl z-50">
+                  <button onClick={() => setShowNewMenu(false)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+                    Products
+                  </button>
+                  <button onClick={() => setShowNewMenu(false)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><path d="M4 11h16"/></svg>
+                    Pages
+                  </button>
+                  <button onClick={() => setShowNewMenu(false)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+                    News
+                  </button>
+                </div>
+              )}
+            </div>
+            <span className="h-4 w-px bg-zinc-700/60 mx-0.5" />
+            <label className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition-colors cursor-pointer">
+              Publish
+              <div className="relative w-7 h-3.5">
+                <input type="checkbox" checked={isDark} onChange={() => setIsDark(!isDark)} className="peer sr-only" />
+                <div className="absolute inset-0 rounded-full bg-zinc-700 peer-checked:bg-blue-600 transition-colors" />
+                <div className="absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white peer-checked:translate-x-3.5 transition-transform" />
+              </div>
+            </label>
+            <span className="h-4 w-px bg-zinc-700/60 mx-0.5" />
+            <button onClick={() => setIsAppearanceOpen(!isAppearanceOpen)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">Edit</button>
+          </div>
+        </nav>}
 
       {/* ── MAIN AREA SPLIT ─ */}
       <div className="flex-1 flex overflow-hidden relative">
-        
+
         {/* Left Side: Native Template Sandbox Viewport */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden relative h-full bg-zinc-950 viewport-scrollbar [transform:translateZ(0)]">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/15 to-transparent pointer-events-none z-10" />
@@ -247,7 +310,7 @@ export default function Preview() {
           </div>
         </div>
 
-        {/* Right Side: Platform Customizer Sidebar ── */}
+        {!cleanPreview && (
         <AnimatePresence>
           {isAppearanceOpen && (
             <motion.aside
@@ -435,6 +498,7 @@ export default function Preview() {
             </motion.aside>
           )}
         </AnimatePresence>
+        )}
       </div>
     </div>
   );

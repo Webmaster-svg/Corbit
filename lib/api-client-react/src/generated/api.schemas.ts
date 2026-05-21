@@ -87,6 +87,7 @@ export interface ProjectUpdate {
   name?: string;
   description?: string;
   status?: string;
+  templateId?: number;
 }
 
 export type TemplateCategory = typeof TemplateCategory[keyof typeof TemplateCategory];

@@ -131,7 +131,8 @@ export const UpdateProjectParams = zod.object({
 export const UpdateProjectBody = zod.object({
   "name": zod.string().optional(),
   "description": zod.string().optional(),
-  "status": zod.string().optional()
+  "status": zod.string().optional(),
+  "templateId": zod.number().optional()
 })
 
 export const UpdateProjectResponse = zod.object({

@@ -475,6 +475,7 @@ export class MockPool {
               if (col === 'name') this.data.projects[idx].name = paramVal;
               else if (col === 'description') this.data.projects[idx].description = paramVal;
               else if (col === 'status') this.data.projects[idx].status = paramVal;
+              else if (col === 'template_id') this.data.projects[idx].template_id = paramVal ? Number(paramVal) : null;
               else if (col === 'domain') this.data.projects[idx].domain = paramVal;
               else if (col === 'custom_domain') this.data.projects[idx].customDomain = paramVal;
               else if (col === 'custom_domain_status') this.data.projects[idx].customDomainStatus = paramVal;

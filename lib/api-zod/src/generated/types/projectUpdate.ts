@@ -10,4 +10,5 @@ export interface ProjectUpdate {
   name?: string;
   description?: string;
   status?: string;
+  templateId?: number;
 }

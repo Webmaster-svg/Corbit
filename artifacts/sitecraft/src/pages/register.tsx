@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRegister } from "@workspace/api-client-react";
+import { useRegister, useCreateProject } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
@@ -18,6 +18,18 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const queryParams = new URLSearchParams(window.location.search);
+  const templateId = queryParams.get("templateId");
+
+  const createProjectMutation = useCreateProject({
+    mutation: {
+      onSuccess: (newProj: any) => {
+        const slug = newProj.name.toLowerCase().replace(/\s+/g, "-");
+        setLocation(`/dashboard/${slug}`);
+      },
+    },
+  });
+
   const registerMutation = useRegister({
     mutation: {
       onSuccess: (data) => {
@@ -27,7 +39,11 @@ export default function Register() {
           email, 
           plan: "Pro Plan" 
         });
-        setLocation("/");
+        if (templateId) {
+          createProjectMutation.mutate({ data: { name, templateId: parseInt(templateId) } });
+        } else {
+          setLocation("/");
+        }
       },
       onError: (err: any) => {
         setError(err?.data?.error || t("register.error"));

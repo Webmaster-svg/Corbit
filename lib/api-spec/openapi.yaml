@@ -412,6 +412,8 @@ components:
           type: string
         status:
           type: string
+        templateId:
+          type: integer
 
     Template:
       type: object
