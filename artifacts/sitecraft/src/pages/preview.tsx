@@ -132,7 +132,7 @@ export default function Preview() {
     <div className="flex flex-col h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans select-none dark">
       
       {/*  TOP PLATFORM PREVIEW BAR ── */}
-      <header className="h-16 border-b border-zinc-800 bg-zinc-950 text-white flex items-center justify-between px-6 z-50 shrink-0 select-none">
+      <header className="h-16 border-b border-zinc-200 bg-white text-zinc-900 flex items-center justify-between px-6 z-50 shrink-0 select-none">
         
         {/* Left Side: Back Button & Template Name */}
         <div className="flex items-center gap-4">
@@ -148,17 +148,17 @@ export default function Preview() {
                 setLocation("/templates");
               }
             }}
-            className="text-zinc-300 hover:text-white hover:bg-zinc-900 h-9 px-4 rounded-full text-xs gap-1.5 cursor-pointer font-bold border border-zinc-800 bg-zinc-950"
+            className="text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 h-9 px-4 rounded-full text-xs gap-1.5 cursor-pointer font-bold border border-zinc-200 bg-white"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-zinc-400" />
             {projectParam ? "Back to Dashboard" : "Back"}
           </Button>
           
-          <div className="h-5 w-px bg-zinc-800 hidden md:block" />
+          <div className="h-5 w-px bg-zinc-200 hidden md:block" />
           
           {/* Template Name & Category */}
           <div className="hidden sm:flex items-center gap-2">
-            <span className="text-xs font-black tracking-tight text-white">{template.name}</span>
+            <span className="text-xs font-black tracking-tight text-zinc-900">{template.name}</span>
             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 uppercase scale-90">
               {template.category}
             </span>
@@ -169,15 +169,15 @@ export default function Preview() {
         <div className="flex items-center gap-2 md:gap-3">
           
           {/* Quick Language pills (Rounded full) */}
-          <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded-full p-0.5">
+          <div className="flex items-center bg-zinc-100 border border-zinc-200 rounded-full p-0.5">
             {(["en", "fr", "ar"] as const).map((lang) => (
               <button
                 key={lang}
                 onClick={() => setLanguage(lang)}
                 className={`px-3 py-1.5 text-[10px] font-bold rounded-full uppercase transition-all cursor-pointer ${
                   language === lang
-                    ? "bg-zinc-800 text-blue-400 shadow-sm border border-zinc-700 font-extrabold"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-white text-blue-600 shadow-sm border border-zinc-300 font-extrabold"
+                    : "text-zinc-400 hover:text-zinc-900"
                 }`}
               >
                 {lang}
@@ -188,7 +188,7 @@ export default function Preview() {
           {/* Simulator Dark/Light Toggle (Rounded full) */}
           <button
             onClick={() => setIsDark(!isDark)}
-            className="flex items-center gap-2 px-4.5 py-1.5 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-full text-[10px] font-bold h-9 transition-all cursor-pointer shadow-2xs"
+            className="flex items-center gap-2 px-4.5 py-1.5 bg-zinc-100 border border-zinc-200 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 rounded-full text-[10px] font-bold h-9 transition-all cursor-pointer shadow-2xs"
             title="Toggle Simulator Theme"
           >
             {isDark ? (
@@ -215,10 +215,10 @@ export default function Preview() {
             </Button>
             <button
               onClick={() => setIsAppearanceOpen(!isAppearanceOpen)}
-              className={`ml-1.5 p-2 rounded-full border text-zinc-400 hover:text-white transition-all cursor-pointer ${
+              className={`ml-1.5 p-2 rounded-full border text-zinc-400 hover:text-zinc-900 transition-all cursor-pointer ${
                 isAppearanceOpen
-                  ? "bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/15"
-                  : "bg-zinc-900 border-zinc-800 hover:bg-zinc-800"
+                  ? "bg-blue-500/10 border-blue-500/30 text-blue-600 hover:bg-blue-500/15"
+                  : "bg-white border-zinc-200 hover:bg-zinc-100"
               }`}
               title={isAppearanceOpen ? "Hide sidebar" : "Show sidebar"}
             >
