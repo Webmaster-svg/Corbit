@@ -18,7 +18,6 @@ import {
   Package, ShoppingCart, FileEdit
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlatformLoader } from "@/components/ui/platform-loader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
@@ -75,10 +74,6 @@ export default function Projects() {
       },
     });
   };
-
-  if (isLoading) {
-    return <PlatformLoader fullScreen />;
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
-import { PlatformLoader } from "@/components/ui/platform-loader";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -106,10 +105,6 @@ export default function Dashboard() {
   const filtered = (Array.isArray(projects) ? projects.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   ) : []) as any[];
-
-  if (projectsLoading) {
-    return <PlatformLoader fullScreen />;
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

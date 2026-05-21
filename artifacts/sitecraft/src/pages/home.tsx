@@ -4,7 +4,6 @@ import { Footer } from "@/components/layout/Footer";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { PlatformLoader } from "@/components/ui/platform-loader";
 import { motion, useInView } from "framer-motion";
 import {
   ArrowRight, CheckCircle2, Layout, Zap, Globe, Smartphone,
@@ -276,13 +275,6 @@ export default function Home() {
   ];
   const { data: templates, isLoading } = useListTemplates();
   const { isAuthenticated } = useAuth();
-  const [bootLoading, setBootLoading] = useState(true);
-
-  useEffect(() => {
-    // Artificial delay to guarantee the premium platform loader displays
-    const bootTimer = setTimeout(() => setBootLoading(false), 3500);
-    return () => clearTimeout(bootTimer);
-  }, []);
 
   let showcaseTemplates = Array.isArray(templates) ? templates.slice(0, 8) : [];
   if (showcaseTemplates.length > 0 && showcaseTemplates.length < 6) {
@@ -307,7 +299,7 @@ export default function Home() {
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
 
-    if (typeof window !== "undefined" && !bootLoading && !isLoading) {
+    if (typeof window !== "undefined" && !isLoading) {
       if ("scrollRestoration" in window.history) {
         window.history.scrollRestoration = "manual";
       }
@@ -324,7 +316,7 @@ export default function Home() {
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [bootLoading, isLoading]);
+  }, [isLoading]);
 
   // Directly update the progress bar DOM properties to prevent high-frequency React re-renders during scrolls
   const updateProgressDOM = useCallback((progress: number) => {
@@ -437,10 +429,10 @@ export default function Home() {
     return () => {
       section.removeEventListener("wheel", handleWheel);
     };
-  }, [showcaseTemplates, updateProgressDOM, bootLoading]);
+  }, [showcaseTemplates, updateProgressDOM]);
 
-  if (isLoading || bootLoading) {
-    return <PlatformLoader fullScreen />;
+  if (isLoading) {
+    return null;
   }
 
   return (

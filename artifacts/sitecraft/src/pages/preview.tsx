@@ -6,17 +6,12 @@ import { TEMPLATES } from "../../templates";
 import { useAuth } from "@/lib/auth";
 import { 
   ArrowLeft, 
-  Sparkles, 
   Check, 
   X, 
-  Sliders, 
   Sun, 
-  Moon, 
-  Globe,
-  FileText,
-  Search,
-  Server,
-  Link2
+  Moon,
+  PanelRightClose,
+  PanelRightOpen
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
@@ -26,16 +21,13 @@ export default function Preview() {
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
 
-  // Read project parameter from query string
   const queryParams = new URLSearchParams(window.location.search);
   const projectParam = queryParams.get("project");
 
-  // Find template by ID or slug
   const template = TEMPLATES.find(
     (tmpl) => tmpl.id === parseInt(id || "") || tmpl.slug.toLowerCase() === id?.toLowerCase()
   );
 
-  // If template not found, redirect to templates explorer
   useEffect(() => {
     if (!template) {
       setLocation("/templates");
@@ -44,14 +36,18 @@ export default function Preview() {
 
   if (!template) return null;
 
-  // Simulator configuration states
   const [language, setLanguage] = useState<"en" | "fr" | "ar">("en");
   const [selectedScheme, setSelectedScheme] = useState(template.schemes[0]);
   const [isDark, setIsDark] = useState(false);
   const [isAppearanceOpen, setIsAppearanceOpen] = useState(true);
   const [customBrandName, setCustomBrandName] = useState(template.name.toLowerCase());
+  const [isCustomColor, setIsCustomColor] = useState(false);
+  const [customColorValue, setCustomColorValue] = useState(template.schemes[0].accent);
 
-  // Handle CTA Click to deploy/use template
+  const effectiveScheme = isCustomColor
+    ? { ...selectedScheme, swatch: customColorValue, accent: customColorValue }
+    : selectedScheme;
+
   const handleUseTemplate = () => {
     if (isAuthenticated) {
       setLocation("/dashboard");
@@ -62,18 +58,33 @@ export default function Preview() {
 
   const ActiveComponent = template.component;
 
-  // List of standard pages inside these premium templates
   const themePages = [
-    { title: "Home Landing", path: "/", desc: "Hero, carousel, about snippet", icon: "🏠" },
-    { title: "Products Directory", path: "/products", desc: "Category filter, search, quick cart", icon: "📦" },
-    { title: "Brand Story (About)", path: "/about", desc: "Heritage, values, craft narrative", icon: "📖" },
-    { title: "Contact Hub", path: "/contact", desc: "Interactive form, map, visits", icon: "✉️" }
+    { title: "Home Landing", path: "/", desc: "Hero, carousel, about snippet" },
+    { title: "Products Catalog", path: "/products", desc: "Filters, search, quick cart" },
+    { title: "Brand Story", path: "/about", desc: "Heritage, values, craft" },
+    { title: "Contact Hub", path: "/contact", desc: "Form, map, visit info" }
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.07 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 14 },
+    visible: {
+      opacity: 1, y: 0,
+      transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] as const }
+    }
+  };
+
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-zinc-900 text-zinc-100 font-sans select-none dark">
+    <div className="flex flex-col h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans select-none dark">
       
-      {/* ── TOP PLATFORM PREVIEW BAR ── */}
+      {/*  TOP PLATFORM PREVIEW BAR ── */}
       <header className="h-16 border-b border-zinc-800 bg-zinc-950 text-white flex items-center justify-between px-6 z-50 shrink-0 select-none">
         
         {/* Left Side: Back Button & Template Name */}
@@ -98,20 +109,12 @@ export default function Preview() {
           
           <div className="h-5 w-px bg-zinc-800 hidden md:block" />
           
-          {/* Brand Logo & Info Group */}
-          <div className="hidden sm:flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-blue-455 flex items-center justify-center shadow-sm relative overflow-hidden shrink-0">
-              <span className="text-white font-extrabold text-xs tracking-tighter">C</span>
-            </div>
-            <div className="flex flex-col text-left">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black tracking-tight text-white">{template.name}</span>
-                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 uppercase scale-90">
-                  {template.category}
-                </span>
-              </div>
-              <span className="text-[10px] text-zinc-400 font-semibold">Simulated Sandbox Environment</span>
-            </div>
+          {/* Template Name & Category */}
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-xs font-black tracking-tight text-white">{template.name}</span>
+            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 uppercase scale-90">
+              {template.category}
+            </span>
           </div>
         </div>
 
@@ -154,214 +157,233 @@ export default function Preview() {
             )}
           </button>
 
-          {/* Quick Customizer Sidebar Trigger (Rounded full) */}
-          <button
-            onClick={() => setIsAppearanceOpen(!isAppearanceOpen)}
-            className={`flex items-center gap-2 px-4.5 py-1.5 border text-[10px] font-bold h-9 rounded-full transition-all cursor-pointer shadow-2xs ${
-              isAppearanceOpen
-                ? "bg-blue-500/10 border-blue-500/30 text-blue-400"
-                : "bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-300 hover:text-white"
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span>Settings</span>
-          </button>
-
-          {/* Primary CTA (Vibrant Brand Blue & Fully Rounded) */}
-          <Button
-            size="sm"
-            onClick={handleUseTemplate}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 rounded-full px-5.5 gap-1.5 shadow-md shadow-blue-600/10 cursor-pointer transition-transform hover:-translate-y-0.5 active:translate-y-0"
-          >
-            Use Template
-          </Button>
+          {/* Primary CTA + Sidebar Toggle */}
+          <div className="flex items-center">
+            <Button
+              size="sm"
+              onClick={handleUseTemplate}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 rounded-full px-5.5 gap-1.5 shadow-md shadow-blue-600/10 cursor-pointer transition-transform hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Use Template
+            </Button>
+            <button
+              onClick={() => setIsAppearanceOpen(!isAppearanceOpen)}
+              className={`ml-1.5 p-2 rounded-full border text-zinc-400 hover:text-white transition-all cursor-pointer ${
+                isAppearanceOpen
+                  ? "bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/15"
+                  : "bg-zinc-900 border-zinc-800 hover:bg-zinc-800"
+              }`}
+              title={isAppearanceOpen ? "Hide sidebar" : "Show sidebar"}
+            >
+              {isAppearanceOpen ? (
+                <PanelRightClose className="w-3.5 h-3.5" />
+              ) : (
+                <PanelRightOpen className="w-3.5 h-3.5" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* ── MAIN AREA SPLIT ── */}
+      {/* ── MAIN AREA SPLIT ─ */}
       <div className="flex-1 flex overflow-hidden relative">
         
         {/* Left Side: Native Template Sandbox Viewport */}
         <div className="flex-1 overflow-y-auto relative h-full bg-zinc-950">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/15 to-transparent pointer-events-none z-10" />
           <ActiveComponent 
             language={language} 
-            scheme={selectedScheme} 
+            scheme={effectiveScheme} 
             dark={isDark} 
           />
         </div>
 
-        {/* Right Side: Platform Customizer Sidebar (PERMANENTLY DARK) ── */}
+        {/* Right Side: Platform Customizer Sidebar ── */}
         <AnimatePresence>
           {isAppearanceOpen && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 340, opacity: 1 }}
+              animate={{ width: 360, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="border-l border-zinc-800 bg-zinc-950 text-white flex flex-col h-full shrink-0 z-40 overflow-hidden relative shadow-2xl animate-in fade-in-50"
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="border-l border-zinc-800/80 bg-zinc-950 text-white flex flex-col h-full shrink-0 z-40 overflow-hidden relative"
             >
-              <div className="w-[340px] flex flex-col h-full">
+              <div className="w-[360px] flex flex-col h-full">
                 
-                {/* Customizer Sidebar Header */}
-                <div className="p-5 border-b border-zinc-800 flex items-center justify-between shrink-0 bg-zinc-900/20">
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-zinc-100 flex items-center gap-2">
-                    <Sliders className="w-4 h-4 text-blue-400" />
-                    Appearance Settings
-                  </span>
-                  <button
-                    onClick={() => setIsAppearanceOpen(false)}
-                    className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800 cursor-pointer border border-transparent hover:border-zinc-800 transition-all"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Customizer Settings Content */}
-                <div className="flex-1 overflow-y-auto p-5 space-y-6 text-left">
+                {/* ── Scrollable Content ── */}
+                <motion.div 
+                  className="flex-1 overflow-y-auto px-6 py-8 space-y-7"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
                   
-                  {/* Color Schemes */}
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
-                      Color Scheme
-                    </label>
-                    <div className="space-y-2">
+                  {/* ── Color Schemes ── */}
+                  <motion.section variants={itemVariants}>
+                    <div className="flex items-center gap-2.5 mb-3.5">
+                      <div className="w-0.5 h-4 bg-blue-500/60 rounded-full" />
+                      <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-[0.2em]">
+                        Color Direction
+                      </span>
+                    </div>
+                    <div className="space-y-1.5">
                       {template.schemes.map((scheme) => (
                         <button
                           key={scheme.name}
-                          onClick={() => setSelectedScheme(scheme)}
-                          className={`w-full flex items-center justify-between p-3.5 rounded-2xl border text-xs font-bold transition-all cursor-pointer ${
-                            selectedScheme.name === scheme.name
-                              ? "bg-blue-500/5 border-blue-500/40 text-blue-300 shadow-2xs font-extrabold"
-                              : "bg-zinc-900/50 border-zinc-850 hover:border-zinc-800 text-zinc-400 hover:text-white"
+                          onClick={() => {
+                            setSelectedScheme(scheme);
+                            setIsCustomColor(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-[10px] border text-xs font-medium transition-all cursor-pointer ${
+                            selectedScheme.name === scheme.name && !isCustomColor
+                              ? "bg-blue-500/[0.06] border-blue-500/35 text-blue-300 shadow-xs"
+                              : "bg-zinc-900/40 border-zinc-800/60 hover:border-zinc-700/60 text-zinc-400 hover:text-zinc-200"
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <span 
-                              className="w-5 h-5 rounded-full border border-zinc-700 shrink-0 shadow-inner"
+                              className="w-4 h-4 rounded-[3px] border border-zinc-700/60 shrink-0"
                               style={{ backgroundColor: scheme.swatch }}
                             />
                             <span>{scheme.name}</span>
                           </div>
-                          {selectedScheme.name === scheme.name && (
-                            <Check className="w-4 h-4 text-blue-400 shrink-0 animate-in zoom-in-50 duration-200" />
+                          {selectedScheme.name === scheme.name && !isCustomColor && (
+                            <Check className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                           )}
                         </button>
                       ))}
                     </div>
-                  </div>
 
-                  {/* Theme Pages Directory Section */}
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                      <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                      Theme Pages Directory
-                    </label>
-                    <div className="space-y-2">
+                    <div className="border-t border-zinc-800/30 pt-1.5 mt-1.5">
+                      <button
+                        onClick={() => setIsCustomColor(!isCustomColor)}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-[10px] border text-xs font-medium transition-all cursor-pointer ${
+                          isCustomColor
+                            ? "bg-blue-500/[0.06] border-blue-500/35 text-blue-300 shadow-xs"
+                            : "bg-zinc-900/40 border-zinc-800/60 hover:border-zinc-700/60 text-zinc-400 hover:text-zinc-200"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span 
+                            className="w-4 h-4 rounded-[3px] border border-zinc-700/60 shrink-0"
+                            style={{ backgroundColor: isCustomColor ? customColorValue : '#3b82f6' }}
+                          />
+                          <span>Custom</span>
+                        </div>
+                        {isCustomColor && (
+                          <Check className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        )}
+                      </button>
+                      {isCustomColor && (
+                        <div className="flex items-center gap-2 px-1 mt-2">
+                          <input
+                            type="color"
+                            value={customColorValue}
+                            onChange={(e) => setCustomColorValue(e.target.value)}
+                            className="w-8 h-8 rounded cursor-pointer border border-zinc-700/60 bg-transparent p-0.5"
+                          />
+                          <input
+                            type="text"
+                            value={customColorValue}
+                            onChange={(e) => setCustomColorValue(e.target.value)}
+                            className="flex-1 bg-transparent text-xs text-zinc-300 border border-zinc-800/60 rounded-lg px-3 py-1.5 focus:outline-none focus:border-zinc-600 font-mono"
+                            placeholder="#hex"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </motion.section>
+
+                  {/* ── Theme Pages ── */}
+                  <motion.section variants={itemVariants}>
+                    <div className="flex items-center gap-2.5 mb-3.5">
+                      <div className="w-0.5 h-4 bg-zinc-600/60 rounded-full" />
+                      <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-[0.2em]">
+                        Pages
+                      </span>
+                    </div>
+                    <div className="space-y-1">
                       {themePages.map((page) => (
                         <div 
                           key={page.title}
-                          className="flex items-start gap-3 p-3 bg-zinc-900/50 border border-zinc-850 rounded-2xl hover:border-zinc-800 transition-colors"
+                          className="group flex items-center justify-between px-4 py-2.5 rounded-[10px] hover:bg-zinc-900/60 transition-colors cursor-default"
                         >
-                          <span className="text-base select-none shrink-0 mt-0.5">{page.icon}</span>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-zinc-150 leading-none">{page.title}</span>
-                              <span className="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md font-semibold select-none leading-none">
-                                {page.path}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-zinc-400 leading-normal mt-1">{page.desc}</p>
+                          <div className="flex flex-col">
+                            <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors">{page.title}</span>
+                            <span className="text-[10px] text-zinc-600 leading-tight mt-0.5">{page.desc}</span>
                           </div>
+                          <span className="text-[9px] font-mono text-zinc-600 bg-zinc-900/80 px-2 py-0.5 rounded font-medium">
+                            {page.path}
+                          </span>
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </motion.section>
 
-                  {/* Google SEO snippet simulation */}
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                      <Search className="w-3.5 h-3.5 text-zinc-500" />
-                      Google Search Result SEO Preview
-                    </label>
-                    
-                    {/* Simulated SEO Card */}
-                    <div className="p-4 bg-zinc-900/40 border border-zinc-850 rounded-2xl space-y-2 shadow-inner">
-                      <div className="space-y-1">
-                        {/* URL snippet */}
-                        <div className="flex items-center gap-1 text-[10px] text-zinc-500 truncate">
-                          <span>https://algeriaweb.studio</span>
-                          <span>›</span>
-                          <span className="text-zinc-400 lowercase">{customBrandName}.dz</span>
+                  {/* ── Highlights ── */}
+                  <motion.section variants={itemVariants}>
+                    <div className="flex items-center gap-2.5 mb-3.5">
+                      <div className="w-0.5 h-4 bg-zinc-600/60 rounded-full" />
+                      <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-[0.2em]">
+                        Highlights
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        ["Languages", "EN / FR / AR"],
+                        ["Responsive", "Mobile → Desktop"],
+                        ["Payments", "DZ-optimized"],
+                        ["Pages", "4 included"]
+                      ].map(([label, value]) => (
+                        <div key={label} className="px-3.5 py-3 rounded-[10px] bg-zinc-900/30 border border-zinc-800/40">
+                          <span className="text-[8px] font-semibold text-zinc-600 uppercase tracking-[0.15em]">{label}</span>
+                          <p className="text-xs font-semibold text-zinc-200 mt-1">{value}</p>
                         </div>
-                        {/* Title Snippet */}
-                        <h4 className="text-sm font-semibold text-[#8ab4f8] leading-tight hover:underline cursor-pointer">
-                          {template.name} Store | Premium E-Commerce Website Builder
+                      ))}
+                    </div>
+                  </motion.section>
+
+                  {/* ── Search Preview ── */}
+                  <motion.section variants={itemVariants}>
+                    <div className="flex items-center gap-2.5 mb-3.5">
+                      <div className="w-0.5 h-4 bg-zinc-600/60 rounded-full" />
+                      <span className="text-[9px] font-semibold text-zinc-500 uppercase tracking-[0.2em]">
+                        Search Preview
+                      </span>
+                    </div>
+                    
+                    <div className="p-4 rounded-[10px] bg-zinc-900/20 border border-zinc-800/40 space-y-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1 text-[10px] text-zinc-600 truncate">
+                          <span>https://algeriaweb.studio</span>
+                          <span className="text-zinc-700">›</span>
+                          <span className="text-zinc-500 lowercase">{customBrandName}.dz</span>
+                        </div>
+                        <h4 className="text-sm font-semibold text-[#8ab4f8] leading-tight">
+                          {template.name} Store | Premium E-Commerce
                         </h4>
                       </div>
-                      {/* Description snippet */}
-                      <p className="text-[11px] text-zinc-400 leading-relaxed leading-normal">
-                        {template.description} Get started with fully responsive, multilingual e-commerce stores optimized for Algeria payment networks.
+                      <p className="text-[11px] text-zinc-500 leading-relaxed">
+                        {template.description} Fully responsive, multilingual, optimized for Algeria.
                       </p>
                     </div>
 
-                    {/* SEO Input simulator */}
-                    <div className="space-y-1.5">
-                      <span className="text-[9px] font-bold text-zinc-500">Live Domain Simulator (.dz)</span>
-                      <div className="flex rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 scale-95 origin-left">
-                        <span className="text-[10px] font-bold text-zinc-500 px-2.5 py-2 bg-zinc-950 border-r border-zinc-800 select-none">brandname</span>
+                    <div className="mt-2 flex items-center gap-2 rounded-[10px] border border-zinc-800/60 bg-zinc-900/20 px-3.5 py-2.5">
+                      <span className="text-[9px] font-semibold text-zinc-500 uppercase shrink-0">.dz</span>
+                      <div className="flex-1 flex items-center">
+                        <span className="text-[10px] text-zinc-700 mr-1">/</span>
                         <input 
                           type="text" 
                           value={customBrandName}
                           onChange={(e) => setCustomBrandName(e.target.value.replace(/\s+/g, "").toLowerCase())}
-                          placeholder="e.g. fashion"
-                          className="flex-1 bg-transparent px-3 py-1.5 text-xs text-white placeholder-zinc-650 focus:outline-none"
+                          placeholder="brand"
+                          className="flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none"
                         />
-                        <span className="text-[10px] font-bold text-blue-400 px-2.5 py-2 bg-zinc-950 select-none">.dz</span>
                       </div>
                     </div>
-                  </div>
+                  </motion.section>
 
-                  {/* Isolated Docker Server Info */}
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                      <Server className="w-3.5 h-3.5 text-zinc-500" />
-                      Isolated Container Server Specs
-                    </label>
-                    <div className="p-3.5 rounded-2xl bg-zinc-900/30 border border-zinc-850 space-y-2 text-[10px]">
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500 font-medium">Virtual Environment:</span>
-                        <span className="text-zinc-300 font-bold">Ubuntu 24.04 (Docker Node)</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500 font-medium">Hosting Region:</span>
-                        <span className="text-zinc-300 font-bold">Algeria-East-1 (Alger Telecom)</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500 font-medium">Isolated Database:</span>
-                        <span className="text-zinc-300 font-bold">Memory Pool JSON / SQLite</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500 font-medium">SSL Security:</span>
-                        <span className="text-emerald-450 font-bold">Active Let's Encrypt SSL</span>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* Customizer Sidebar Bottom CTA (Rounded full & Blue brand styled) */}
-                <div className="p-5 border-t border-zinc-800 shrink-0 space-y-2 bg-zinc-950">
-                  <Button
-                    onClick={handleUseTemplate}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs h-11 rounded-full shadow-lg shadow-blue-600/15 cursor-pointer transition-transform hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    Use This Template
-                  </Button>
-                  <p className="text-[10px] text-zinc-500 text-center font-bold">
-                    Free to start — no credit card
-                  </p>
-                </div>
+                </motion.div>
 
               </div>
             </motion.aside>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n";
@@ -26,11 +26,39 @@ export function Navbar() {
   const isDashboard = location.startsWith("/dashboard") || location.startsWith("/projects") || location.startsWith("/templates");
   const isRTL = language === "ar";
 
+  const [supportOpen, setSupportOpen] = useState(false);
+  const supportRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastHoverOpenedRef = useRef(0);
+
+  const showSupport = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    if (!supportOpen) lastHoverOpenedRef.current = Date.now();
+    setSupportOpen(true);
+  };
+
+  const hideSupport = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setSupportOpen(false);
+    }, 500);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSupportOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    };
+  }, []);
+
   return (
     <header className={
       isDashboard 
         ? "sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-xs"
-        : "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        : `sticky top-0 z-50 w-full border-b ${supportOpen ? 'bg-background' : 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'}`
     }>
       <div className={
         isDashboard 
@@ -167,115 +195,152 @@ export function Navbar() {
                 {t("nav.about")}
               </Link>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-1 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer select-none focus:outline-none py-1 group">
-                    <span>{t("nav.support")}</span>
-                    <ChevronDown className="w-3.5 h-3.5 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="start" 
-                  className="w-[500px] p-0 bg-background/80 backdrop-blur-3xl border border-border/40 shadow-2xl rounded-3xl mt-2 font-sans overflow-hidden ring-1 ring-white/10 dark:ring-white/5 animate-in fade-in-50 slide-in-from-top-3 duration-300"
+              <div ref={supportRef} className="relative">
+                <button 
+                  onMouseEnter={showSupport}
+                  onMouseLeave={hideSupport}
+                  onClick={() => {
+                    if (!supportOpen) { setSupportOpen(true); return; }
+                    if (Date.now() - lastHoverOpenedRef.current < 500) return;
+                    setSupportOpen(false);
+                  }}
+                  className="flex items-center gap-1 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer select-none focus:outline-none py-1 group"
                 >
-                  <div className="grid grid-cols-5">
-                    {/* Left side: Highlight/Featured */}
-                    <div className="col-span-2 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 border-r border-border/30 relative overflow-hidden">
-                      <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/30 rounded-full blur-3xl pointer-events-none" />
-                      <div className="absolute bottom-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+                  <span>{t("nav.support")}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${supportOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                <div 
+                  className={`fixed inset-0 top-16 z-40 bg-black/10 dark:bg-black/30 transition-opacity duration-200 ${supportOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                  onClick={() => setSupportOpen(false)}
+                  aria-hidden="true"
+                />
+                
+                <div 
+                  onMouseEnter={showSupport}
+                  onMouseLeave={hideSupport}
+                  className={`fixed left-0 right-0 top-16 z-50 bg-background border-b border-border/40 shadow-xl transition-all duration-300 ${supportOpen ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0 pointer-events-none'}`}>
+                  <div className="max-w-6xl mx-auto px-8 py-12">
+                    <div className="grid grid-cols-4 gap-10">
                       
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        <div>
-                          <div className="w-10 h-10 rounded-2xl bg-primary/20 flex items-center justify-center mb-4 text-primary shadow-inner">
+                      <div className="col-span-1">
+                        <div className="flex flex-col h-full">
+                          <div className="w-10 h-10 rounded-2xl bg-primary/20 flex items-center justify-center mb-4 text-primary">
                             <Sparkles className="w-5 h-5" />
                           </div>
-                          <h4 className="text-sm font-extrabold text-foreground mb-1.5 tracking-tight">We're here to help</h4>
-                          <p className="text-[11px] text-muted-foreground leading-relaxed font-medium">
-                            Find answers, connect with the community, or get in touch with our expert support team in Algeria.
+                          <h3 className="text-lg font-bold text-foreground mb-2 tracking-tight">
+                            {t("nav.support_hero")}
+                          </h3>
+                          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                            {t("nav.support_hero_desc")}
                           </p>
-                        </div>
-                        <div className="mt-6">
                           <a 
-                            href="mailto:support@corbit.dz" 
-                            className="inline-flex w-full items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-foreground hover:bg-foreground/90 text-background text-xs font-bold shadow-xl shadow-foreground/10 transition-all hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
+                            href="mailto:support@corbit.dz"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-foreground hover:bg-foreground/90 text-background text-sm font-semibold shadow-lg shadow-foreground/10 transition-all hover:-translate-y-0.5 active:translate-y-0 active:scale-95 mt-auto"
                           >
-                            <Mail className="w-3.5 h-3.5" />
-                            Contact Support
+                            <Mail className="w-4 h-4" />
+                            {t("nav.contact_support")}
                           </a>
                         </div>
                       </div>
-                    </div>
-                    
-                    {/* Right side: Links */}
-                    <div className="col-span-3 p-2.5 flex flex-col gap-1 bg-card/50">
-                      {/* Header */}
-                      <div className="px-3 py-2 flex items-center justify-between">
-                        <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground/80 flex items-center gap-1.5">
-                          Resources
-                        </span>
-                        <span className="flex h-2 w-2 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
+                      
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 mb-5">
+                          {t("nav.get_started")}
+                        </h4>
+                        <ul className="space-y-3">
+                          <li>
+                            <Link href="/docs" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
+                              <span>{t("nav.quick_start")}</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/tutorials" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <Terminal className="w-4 h-4 text-emerald-500 shrink-0" />
+                              <span>{t("nav.tutorials")}</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/faq" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <HelpCircle className="w-4 h-4 text-amber-500 shrink-0" />
+                              <span>{t("nav.faq_page")}</span>
+                            </Link>
+                          </li>
+                        </ul>
                       </div>
                       
-                      {/* Item 1 */}
-                      <Link href="/community">
-                        <DropdownMenuItem className="cursor-pointer rounded-2xl p-2.5 flex items-start gap-3.5 hover:bg-accent/60 focus:bg-accent/70 transition-all duration-300 group border border-transparent hover:border-border/40">
-                          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-purple-500 transition-all duration-300 shadow-sm">
-                            <Users className="w-4 h-4 text-purple-500 group-hover:text-white transition-colors" />
-                          </div>
-                          <div className="space-y-0.5 min-w-0 flex-1">
-                            <div className="text-sm font-bold text-foreground flex justify-between items-center group-hover:text-purple-500 transition-colors">
-                              {t("nav.community")}
-                              <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                            </div>
-                            <p className="text-[11px] text-muted-foreground line-clamp-1 font-medium">
-                              {t("nav.community_desc")}
-                            </p>
-                          </div>
-                        </DropdownMenuItem>
-                      </Link>
-
-                      {/* Item 2 */}
-                      <Link href="/docs">
-                        <DropdownMenuItem className="cursor-pointer rounded-2xl p-2.5 flex items-start gap-3.5 hover:bg-accent/60 focus:bg-accent/70 transition-all duration-300 group border border-transparent hover:border-border/40">
-                          <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-blue-500 transition-all duration-300 shadow-sm">
-                            <BookOpen className="w-4 h-4 text-blue-500 group-hover:text-white transition-colors" />
-                          </div>
-                          <div className="space-y-0.5 min-w-0 flex-1">
-                            <div className="text-sm font-bold text-foreground flex justify-between items-center group-hover:text-blue-500 transition-colors">
-                              {t("nav.docs")}
-                              <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                            </div>
-                            <p className="text-[11px] text-muted-foreground line-clamp-1 font-medium">
-                              {t("nav.docs_desc")}
-                            </p>
-                          </div>
-                        </DropdownMenuItem>
-                      </Link>
-
-                      {/* Item 3 */}
-                      <Link href="/help">
-                        <DropdownMenuItem className="cursor-pointer rounded-2xl p-2.5 flex items-start gap-3.5 hover:bg-accent/60 focus:bg-accent/70 transition-all duration-300 group border border-transparent hover:border-border/40">
-                          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-amber-500 transition-all duration-300 shadow-sm">
-                            <HelpCircle className="w-4 h-4 text-amber-500 group-hover:text-white transition-colors" />
-                          </div>
-                          <div className="space-y-0.5 min-w-0 flex-1">
-                            <div className="text-sm font-bold text-foreground flex justify-between items-center group-hover:text-amber-500 transition-colors">
-                              {t("nav.help")}
-                              <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                            </div>
-                            <p className="text-[11px] text-muted-foreground line-clamp-1 font-medium">
-                              {t("nav.help_desc")}
-                            </p>
-                          </div>
-                        </DropdownMenuItem>
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 mb-5">
+                          {t("nav.community")}
+                        </h4>
+                        <ul className="space-y-3">
+                          <li>
+                            <Link href="/community" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <Users className="w-4 h-4 text-purple-500 shrink-0" />
+                              <span>{t("nav.community_forum")}</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <a href="https://discord.gg/corbit" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <MessageSquare className="w-4 h-4 text-sky-500 shrink-0" />
+                              <span>{t("nav.discord")}</span>
+                            </a>
+                          </li>
+                          <li>
+                            <Link href="/events" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <Megaphone className="w-4 h-4 text-rose-500 shrink-0" />
+                              <span>{t("nav.events")}</span>
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 mb-5">
+                          {t("nav.resources")}
+                        </h4>
+                        <ul className="space-y-3">
+                          <li>
+                            <Link href="/docs" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <BookOpen className="w-4 h-4 text-indigo-500 shrink-0" />
+                              <span>{t("nav.docs")}</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/api" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <Terminal className="w-4 h-4 text-orange-500 shrink-0" />
+                              <span>{t("nav.api_ref")}</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/help" className="group flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" onClick={() => setSupportOpen(false)}>
+                              <HelpCircle className="w-4 h-4 text-green-500 shrink-0" />
+                              <span>{t("nav.help")}</span>
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+                      
+                    </div>
+                    
+                    <div className="mt-10 pt-6 border-t border-border/30 flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                          </span>
+                          {t("nav.all_operational")}
+                        </span>
+                      </div>
+                      <Link href="/help" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors" onClick={() => setSupportOpen(false)}>
+                        {t("nav.visit_help")} →
                       </Link>
                     </div>
                   </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </div>
+              </div>
 
               <Link href="/pricing" className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer">
                 {t("nav.pricing")}
