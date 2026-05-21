@@ -100,31 +100,33 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
   const homePage = (
     <>
       <div style={{ position: "relative", overflow: "hidden", minHeight: "560px" }}>
-        {slides.map((s, i) => (
-          <div key={i} style={{ position: "absolute", inset: 0, opacity: slide === i ? 1 : 0, transition: "opacity 0.6s ease", display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center" }}>
-            <div style={{ padding: "4rem", zIndex: 2, position: "relative" }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: `${ac}22`, color: ac, border: `1px solid ${ac}44`, padding: "0.375rem 1.125rem", fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1.5rem" }}>
-                <Icon name="flame" size={14} /> {i === 0 ? "New Arrivals" : i === 1 ? "Pro Series" : "Elite Gear"}
+        <div style={{ display: "flex", transition: "transform 0.5s ease", transform: `translateX(-${slide * 100}%)`, width: `${slides.length * 100}%` }}>
+          {slides.map((s, i) => (
+            <div key={i} style={{ width: `${100 / slides.length}%`, display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center", minHeight: "560px", flexShrink: 0 }}>
+              <div style={{ padding: "4rem", zIndex: 2, position: "relative" }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: `${ac}22`, color: ac, border: `1px solid ${ac}44`, padding: "0.375rem 1.125rem", fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1.5rem" }}>
+                  <Icon name="flame" size={14} /> {i === 0 ? "New Arrivals" : i === 1 ? "Pro Series" : "Elite Gear"}
+                </div>
+                <h1 style={{ fontSize: "clamp(2.2rem,4.5vw,3.5rem)", fontWeight: 900, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: "0.5rem" }}>
+                  <span style={{ color: txt }}>{s.title}</span>
+                </h1>
+                <h1 style={{ fontSize: "clamp(2.2rem,4.5vw,3.5rem)", fontWeight: 900, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: "1.5rem" }}>
+                  <span style={{ color: ac }}>{s.subtitle}</span>
+                </h1>
+                <div style={{ width: "4rem", height: "4px", background: ac, marginBottom: "1.5rem" }} />
+                <p style={{ color: mut, maxWidth: "400px", lineHeight: 1.7, marginBottom: "2.5rem", fontSize: "0.95rem" }}>{s.text}</p>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                  <button onClick={() => setPage("products")} style={{ background: ac, color: "#fff", border: "none", padding: "0.875rem 2rem", cursor: "pointer", fontWeight: 800, fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.shop}</button>
+                  <button onClick={() => setPage("about")} style={{ background: "transparent", color: txt, border: `1px solid ${brd}`, padding: "0.875rem 2rem", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Our Story</button>
+                </div>
               </div>
-              <h1 style={{ fontSize: "clamp(2.2rem,4.5vw,3.5rem)", fontWeight: 900, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: "0.5rem" }}>
-                <span style={{ color: txt }}>{s.title}</span>
-              </h1>
-              <h1 style={{ fontSize: "clamp(2.2rem,4.5vw,3.5rem)", fontWeight: 900, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: "1.5rem" }}>
-                <span style={{ color: ac }}>{s.subtitle}</span>
-              </h1>
-              <div style={{ width: "4rem", height: "4px", background: ac, marginBottom: "1.5rem" }} />
-              <p style={{ color: mut, maxWidth: "400px", lineHeight: 1.7, marginBottom: "2.5rem", fontSize: "0.95rem" }}>{s.text}</p>
-              <div style={{ display: "flex", gap: "1rem" }}>
-                <button onClick={() => setPage("products")} style={{ background: ac, color: "#fff", border: "none", padding: "0.875rem 2rem", cursor: "pointer", fontWeight: 800, fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.shop}</button>
-                <button onClick={() => setPage("about")} style={{ background: "transparent", color: txt, border: `1px solid ${brd}`, padding: "0.875rem 2rem", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Our Story</button>
+              <div style={{ position: "relative", height: "560px", overflow: "hidden" }}>
+                <img src={s.img} alt="hero" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to right, ${bg}, transparent)` }} />
               </div>
             </div>
-            <div style={{ position: "relative", height: "560px", overflow: "hidden" }}>
-              <img src={s.img} alt="hero" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to right, ${bg}, transparent)` }} />
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
         <button onClick={() => setSlide(s => (s - 1 + slides.length) % slides.length)} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", zIndex: 10, background: `${bg}88`, border: "none", color: "#fff", width: "2.5rem", height: "2.5rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>
           <Icon name="chevronLeft" size={22} />
         </button>
@@ -137,7 +139,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
           ))}
         </div>
       </div>
-      <div style={{ background: surf, borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, padding: "1.25rem 2rem", display: "flex", gap: "2rem", overflowX: "auto", justifyContent: "center" }}>
+      <div style={{ background: surf, borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, padding: "1.25rem 2rem", display: "flex", gap: "2rem", flexWrap: "wrap", justifyContent: "center" }}>
         {CATS.filter(c => c !== "All").map(s => (
           <button key={s} onClick={() => { setPage("products"); setActiveCat(s); }} style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", cursor: "pointer", whiteSpace: "nowrap", background: "none", border: "none", color: mut, display: "flex", alignItems: "center", gap: "0.35rem" }}>
             <Icon name="shoe" size={14} style={{ color: ac }} />{s}
