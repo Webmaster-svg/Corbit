@@ -291,7 +291,7 @@ export default function Preview() {
               </div>
             </label>
             <span className="h-4 w-px bg-zinc-700/60 mx-0.5" />
-            <button onClick={() => setIsAppearanceOpen(!isAppearanceOpen)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">Edit</button>
+            <button onClick={() => setLocation(`/editor/${id}`)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">Edit</button>
           </div>
         </nav>}
 

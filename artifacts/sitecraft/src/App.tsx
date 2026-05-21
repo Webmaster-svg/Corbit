@@ -14,6 +14,7 @@ import Checkout from "@/pages/checkout";
 import ChargilySimulate from "@/pages/chargily-simulate";
 import Templates from "@/pages/templates";
 import Preview from "@/pages/preview";
+import Editor from "@/pages/editor";
 import Dashboard from "@/pages/dashboard";
 import Projects from "@/pages/projects";
 import ProjectDetail from "@/pages/project-detail";
@@ -60,6 +61,9 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/templates" component={Templates} />
       <Route path="/preview/:id" component={Preview} />
+      <Route path="/editor/:id">
+        {() => <ProtectedRoute component={Editor} />}
+      </Route>
       <Route path="/pricing" component={Pricing} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/chargily-simulate" component={ChargilySimulate} />

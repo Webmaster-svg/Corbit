@@ -19,6 +19,7 @@ export interface TemplateProps {
 }
 
 export interface TemplateEntry {
+  id: number;
   slug: string;
   name: string;
   category: string;
