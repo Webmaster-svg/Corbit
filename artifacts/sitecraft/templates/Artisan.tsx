@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CartDrawer, type CartItem } from "./shared/CartDrawer";
 import type { TemplateProps } from "./types";
+import { Icon } from "./shared/Icons";
 
 type Page = "home" | "products" | "about" | "contact";
 
@@ -17,14 +18,18 @@ const PRODUCTS = [
   { id: 10, name: "Walnut Serving Tray", price: "$115", priceNum: 115, img: "https://picsum.photos/seed/art10/400/400", cat: "Woodwork", maker: "Erik, Norway" },
   { id: 11, name: "Indigo Dyed Scarf", price: "$89", priceNum: 89, img: "https://picsum.photos/seed/art11/400/500", cat: "Textiles", maker: "Lin, China" },
   { id: 12, name: "Silver Ring Band", price: "$145", priceNum: 145, img: "https://picsum.photos/seed/art12/400/400", cat: "Jewelry", maker: "Clara, Spain" },
+  { id: 13, name: "Hammered Copper Mug", price: "$52", priceNum: 52, img: "https://picsum.photos/seed/art13/400/400", cat: "Metalwork", maker: "Yuki Tanaka, Japan" },
+  { id: 14, name: "Indigo Dyed Scarf", price: "$68", priceNum: 68, img: "https://picsum.photos/seed/art14/400/400", cat: "Textiles", maker: "Aisha Diop, Senegal" },
+  { id: 15, name: "Carved Wooden Bowl", price: "$95", priceNum: 95, img: "https://picsum.photos/seed/art15/400/400", cat: "Woodwork", maker: "Elena Voss, Germany" },
+  { id: 16, name: "Hand-painted Vase", price: "$78", priceNum: 78, img: "https://picsum.photos/seed/art16/400/400", cat: "Ceramics", maker: "Carlos Ruiz, Mexico" },
 ];
 
 const CATS = ["All", "Ceramics", "Weaving", "Woodwork", "Leather", "Candles", "Textiles", "Jewelry", "Metalwork"];
 
 const T = {
-  en: { nav: ["Home", "Shop", "Our Story", "Contact"], hero: "Made by Hand,\nMade to Last", sub: "Discover unique handcrafted goods made by independent artisans from around the world.", shop: "Shop Handmade", viewAll: "View All", addCart: "Add to Cart", allProd: "All Handmade Goods", deal: "🌿 10% off your first order — Code HANDMADE10", aboutTitle: "The Artisan Story", aboutText: "Artisan Marketplace was founded to connect skilled craftspeople with people who truly appreciate handmade goods. Every maker on our platform goes through a rigorous quality review. When you buy from Artisan, you directly support the livelihoods of independent creators worldwide.", contactTitle: "Say Hello", name: "Your Name", email: "Your Email", message: "Tell us how we can help", send: "Send Message", address: "The Craft House, Amsterdam", phone: "+31 20 000 0000", hours: "Mon–Fri 9am–6pm", footer: "© 2024 Artisan. Crafted with care." },
-  fr: { nav: ["Accueil", "Boutique", "Notre Histoire", "Contact"], hero: "Fait à la Main,\nFait pour Durer", sub: "Découvrez des articles artisanaux uniques faits par des artisans indépendants.", shop: "Acheter Artisanal", viewAll: "Voir Tout", addCart: "Ajouter au Panier", allProd: "Tous les Articles Artisanaux", deal: "🌿 10% sur votre première commande — Code HANDMADE10", aboutTitle: "L'Histoire Artisan", aboutText: "Artisan Marketplace a été fondé pour connecter les artisans avec les personnes qui apprécient vraiment les articles faits à la main.", contactTitle: "Nous Dire Bonjour", name: "Votre Nom", email: "Votre Email", message: "Comment pouvons-nous vous aider?", send: "Envoyer", address: "The Craft House, Amsterdam", phone: "+31 20 000 0000", hours: "Lun–Ven 9h–18h", footer: "© 2024 Artisan. Fait avec soin." },
-  ar: { nav: ["الرئيسية", "المتجر", "قصتنا", "اتصل بنا"], hero: "صُنع باليد،\nصُنع ليدوم", sub: "اكتشف منتجات حرفية فريدة من صنع حرفيين مستقلين من جميع أنحاء العالم.", shop: "تسوق المصنوع يدوياً", viewAll: "عرض الكل", addCart: "أضف إلى السلة", allProd: "جميع المنتجات اليدوية", deal: "🌿 10% خصم على طلبك الأول — الرمز HANDMADE10", aboutTitle: "قصة أرتيزان", aboutText: "تأسست أرتيزان ماركت بليس للربط بين الحرفيين الماهرين والأشخاص الذين يقدرون حقاً المنتجات المصنوعة يدوياً.", contactTitle: "قل مرحباً", name: "اسمك", email: "بريدك الإلكتروني", message: "كيف يمكننا مساعدتك؟", send: "إرسال", address: "بيت الحرف، أمستردام", phone: "+31 20 000 0000", hours: "الاثنين–الجمعة 9ص–6م", footer: "© 2024 أرتيزان. مصنوع بعناية." },
+  en: { nav: ["Home", "Shop", "Our Story", "Contact"], hero: "Made by Hand,\nMade to Last", sub: "Discover unique handcrafted goods made by independent artisans from around the world.", shop: "Shop Handmade", viewAll: "View All", addCart: "Add to Cart", allProd: "All Handmade Goods", deal: "🌿 10% off your first order — Code HANDMADE10", aboutTitle: "The Artisan Story", aboutText: "Artisan Marketplace was founded to connect skilled craftspeople with people who truly appreciate handmade goods. Every maker on our platform goes through a rigorous quality review. When you buy from Artisan, you directly support the livelihoods of independent creators worldwide.", contactTitle: "Say Hello", name: "Your Name", email: "Your Email", message: "Tell us how we can help", send: "Send Message", address: "The Craft House, Amsterdam", phone: "+31 20 000 0000", hours: "Mon–Fri 9am–6pm", testimonialTitle: "Stories from Our Community", testimonial1: "I bought the handwoven rug for my studio and it's absolutely stunning. You can feel the craftsmanship in every thread.", testimonialName1: "Claire Beaumont", testimonialRole1: "Interior Designer", testimonial2: "Knowing exactly which artisan made my pottery makes it so much more special. The story behind each piece is incredible.", testimonialName2: "James Okonkwo", testimonialRole2: "Collector", testimonial3: "The quality of craftsmanship is unmatched. I've bought several pieces and each one feels like a work of art.", testimonialName3: "Priya Sharma", testimonialRole3: "Loyal Customer", footer: "© 2024 Artisan. Crafted with care." },
+  fr: { nav: ["Accueil", "Boutique", "Notre Histoire", "Contact"], hero: "Fait à la Main,\nFait pour Durer", sub: "Découvrez des articles artisanaux uniques faits par des artisans indépendants.", shop: "Acheter Artisanal", viewAll: "Voir Tout", addCart: "Ajouter au Panier", allProd: "Tous les Articles Artisanaux", deal: "🌿 10% sur votre première commande — Code HANDMADE10", aboutTitle: "L'Histoire Artisan", aboutText: "Artisan Marketplace a été fondé pour connecter les artisans avec les personnes qui apprécient vraiment les articles faits à la main.", contactTitle: "Nous Dire Bonjour", name: "Votre Nom", email: "Votre Email", message: "Comment pouvons-nous vous aider?", send: "Envoyer", address: "The Craft House, Amsterdam", phone: "+31 20 000 0000", hours: "Lun–Ven 9h–18h", testimonialTitle: "Témoignages de Notre Communauté", testimonial1: "J'ai acheté le tapis tissé à la main pour mon studio et il est absolument magnifique.", testimonialName1: "Claire Beaumont", testimonialRole1: "Architecte d'Intérieur", testimonial2: "Savoir exactement quel artisan a fabriqué ma poterie la rend tellement plus spéciale.", testimonialName2: "James Okonkwo", testimonialRole2: "Collectionneur", testimonial3: "La qualité de l'artisanat est inégalée. Chaque pièce est une œuvre d'art.", testimonialName3: "Priya Sharma", testimonialRole3: "Cliente Fidèle", footer: "© 2024 Artisan. Fait avec soin." },
+  ar: { nav: ["الرئيسية", "المتجر", "قصتنا", "اتصل بنا"], hero: "صُنع باليد،\nصُنع ليدوم", sub: "اكتشف منتجات حرفية فريدة من صنع حرفيين مستقلين من جميع أنحاء العالم.", shop: "تسوق المصنوع يدوياً", viewAll: "عرض الكل", addCart: "أضف إلى السلة", allProd: "جميع المنتجات اليدوية", deal: "🌿 10% خصم على طلبك الأول — الرمز HANDMADE10", aboutTitle: "قصة أرتيزان", aboutText: "تأسست أرتيزان ماركت بليس للربط بين الحرفيين الماهرين والأشخاص الذين يقدرون حقاً المنتجات المصنوعة يدوياً.", contactTitle: "قل مرحباً", name: "اسمك", email: "بريدك الإلكتروني", message: "كيف يمكننا مساعدتك؟", send: "إرسال", address: "بيت الحرف، أمستردام", phone: "+31 20 000 0000", hours: "الاثنين–الجمعة 9ص–6م", testimonialTitle: "قصص من مجتمعنا", testimonial1: "اشتريت السجادة المنسوجة يدوياً لاستوديوهي وهي مذهلة. يمكنك الشعور بالحرفية في كل خيط.", testimonialName1: "كلير بومونت", testimonialRole1: "مصممة داخلية", testimonial2: "معرفة الحرفي الذي صنع الفخار يجعله أكثر خصوصية. القصة وراء كل قطعة لا تصدق.", testimonialName2: "جيمس أوكونكو", testimonialRole2: "جامع تحف", testimonial3: "جودة الحرفية لا تضاهى. كل قطعة تشعر وكأنها عمل فني.", testimonialName3: "بريا شارما", testimonialRole3: "زبونة وفية", footer: "© 2024 أرتيزان. مصنوع بعناية." },
 };
 
 export default function Artisan({ language, scheme, dark }: TemplateProps) {
@@ -70,7 +75,7 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
           ))}
         </div>
         <button onClick={() => setCartOpen(true)} style={{ background: scheme.accent, color: scheme.accentText, border: "none", padding: "0.625rem 1.5rem", cursor: "pointer", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-          🛒 {cartCount > 0 && <span style={{ background: "#fff", color: scheme.accent, borderRadius: "50%", width: "1.2rem", height: "1.2rem", fontSize: "0.65rem", fontWeight: 900, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
+<Icon name="bag" size={18} /> {cartCount > 0 && <span style={{ background: "#fff", color: scheme.accent, borderRadius: "50%", width: "1.2rem", height: "1.2rem", fontSize: "0.65rem", fontWeight: 900, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
         </button>
       </nav>
     </>
@@ -113,6 +118,28 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
           <div key={i} style={{ fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{tr}</div>
         ))}
       </div>
+      {/* Testimonials */}
+      <section style={{ padding: "4rem 2rem" }}>
+        <h2 style={{ textAlign: "center", fontWeight: 400, fontSize: "1.4rem", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+          {[
+            { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
+            { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
+            { text: t.testimonial3, name: t.testimonialName3, role: t.testimonialRole3 },
+          ].map((item, i) => (
+            <div key={i} style={{ background: surf, border: `1px solid ${brd}`, padding: "1.75rem", display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", gap: "0.2rem", marginBottom: "0.75rem" }}>
+                {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={14} style={{ color: "#d97706", fill: "#d97706" }} />)}
+              </div>
+              <p style={{ color: txt, fontSize: "0.85rem", lineHeight: 1.8, margin: "0 0 1.25rem", flex: 1, fontStyle: "italic" }}>"{item.text}"</p>
+              <div style={{ borderTop: `1px solid ${brd}`, paddingTop: "0.75rem" }}>
+                <div style={{ fontWeight: 600, fontSize: "0.8rem", fontFamily: "'Georgia',serif" }}>{item.name}</div>
+                <div style={{ color: mut, fontSize: "0.7rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>{item.role}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </>
   );
 
@@ -179,9 +206,9 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
       <div>
         <h2 style={{ fontWeight: 400, fontSize: "1.25rem", marginBottom: "2rem", letterSpacing: "0.08em", textTransform: "uppercase", color: txt }}>Find Us</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          {[{ icon: "📍", text: t.address }, { icon: "📞", text: t.phone }, { icon: "🕐", text: t.hours }].map(i => (
-            <div key={i.icon} style={{ display: "flex", gap: "1rem" }}>
-              <span style={{ fontSize: "1.25rem" }}>{i.icon}</span><span style={{ color: mut, fontSize: "0.9rem", lineHeight: 1.6 }}>{i.text}</span>
+          {[{ icon: "pin", text: t.address }, { icon: "phone", text: t.phone }, { icon: "clock", text: t.hours }].map(i => (
+            <div key={i.icon} style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <Icon name={i.icon} size={20} /><span style={{ color: mut, fontSize: "0.9rem", lineHeight: 1.6 }}>{i.text}</span>
             </div>
           ))}
         </div>
@@ -196,7 +223,33 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
       {page === "products" && productsPage}
       {page === "about" && aboutPage}
       {page === "contact" && contactPage}
-      <footer style={{ padding: "1.5rem", textAlign: "center", color: mut, fontSize: "0.75rem", letterSpacing: "0.1em", borderTop: `1px solid ${brd}` }}>{t.footer}</footer>
+      <footer style={{ background: surf, borderTop: `1px solid ${brd}`, marginTop: "3rem" }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "2.5rem" }}>
+          <div>
+            <div style={{ fontFamily: "'Georgia',serif", fontSize: "1.2rem", fontWeight: 700, marginBottom: "0.75rem", color: txt }}>Artisan</div>
+            <p style={{ color: mut, fontSize: "0.85rem", lineHeight: 1.7, fontFamily: "'Georgia',serif", fontStyle: "italic", margin: "0 0 1rem" }}>A marketplace for handmade goods crafted with care by skilled artisans from around the world.</p>
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <Icon name="twitter" size={18} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="instagram" size={18} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="facebook" size={18} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="pinterest" size={18} style={{ color: mut, cursor: "pointer" }} />
+            </div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "1rem", color: txt }}>Links</div>
+            {["Shop All", "About Us", "Our Makers", "Contact", "FAQs"].map(l => (
+              <div key={l} style={{ color: mut, fontSize: "0.85rem", marginBottom: "0.5rem", cursor: "pointer", fontFamily: "'Georgia',serif" }}>{l}</div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "1rem", color: txt }}>Support</div>
+            {["Shipping Info", "Returns", "Care Guide", "Bulk Orders", "Gift Cards"].map(l => (
+              <div key={l} style={{ color: mut, fontSize: "0.85rem", marginBottom: "0.5rem", cursor: "pointer", fontFamily: "'Georgia',serif" }}>{l}</div>
+            ))}
+          </div>
+        </div>
+        <div style={{ borderTop: `1px solid ${brd}`, padding: "1.25rem 2rem", textAlign: "center", color: mut, fontSize: "0.75rem", letterSpacing: "0.08em" }}>{t.footer}</div>
+      </footer>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cart} onRemove={removeFromCart} onUpdate={updateQty} scheme={scheme} dark={dark} lang={language} />
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CartDrawer, type CartItem } from "./shared/CartDrawer";
 import type { TemplateProps } from "./types";
+import { Icon } from "./shared/Icons";
 
 type Page = "home" | "products" | "about" | "contact";
 
@@ -17,14 +18,18 @@ const PRODUCTS = [
   { id: 10, name: "Italian Leather Belt", price: "$180", priceNum: 180, img: "https://picsum.photos/seed/lux10/400/400", cat: "Accessories" },
   { id: 11, name: "Oxford Brogue Shoes", price: "$520", priceNum: 520, img: "https://picsum.photos/seed/lux11/400/500", cat: "Shoes" },
   { id: 12, name: "Pleated Midi Skirt", price: "$460", priceNum: 460, img: "https://picsum.photos/seed/lux12/400/500", cat: "Women" },
+  { id: 13, name: "Diamond Tennis Bracelet", price: "$4,200", priceNum: 4200, img: "https://picsum.photos/seed/lux13/500/600", cat: "Fine Jewelry" },
+  { id: 14, name: "Wool Cashmere Overcoat", price: "$2,800", priceNum: 2800, img: "https://picsum.photos/seed/lux14/500/600", cat: "Women" },
+  { id: 15, name: "Italian Leather Tote", price: "$1,950", priceNum: 1950, img: "https://picsum.photos/seed/lux15/500/600", cat: "Accessories" },
+  { id: 16, name: "Hand-stitched Oxford Shoes", price: "$1,350", priceNum: 1350, img: "https://picsum.photos/seed/lux16/500/600", cat: "Shoes" },
 ];
 
 const CATS = ["All", "Women", "Men", "Accessories", "Shoes", "Fine Jewelry"];
 
 const T = {
-  en: { nav: ["Home", "Products", "About", "Contact"], hero: "Wear the\nUnseen", sub: "Curated luxury fashion for those who define their own elegance.", shop: "Shop Collection", explore: "Explore Lookbook", featured: "Featured Pieces", viewAll: "View All", addCart: "Add to Cart", allProd: "All Products", filter: "Filter", aboutTitle: "Our Story", aboutText: "Luxuria was born from a desire to make true luxury accessible — not in price, but in the experience of wearing something that was made just for you. Each piece in our collection is sourced from the world's finest ateliers.", contactTitle: "Get in Touch", name: "Full Name", email: "Email Address", message: "Your Message", send: "Send Message", address: "123 Rue Saint-Honoré, Paris", phone: "+33 1 42 00 00 00", hours: "Mon–Sat 10am–7pm", footer: "© 2024 Luxuria. All rights reserved.", badge: "New Collection 2024" },
-  fr: { nav: ["Accueil", "Produits", "À Propos", "Contact"], hero: "Portez\nl'Invisible", sub: "Mode de luxe sélectionnée pour ceux qui définissent leur propre élégance.", shop: "Voir la Collection", explore: "Explorer le Lookbook", featured: "Pièces Vedettes", viewAll: "Voir Tout", addCart: "Ajouter au Panier", allProd: "Tous les Produits", filter: "Filtrer", aboutTitle: "Notre Histoire", aboutText: "Luxuria est née du désir de rendre le vrai luxe accessible. Chaque pièce est sourcée dans les meilleurs ateliers du monde.", contactTitle: "Nous Contacter", name: "Nom Complet", email: "Adresse Email", message: "Votre Message", send: "Envoyer", address: "123 Rue Saint-Honoré, Paris", phone: "+33 1 42 00 00 00", hours: "Lun–Sam 10h–19h", footer: "© 2024 Luxuria. Tous droits réservés.", badge: "Nouvelle Collection 2024" },
-  ar: { nav: ["الرئيسية", "المنتجات", "من نحن", "اتصل بنا"], hero: "ارتدِ\nاللامرئي", sub: "أزياء فاخرة منتقاة لمن يصنعون أناقتهم الخاصة.", shop: "تسوق المجموعة", explore: "استكشاف الكتاب", featured: "القطع المميزة", viewAll: "عرض الكل", addCart: "أضف إلى السلة", allProd: "جميع المنتجات", filter: "تصفية", aboutTitle: "قصتنا", aboutText: "وُلدت لوكسوريا من رغبة في جعل الفخامة الحقيقية في متناول الجميع. كل قطعة في مجموعتنا مصدرها أفضل دور الأزياء في العالم.", contactTitle: "تواصل معنا", name: "الاسم الكامل", email: "البريد الإلكتروني", message: "رسالتك", send: "إرسال", address: "123 شارع سانت أونوريه، باريس", phone: "+33 1 42 00 00 00", hours: "الاثنين–السبت 10ص–7م", footer: "© 2024 لوكسوريا. جميع الحقوق محفوظة.", badge: "مجموعة جديدة 2024" },
+  en: { nav: ["Home", "Products", "About", "Contact"], hero: "Wear the\nUnseen", sub: "Curated luxury fashion for those who define their own elegance.", shop: "Shop Collection", explore: "Explore Lookbook", featured: "Featured Pieces", viewAll: "View All", addCart: "Add to Cart", allProd: "All Products", filter: "Filter", aboutTitle: "Our Story", aboutText: "Luxuria was born from a desire to make true luxury accessible — not in price, but in the experience of wearing something that was made just for you. Each piece in our collection is sourced from the world's finest ateliers.", contactTitle: "Get in Touch", name: "Full Name", email: "Email Address", message: "Your Message", send: "Send Message", address: "123 Rue Saint-Honoré, Paris", phone: "+33 1 42 00 00 00",     hours: "Mon–Sat 10am–7pm", testimonialTitle: "The Luxuria Experience", testimonial1: "Exceptional quality and service. The attention to detail in every piece is remarkable. Truly world-class craftsmanship.", testimonialName1: "Victoria Ashford", testimonialRole1: "Fashion Editor", testimonial2: "I've never experienced such personalized service. The styling consultation was worth every penny.", testimonialName2: "Henrik Larsson", testimonialRole2: "CEO, Stockholm", testimonial3: "Each piece arrives like a gift — beautifully wrapped and presented. It makes every purchase feel special.", testimonialName3: "Camille Dubois", testimonialRole3: "Loyal Client", footer: "© 2024 Luxuria. All rights reserved.", badge: "New Collection 2024" },
+  fr: { nav: ["Accueil", "Produits", "À Propos", "Contact"], hero: "Portez\nl'Invisible", sub: "Mode de luxe sélectionnée pour ceux qui définissent leur propre élégance.", shop: "Voir la Collection", explore: "Explorer le Lookbook", featured: "Pièces Vedettes", viewAll: "Voir Tout", addCart: "Ajouter au Panier", allProd: "Tous les Produits", filter: "Filtrer", aboutTitle: "Notre Histoire", aboutText: "Luxuria est née du désir de rendre le vrai luxe accessible. Chaque pièce est sourcée dans les meilleurs ateliers du monde.", contactTitle: "Nous Contacter", name: "Nom Complet", email: "Adresse Email", message: "Votre Message", send: "Envoyer", address: "123 Rue Saint-Honoré, Paris", phone: "+33 1 42 00 00 00", hours: "Lun–Sam 10h–19h", testimonialTitle: "L'Expérience Luxuria", testimonial1: "Qualité et service exceptionnels. Le souci du détail dans chaque pièce est remarquable.", testimonialName1: "Victoria Ashford", testimonialRole1: "Rédactrice de Mode", testimonial2: "Je n'ai jamais eu un service aussi personnalisé. La consultation stylistique en valait chaque centime.", testimonialName2: "Henrik Larsson", testimonialRole2: "PDG, Stockholm", testimonial3: "Chaque pièce arrive comme un cadeau — magnifiquement emballée. Chaque achat est spécial.", testimonialName3: "Camille Dubois", testimonialRole3: "Cliente Fidèle", footer: "© 2024 Luxuria. Tous droits réservés.", badge: "Nouvelle Collection 2024" },
+  ar: { nav: ["الرئيسية", "المنتجات", "من نحن", "اتصل بنا"], hero: "ارتدِ\nاللامرئي", sub: "أزياء فاخرة منتقاة لمن يصنعون أناقتهم الخاصة.", shop: "تسوق المجموعة", explore: "استكشاف الكتاب", featured: "القطع المميزة", viewAll: "عرض الكل", addCart: "أضف إلى السلة", allProd: "جميع المنتجات", filter: "تصفية", aboutTitle: "قصتنا", aboutText: "وُلدت لوكسوريا من رغبة في جعل الفخامة الحقيقية في متناول الجميع. كل قطعة في مجموعتنا مصدرها أفضل دور الأزياء في العالم.", contactTitle: "تواصل معنا", name: "الاسم الكامل", email: "البريد الإلكتروني", message: "رسالتك", send: "إرسال", address: "123 شارع سانت أونوريه، باريس", phone: "+33 1 42 00 00 00", hours: "الاثنين–السبت 10ص–7م", testimonialTitle: "تجربة لوكسوريا", testimonial1: "جودة وخدمة استثنائية. الاهتمام بالتفاصيل في كل قطعة رائع. حرفية عالمية حقاً.", testimonialName1: "فيكتوريا أشفورد", testimonialRole1: "محررة أزياء", testimonial2: "لم أشهد أبداً خدمة مخصصة بهذا المستوى. استشارة التصميم كانت تستحق كل قرش.", testimonialName2: "هنريك لارسون", testimonialRole2: "رئيس تنفيذي، ستوكهولم", testimonial3: "كل قطعة تصل كهدية — مغلفة بشكل جميل. تجعل كل عملية شراء مميزة.", testimonialName3: "كاميل دوبوا", testimonialRole3: "زبونة وفية", footer: "© 2024 لوكسوريا. جميع الحقوق محفوظة.", badge: "مجموعة جديدة 2024" },
 };
 
 export default function Luxuria({ language, scheme, dark }: TemplateProps) {
@@ -107,6 +112,28 @@ export default function Luxuria({ language, scheme, dark }: TemplateProps) {
           <div key={i} style={{ fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{tr}</div>
         ))}
       </div>
+          {/* Testimonials */}
+          <section style={{ padding: "4rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
+            <h2 style={{ textAlign: "center", fontWeight: 300, fontSize: "1.4rem", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
+              {[
+                { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
+                { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
+                { text: t.testimonial3, name: t.testimonialName3, role: t.testimonialRole3 },
+              ].map((item, i) => (
+                <div key={i} style={{ borderTop: `1px solid ${brd}`, paddingTop: "1.5rem", display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", gap: "0.2rem", marginBottom: "0.75rem" }}>
+                    {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={12} style={{ color: "#d4a574", fill: "#d4a574" }} />)}
+                  </div>
+                  <p style={{ color: txt, fontSize: "0.85rem", lineHeight: 1.9, margin: "0 0 1.25rem", flex: 1, fontStyle: "italic", fontWeight: 300 }}>"{item.text}"</p>
+                  <div>
+                    <div style={{ fontWeight: 400, fontSize: "0.8rem", letterSpacing: "0.08em" }}>{item.name}</div>
+                    <div style={{ color: mut, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: "0.15rem" }}>{item.role}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
       <section style={{ padding: "6rem 2rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
         <img src="https://picsum.photos/seed/luxabout/700/500" alt="about" style={{ width: "100%", objectFit: "cover" }} />
         <div>
@@ -184,9 +211,9 @@ export default function Luxuria({ language, scheme, dark }: TemplateProps) {
       <div>
         <h2 style={{ fontSize: "1.1rem", fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "2rem" }}>Visit Us</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          {[{ icon: "📍", text: t.address }, { icon: "📞", text: t.phone }, { icon: "🕐", text: t.hours }].map(i => (
+          {[{ icon: "pin", text: t.address }, { icon: "phone", text: t.phone }, { icon: "clock", text: t.hours }].map(i => (
             <div key={i.icon} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-              <span style={{ fontSize: "1.25rem" }}>{i.icon}</span>
+              <Icon name={i.icon} size={20} />
               <span style={{ color: mut, fontSize: "0.9rem", lineHeight: 1.6 }}>{i.text}</span>
             </div>
           ))}
@@ -202,7 +229,39 @@ export default function Luxuria({ language, scheme, dark }: TemplateProps) {
       {page === "products" && productsPage}
       {page === "about" && aboutPage}
       {page === "contact" && contactPage}
-      <footer style={{ padding: "2rem", textAlign: "center", fontSize: "0.75rem", color: mut, letterSpacing: "0.1em", borderTop: `1px solid ${brd}` }}>{t.footer}</footer>
+      <footer style={{ borderTop: `1px solid ${brd}`, padding: "0" }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3.5rem 2rem 2.5rem", display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: "2.5rem" }}>
+          <div>
+            <div style={{ fontSize: "1.4rem", fontWeight: 300, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.75rem", color: txt, fontFamily: "'Georgia',serif" }}>LUXURIA</div>
+            <p style={{ color: mut, fontSize: "0.8rem", lineHeight: 1.9, margin: "0 0 1.25rem", fontWeight: 300, fontStyle: "italic" }}>Timeless elegance crafted for those who appreciate the finest things in life. Since 1998.</p>
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <Icon name="instagram" size={16} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="facebook" size={16} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="twitter" size={16} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="youtube" size={16} style={{ color: mut, cursor: "pointer" }} />
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "1.25rem", color: txt }}>Collections</div>
+            {["Women", "Men", "Accessories", "Shoes", "Fine Jewelry"].map(l => (
+              <div key={l} style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.55rem", cursor: "pointer", fontWeight: 300 }}>{l}</div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "1.25rem", color: txt }}>Client Care</div>
+            {["Contact Us", "Shipping & Delivery", "Returns & Exchanges", "Size Guide", "Care Instructions"].map(l => (
+              <div key={l} style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.55rem", cursor: "pointer", fontWeight: 300 }}>{l}</div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "1.25rem", color: txt }}>Boutique</div>
+            <div style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.35rem", fontWeight: 300 }}><Icon name="pin" size={14} /> 384 Avenue des Champs-Élysées</div>
+            <div style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.35rem", fontWeight: 300 }}><Icon name="phone" size={14} /> +33 1 44 55 66 77</div>
+            <div style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.35rem", fontWeight: 300 }}><Icon name="mail" size={14} /> concierge@luxuria.com</div>
+          </div>
+        </div>
+        <div style={{ borderTop: `1px solid ${brd}`, padding: "1.25rem 2rem", textAlign: "center", fontSize: "0.7rem", color: mut, letterSpacing: "0.12em", fontWeight: 300 }}>{t.footer}</div>
+      </footer>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cart} onRemove={removeFromCart} onUpdate={updateQty} scheme={scheme} dark={dark} lang={language} />
     </div>
   );

@@ -1,9 +1,10 @@
 import type { TemplateProps } from "./types";
+import { Icon } from "./shared/Icons";
 
 const T = {
-  en: { hero: "The Best Digital\nProducts, Delivered", sub: "Premium software, templates, courses, and tools — instant download, lifetime access.", shop: "Browse Marketplace", featured: "Top Downloads", viewAll: "View All", addCart: "Buy Now", cats: "Categories", deal: "🔥 New arrivals every week — Join 50K+ creators", trust1: "Instant Download", trust2: "Lifetime Updates", trust3: "Money-Back Guarantee", trust4: "Verified Creators", footer: "© 2024 DigitalShop. Fuel your creativity." },
-  fr: { hero: "Les Meilleurs Produits\nNumériques", sub: "Logiciels, modèles, cours et outils premium — téléchargement instantané, accès à vie.", shop: "Explorer la Marketplace", featured: "Top Téléchargements", viewAll: "Voir Tout", addCart: "Acheter", cats: "Catégories", deal: "🔥 Nouveautés chaque semaine — Rejoignez 50K+ créateurs", trust1: "Téléchargement Instantané", trust2: "Mises à Jour à Vie", trust3: "Remboursement Garanti", trust4: "Créateurs Vérifiés", footer: "© 2024 DigitalShop. Alimentez votre créativité." },
-  ar: { hero: "أفضل المنتجات\nالرقمية", sub: "برامج ونماذج ودورات وأدوات متميزة — تحميل فوري، وصول مدى الحياة.", shop: "تصفح السوق", featured: "الأكثر تحميلاً", viewAll: "عرض الكل", addCart: "اشتري الآن", cats: "الفئات", deal: "🔥 وافدون جدد كل أسبوع — انضم لـ50K+ مبدع", trust1: "تحميل فوري", trust2: "تحديثات مدى الحياة", trust3: "ضمان استرداد المال", trust4: "مبدعون موثوقون", footer: "© 2024 ديجيتال شوب. أشعل إبداعك." },
+  en: { hero: "The Best Digital\nProducts, Delivered", sub: "Premium software, templates, courses, and tools — instant download, lifetime access.", shop: "Browse Marketplace", featured: "Top Downloads", viewAll: "View All", addCart: "Buy Now", cats: "Categories", deal: "🔥 New arrivals every week — Join 50K+ creators", trust1: "Instant Download", trust2: "Lifetime Updates", trust3: "Money-Back Guarantee", trust4: "Verified Creators", testimonialTitle: "Trusted by Creators Worldwide", testimonial1: "The AI prompt library saved me hours of work. Best investment I've made for my workflow.", testimonialName1: "Alex Chen", testimonialRole1: "Digital Creator", testimonial2: "Incredible quality and variety. The templates are polished and ready to ship.", testimonialName2: "Maya Patel", testimonialRole2: "Freelance Designer", testimonial3: "I've downloaded over 50 products and every single one exceeded my expectations.", testimonialName3: "Ryan O'Brien", testimonialRole3: "Agency Owner", newsletterTitle: "Stay Ahead of the Curve", newsletterText: "Get early access to new releases, creator tips, and exclusive discounts straight to your inbox.", newsletterPlaceholder: "Enter your email", newsletterButton: "Subscribe", footer: "© 2024 DigitalShop. Fuel your creativity." },
+  fr: { hero: "Les Meilleurs Produits\nNumériques", sub: "Logiciels, modèles, cours et outils premium — téléchargement instantané, accès à vie.", shop: "Explorer la Marketplace", featured: "Top Téléchargements", viewAll: "Voir Tout", addCart: "Acheter", cats: "Catégories", deal: "🔥 Nouveautés chaque semaine — Rejoignez 50K+ créateurs", trust1: "Téléchargement Instantané", trust2: "Mises à Jour à Vie", trust3: "Remboursement Garanti", trust4: "Créateurs Vérifiés", testimonialTitle: "Approuvé par les Créateurs du Monde Entier", testimonial1: "La bibliothèque de prompts IA m'a fait gagner des heures de travail. Le meilleur investissement.", testimonialName1: "Alex Chen", testimonialRole1: "Créateur Numérique", testimonial2: "Qualité et variété incroyables. Les templates sont prêts à l'emploi.", testimonialName2: "Maya Patel", testimonialRole2: "Designer Freelance", testimonial3: "J'ai téléchargé plus de 50 produits et chacun a dépassé mes attentes.", testimonialName3: "Ryan O'Brien", testimonialRole3: "Propriétaire d'Agence", newsletterTitle: "Restez en Avance", newsletterText: "Accédez en avant-première aux nouveautés et aux réductions exclusives.", newsletterPlaceholder: "Votre email", newsletterButton: "S'abonner", footer: "© 2024 DigitalShop. Alimentez votre créativité." },
+  ar: { hero: "أفضل المنتجات\nالرقمية", sub: "برامج ونماذج ودورات وأدوات متميزة — تحميل فوري، وصول مدى الحياة.", shop: "تصفح السوق", featured: "الأكثر تحميلاً", viewAll: "عرض الكل", addCart: "اشتري الآن", cats: "الفئات", deal: "🔥 وافدون جدد كل أسبوع — انضم لـ50K+ مبدع", trust1: "تحميل فوري", trust2: "تحديثات مدى الحياة", trust3: "ضمان استرداد المال", trust4: "مبدعون موثوقون", testimonialTitle: "موثوق به من قبل المبدعين في جميع أنحاء العالم", testimonial1: "مكتبة أوامر الذكاء الاصطناعي وفرت لي ساعات من العمل. أفضل استثمار قمت به.", testimonialName1: "أليكس تشين", testimonialRole1: "مبدع رقمي", testimonial2: "جودة وتنوع لا يصدقان. القوالب مصقولة وجاهزة للنشر.", testimonialName2: "مايا باتيل", testimonialRole2: "مصممة مستقلة", testimonial3: "لقد قمت بتحميل أكثر من 50 منتج وكل واحد تجاوز توقعاتي.", testimonialName3: "ريان أوبراين", testimonialRole3: "مالك وكالة", newsletterTitle: "ابق في المقدمة", newsletterText: "احصل على وصول مبكر للإصدارات الجديدة والنصائح الحصرية.", newsletterPlaceholder: "أدخل بريدك الإلكتروني", newsletterButton: "اشتراك", footer: "© 2024 ديجيتال شوب. أشعل إبداعك." },
 };
 
 const products = [
@@ -13,17 +14,20 @@ const products = [
   { id: 4, name: "AI Prompt Library", price: "$19", img: "https://picsum.photos/seed/dig4/400/300", cat: "AI Tools", rating: 4.7, sales: "21k" },
   { id: 5, name: "Video Editing Presets", price: "$39", img: "https://picsum.photos/seed/dig5/400/300", cat: "Video", rating: 4.9, sales: "6.3k" },
   { id: 6, name: "SEO Toolkit 2024", price: "$59", img: "https://picsum.photos/seed/dig6/400/300", cat: "Marketing", rating: 4.6, sales: "3.1k" },
+  { id: 7, name: "Icon Library Pro", price: "$29", img: "https://picsum.photos/seed/dig7/400/300", cat: "Design", rating: 4.8, sales: "8.7k" },
+  { id: 8, name: "Social Media Bundle", price: "$49", img: "https://picsum.photos/seed/dig8/400/300", cat: "Marketing", rating: 4.7, sales: "5.2k" },
+  { id: 9, name: "React Component Kit", price: "$69", img: "https://picsum.photos/seed/dig9/400/300", cat: "Development", rating: 4.9, sales: "3.8k" },
 ];
 
 const categories = [
-  { name: "Design", icon: "🎨", count: 240 },
-  { name: "Development", icon: "💻", count: 185 },
-  { name: "Marketing", icon: "📈", count: 120 },
-  { name: "AI Tools", icon: "🤖", count: 94 },
-  { name: "Productivity", icon: "⚡", count: 78 },
-  { name: "Video", icon: "🎬", count: 63 },
-  { name: "Audio", icon: "🎵", count: 51 },
-  { name: "Templates", icon: "📄", count: 310 },
+  { name: "Design", icon: "palette", count: 240 },
+  { name: "Development", icon: "monitor", count: 185 },
+  { name: "Marketing", icon: "chart", count: 120 },
+  { name: "AI Tools", icon: "bot", count: 94 },
+  { name: "Productivity", icon: "zap", count: 78 },
+  { name: "Video", icon: "clapper", count: 63 },
+  { name: "Audio", icon: "music", count: 51 },
+  { name: "Templates", icon: "file", count: 310 },
 ];
 
 export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
@@ -50,7 +54,7 @@ export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
         </div>
         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
           <div style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "0.5rem", padding: "0.5rem 1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span style={{ color: mut, fontSize: "0.8rem" }}>🔍</span>
+            <Icon name="search" size={16} style={{ color: mut }} />
             <input placeholder="Search products..." style={{ background: "transparent", border: "none", outline: "none", color: txt, fontSize: "0.8rem", width: "160px" }} />
           </div>
           <button style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, color: "#fff", border: "none", borderRadius: "0.5rem", padding: "0.625rem 1.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem" }}>Sign In</button>
@@ -61,7 +65,7 @@ export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
       <div style={{ position: "relative", padding: "6rem 2rem 4rem", textAlign: "center", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 0%, ${scheme.accent}22 0%, transparent 70%)`, pointerEvents: "none" }} />
         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: `${scheme.accent}22`, color: scheme.accent, border: `1px solid ${scheme.accent}44`, borderRadius: "2rem", padding: "0.375rem 1rem", fontSize: "0.8rem", fontWeight: 600, marginBottom: "2rem" }}>
-          ✨ Over 1,200 Digital Products
+          <Icon name="sparkles" size={16} /> Over 1,200 Digital Products
         </div>
         <h1 style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, lineHeight: 1.05, marginBottom: "1.5rem", whiteSpace: "pre-line" }}>
           {t.hero.split('\n').map((line, i) => (
@@ -90,7 +94,7 @@ export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: "0.75rem" }}>
           {categories.map(c => (
             <div key={c.name} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "0.75rem", padding: "1rem 0.5rem", textAlign: "center", cursor: "pointer" }}>
-              <div style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{c.icon}</div>
+              <div style={{ marginBottom: "0.5rem" }}><Icon name={c.icon} size={24} /></div>
               <div style={{ fontSize: "0.7rem", fontWeight: 700, marginBottom: "0.2rem" }}>{c.name}</div>
               <div style={{ fontSize: "0.65rem", color: mut }}>{c.count}</div>
             </div>
@@ -128,17 +132,76 @@ export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section style={{ padding: "4rem 2rem" }}>
+        <h2 style={{ textAlign: "center", fontWeight: 800, fontSize: "1.25rem", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+          {[
+            { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
+            { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
+            { text: t.testimonial3, name: t.testimonialName3, role: t.testimonialRole3 },
+          ].map((item, i) => (
+            <div key={i} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", padding: "1.5rem", display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", gap: "0.25rem", marginBottom: "0.75rem" }}>
+                {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={14} style={{ color: "#f59e0b", fill: "#f59e0b" }} />)}
+              </div>
+              <p style={{ color: txt, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem", flex: 1, fontStyle: "italic" }}>"{item.text}"</p>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.8rem" }}>{item.name}</div>
+                <div style={{ color: mut, fontSize: "0.7rem" }}>{item.role}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Trust */}
       <div style={{ background: surf, borderTop: `1px solid ${brd}`, padding: "2.5rem 2rem", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", textAlign: "center", gap: "1rem" }}>
-        {[{ icon: "⚡", text: t.trust1 }, { icon: "♾️", text: t.trust2 }, { icon: "💰", text: t.trust3 }, { icon: "✅", text: t.trust4 }].map((tr, i) => (
+        {[{ icon: "zap", text: t.trust1 }, { icon: "infinity", text: t.trust2 }, { icon: "wallet", text: t.trust3 }, { icon: "check", text: t.trust4 }].map((tr, i) => (
           <div key={i}>
-            <div style={{ fontSize: "1.75rem", marginBottom: "0.5rem" }}>{tr.icon}</div>
+            <div style={{ marginBottom: "0.5rem" }}><Icon name={tr.icon} size={28} /></div>
             <div style={{ fontWeight: 600, fontSize: "0.8rem", color: mut }}>{tr.text}</div>
           </div>
         ))}
       </div>
 
-      <footer style={{ padding: "1.5rem 2rem", textAlign: "center", color: mut, fontSize: "0.875rem" }}>{t.footer}</footer>
+      {/* Newsletter */}
+      <div style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, color: "#fff", padding: "3.5rem 2rem", textAlign: "center" }}>
+        <h2 style={{ fontWeight: 800, fontSize: "1.5rem", marginBottom: "0.75rem" }}>{t.newsletterTitle}</h2>
+        <p style={{ opacity: 0.9, marginBottom: "1.5rem", fontSize: "0.9rem", maxWidth: "450px", marginLeft: "auto", marginRight: "auto" }}>{t.newsletterText}</p>
+        <div style={{ display: "flex", gap: "0.5rem", maxWidth: "400px", margin: "0 auto" }}>
+          <input type="email" placeholder={t.newsletterPlaceholder} style={{ flex: 1, background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: "0.5rem", padding: "0.75rem 1.25rem", color: "#fff", fontSize: "0.85rem", outline: "none" }} />
+          <button style={{ background: "#fff", color: scheme.accent, border: "none", borderRadius: "0.5rem", padding: "0.75rem 1.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.85rem", whiteSpace: "nowrap" }}>{t.newsletterButton}</button>
+        </div>
+      </div>
+
+      <footer style={{ background: dark ? "#08071a" : "#f8f7ff", borderTop: `1px solid ${brd}`, marginTop: "2rem" }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "2.5rem" }}>
+          <div>
+            <div style={{ fontSize: "1.25rem", fontWeight: 900, marginBottom: "0.5rem", background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>DigitalShop</div>
+            <p style={{ color: mut, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem" }}>The leading marketplace for digital products. Thousands of creators trust us to deliver high-quality design assets, templates, and tools.</p>
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <Icon name="twitter" size={18} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="instagram" size={18} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="youtube" size={18} style={{ color: mut, cursor: "pointer" }} />
+              <Icon name="message" size={18} style={{ color: mut, cursor: "pointer" }} />
+            </div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem", color: txt }}>Explore</div>
+            {["Marketplace", "Bundles", "Free Assets", "Blog", "Creators"].map(l => (
+              <div key={l} style={{ color: mut, fontSize: "0.82rem", marginBottom: "0.5rem", cursor: "pointer" }}>{l}</div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem", color: txt }}>Company</div>
+            {["About", "Careers", "Terms of Service", "Privacy Policy", "Support"].map(l => (
+              <div key={l} style={{ color: mut, fontSize: "0.82rem", marginBottom: "0.5rem", cursor: "pointer" }}>{l}</div>
+            ))}
+          </div>
+        </div>
+        <div style={{ borderTop: `1px solid ${brd}`, padding: "1.25rem 2rem", textAlign: "center", color: mut, fontSize: "0.8rem" }}>{t.footer}</div>
+      </footer>
     </div>
   );
 }

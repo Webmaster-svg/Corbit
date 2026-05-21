@@ -302,4 +302,36 @@
     background: rgba(15, 20, 40, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .viewport-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .viewport-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .viewport-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(113, 113, 122, 0.3);
+    border-radius: 3px;
+  }
+  .viewport-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(113, 113, 122, 0.5);
+  }
+
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

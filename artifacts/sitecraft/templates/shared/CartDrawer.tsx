@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { ColorScheme } from "../types";
+import { Icon } from "./Icons";
 
 export type CartItem = {
   id: number;
@@ -68,7 +69,7 @@ export function CartDrawer({ open, onClose, items, onRemove, onUpdate, scheme, d
             <div style={{ flex: 1, overflowY: "auto", padding: "1rem 1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {items.length === 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "0.875rem", color: mut }}>
-                  <div style={{ fontSize: "3.5rem" }}>🛒</div>
+                  <Icon name="bag" size={56} />
                   <p style={{ fontWeight: 700, fontSize: "1rem", margin: 0 }}>{ct.empty}</p>
                   <p style={{ fontSize: "0.85rem", textAlign: "center", margin: 0 }}>{ct.emptySub}</p>
                   <button onClick={onClose} style={{ background: scheme.accent, color: scheme.accentText, border: "none", borderRadius: "0.5rem", padding: "0.625rem 1.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.85rem", marginTop: "0.5rem" }}>{ct.continue}</button>
