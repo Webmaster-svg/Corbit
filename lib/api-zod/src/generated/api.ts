@@ -77,6 +77,7 @@ export const ListProjectsResponseItem = zod.object({
   "description": zod.string().nullish(),
   "status": zod.enum(['draft', 'published', 'archived']),
   "templateId": zod.number().nullish(),
+  "templateConfig": zod.any().nullish(),
   "thumbnailUrl": zod.string().nullish(),
   "domain": zod.string().nullish(),
   "userId": zod.number(),
@@ -111,6 +112,7 @@ export const GetProjectResponse = zod.object({
   "description": zod.string().nullish(),
   "status": zod.enum(['draft', 'published', 'archived']),
   "templateId": zod.number().nullish(),
+  "templateConfig": zod.any().nullish(),
   "thumbnailUrl": zod.string().nullish(),
   "domain": zod.string().nullish(),
   "userId": zod.number(),
@@ -132,7 +134,8 @@ export const UpdateProjectBody = zod.object({
   "name": zod.string().optional(),
   "description": zod.string().optional(),
   "status": zod.string().optional(),
-  "templateId": zod.number().optional()
+  "templateId": zod.number().optional(),
+  "templateConfig": zod.any().optional()
 })
 
 export const UpdateProjectResponse = zod.object({
@@ -141,6 +144,7 @@ export const UpdateProjectResponse = zod.object({
   "description": zod.string().nullish(),
   "status": zod.enum(['draft', 'published', 'archived']),
   "templateId": zod.number().nullish(),
+  "templateConfig": zod.any().nullish(),
   "thumbnailUrl": zod.string().nullish(),
   "domain": zod.string().nullish(),
   "userId": zod.number(),
@@ -176,6 +180,7 @@ export const PublishProjectResponse = zod.object({
   "description": zod.string().nullish(),
   "status": zod.enum(['draft', 'published', 'archived']),
   "templateId": zod.number().nullish(),
+  "templateConfig": zod.any().nullish(),
   "thumbnailUrl": zod.string().nullish(),
   "domain": zod.string().nullish(),
   "userId": zod.number(),

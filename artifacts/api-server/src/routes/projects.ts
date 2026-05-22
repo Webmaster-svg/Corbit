@@ -33,6 +33,7 @@ function formatProject(p: typeof projectsTable.$inferSelect) {
     description: p.description,
     status: p.status,
     templateId: p.templateId,
+    templateConfig: p.templateConfig,
     thumbnailUrl: p.thumbnailUrl,
     domain: domain,
     customDomain: customDomain,

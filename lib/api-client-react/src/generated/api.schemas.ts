@@ -60,12 +60,13 @@ export const ProjectStatus = {
 
 export interface Project {
   id: number;
-  name: string;
   /** @nullable */
   description?: string | null;
   status: ProjectStatus;
   /** @nullable */
   templateId?: number | null;
+  /** @nullable */
+  templateConfig?: Record<string, unknown> | null;
   /** @nullable */
   thumbnailUrl?: string | null;
   /** @nullable */
@@ -88,6 +89,7 @@ export interface ProjectUpdate {
   description?: string;
   status?: string;
   templateId?: number;
+  templateConfig?: Record<string, unknown>;
 }
 
 export type TemplateCategory = typeof TemplateCategory[keyof typeof TemplateCategory];

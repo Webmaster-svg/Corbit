@@ -695,200 +695,16 @@ export default function ProjectDetail() {
                             </a>
                           </Button>
                         )}
-                      </div>
-                    </div>
-
-                    {/* Custom Domain Manager Card */}
-                    <div className="bg-card border rounded-2xl p-5 space-y-6 shadow-2xs">
-                      <div className="flex items-center justify-between border-b pb-4">
-                        <div className="space-y-1">
-                          <h2 className="font-bold text-base flex items-center gap-2">
-                            <Globe className="w-5 h-5 text-primary" />
-                            Custom Domain Settings
-                          </h2>
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            Point your own domain name (e.g. yourshop.dz) to Algeria Web Studio isolated Docker proxies.
-                          </p>
-                        </div>
-                        {proj?.customDomain && (
-                          <span className={`text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border ${
-                            proj.customDomainStatus === "active" ? "bg-green-500/10 text-green-500 border-green-500/20" :
-                            proj.customDomainStatus === "failed" ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                            "bg-amber-500/10 text-amber-500 border-amber-500/20 animate-pulse"
-                          }`}>
-                            {proj.customDomainStatus === "active" ? (
-                              <><ShieldCheck className="w-3.5 h-3.5 inline mr-1" /> Active</>
-                            ) : proj.customDomainStatus === "failed" ? (
-                              <><ShieldAlert className="w-3.5 h-3.5 inline mr-1" /> DNS Error</>
-                            ) : (
-                              <><Clock className="w-3.5 h-3.5 inline mr-1 animate-spin" /> Resolving</>
-                            )}
-                          </span>
+                        {project.templateId && (
+                          <Button variant="default" onClick={() => setLocation(`/editor/${project.templateId}?projectId=${project.id}`)}>
+                            <FileEdit className="w-4 h-4 mr-2" />
+                            Open Editor
+                          </Button>
                         )}
                       </div>
-
-                      {errorMsg && (
-                        <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs rounded-xl p-3.5 flex items-start gap-2">
-                          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                          <div>{errorMsg}</div>
-                        </div>
-                      )}
-
-                      {!proj?.customDomain ? (
-                        <div className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="custom-domain-input" className="text-xs font-bold">Connect domain name</Label>
-                            <div className="flex gap-2 max-w-md">
-                              <Input
-                                id="custom-domain-input"
-                                placeholder="my-algerian-brand.dz"
-                                value={domainInput}
-                                onChange={(e) => setDomainInput(e.target.value)}
-                                disabled={binding}
-                                className="h-10 rounded-xl"
-                              />
-                              <Button onClick={handleBindDomain} disabled={binding || !domainInput} className="h-10 rounded-xl">
-                                {binding ? <Loader2 className="w-4 h-4 animate-spin" /> : "Connect"}
-                              </Button>
-                            </div>
-                          </div>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <Info className="w-3.5 h-3.5 text-primary shrink-0" />
-                            You will configure DNS records with your domain registrar after binding.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-6">
-                          <div className="bg-muted/30 border rounded-2xl p-4 space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-foreground uppercase tracking-wider">Bound Domain:</span>
-                              <span className="font-mono text-sm font-extrabold text-primary">{proj.customDomain}</span>
-                            </div>
-                            
-                            {proj.customDomainStatus === "active" ? (
-                              <div className="bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 text-xs rounded-xl p-3 flex gap-2.5 items-center">
-                                <ShieldCheck className="w-5 h-5 text-green-500 shrink-0" />
-                                <div className="space-y-0.5 text-left">
-                                  <p className="font-bold">SSL Certificate & Routing Enabled</p>
-                                  <p className="text-muted-foreground text-[10px]">Secured with Let's Encrypt TLS. Dynamically served via Caddy dynamic proxy.</p>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-400 text-xs rounded-xl p-3 flex gap-2.5 items-start">
-                                <Info className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
-                                <div className="space-y-0.5 text-left">
-                                  <p className="font-bold">Verification Pending</p>
-                                  <p className="text-muted-foreground text-[10px]">Please configure the DNS records shown below at your domain registrar. DNS changes can take a few minutes to propagate.</p>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* DNS records config instruction */}
-                          <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Configure DNS records</h3>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setShowIp(!showIp)}
-                                className="h-7 text-xs flex items-center gap-1 text-primary hover:bg-primary/5"
-                              >
-                                {showIp ? <><EyeOff className="w-3.5 h-3.5" /> Hide IP Record</> : <><Eye className="w-3.5 h-3.5" /> Show A-Record IP</>}
-                              </Button>
-                            </div>
-
-                            <div className="border rounded-2xl overflow-hidden bg-card">
-                              <table className="w-full text-left border-collapse text-xs">
-                                <thead>
-                                  <tr className="bg-muted/40 border-b text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                    <th className="p-3">Type</th>
-                                    <th className="p-3">Host</th>
-                                    <th className="p-3">Target Value</th>
-                                    <th className="p-3 text-right">Action</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr className="border-b hover:bg-muted/10 font-medium">
-                                    <td className="p-3 font-bold text-foreground">A</td>
-                                    <td className="p-3 font-mono">@</td>
-                                    <td className="p-3 font-mono">
-                                      {showIp ? (
-                                        proj?.dockerBridgeIp || "172.18.0.15"
-                                      ) : (
-                                        <span className="bg-muted px-2 py-0.5 rounded text-[10px] font-semibold text-muted-foreground">•••••••••••••</span>
-                                      )}
-                                    </td>
-                                    <td className="p-3 text-right">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => copyToClipboard(proj?.dockerBridgeIp || "172.18.0.15")}
-                                        disabled={!showIp}
-                                        className="h-7 w-7 p-0 rounded-lg hover:bg-primary/5"
-                                      >
-                                        <Copy className="w-3.5 h-3.5 text-primary" />
-                                      </Button>
-                                    </td>
-                                  </tr>
-                                  <tr className="hover:bg-muted/10 font-medium">
-                                    <td className="p-3 font-bold text-foreground">CNAME</td>
-                                    <td className="p-3 font-mono">www</td>
-                                    <td className="p-3 font-mono">{proj.customDomain}</td>
-                                    <td className="p-3 text-right">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => copyToClipboard(proj.customDomain)}
-                                        className="h-7 w-7 p-0 rounded-lg hover:bg-primary/5"
-                                      >
-                                        <Copy className="w-3.5 h-3.5 text-primary" />
-                                      </Button>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-
-                          {/* Cloudflare DDoS Protection Notice Card */}
-                          <div className="border border-amber-500/20 bg-amber-500/5 rounded-2xl p-4.5 flex gap-3.5 items-start">
-                            <AlertTriangle className="w-6 h-6 text-amber-500 mt-0.5 shrink-0" />
-                            <div className="space-y-1 text-left">
-                              <p className="text-xs font-bold text-foreground">Important: Cloudflare DNS CDN Proxy Configuration</p>
-                              <p className="text-[11px] leading-relaxed text-muted-foreground">
-                                If you are managing DNS routing via <b>Cloudflare</b>, you must configure your records with **DNS Only** mode (gray cloud) for the Let's Encrypt SSL handshake to resolve successfully. You can switch to **Proxied** (orange cloud) once SSL states report as Active!
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-3 pt-2">
-                            <Button onClick={handleVerifyDomain} disabled={verifying} className="h-10 flex items-center gap-2 rounded-xl">
-                              {verifying ? (
-                                <><Loader2 className="w-4 h-4 animate-spin" /> Verifying DNS...</>
-                              ) : (
-                                <><RefreshCw className="w-4 h-4" /> Verify DNS Connection</>
-                              )}
-                            </Button>
-                            <p className="text-[10px] text-muted-foreground max-w-xs text-left">
-                              For mock local testing, any domain is accepted. Enter a domain containing the word <b>"fail"</b> to simulate verification errors.
-                            </p>
-                          </div>
-
-                          <div className="border-t pt-4 flex justify-end">
-                            <Button
-                              variant="ghost"
-                              onClick={handleUnbindDomain}
-                              disabled={unbinding}
-                              className="text-destructive hover:bg-destructive/10 hover:text-destructive flex items-center gap-1.5 rounded-xl"
-                            >
-                              {unbinding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                              Disconnect Custom Domain
-                            </Button>
-                          </div>
-                        </div>
-                      )}
                     </div>
+
+
                   </div>
                 )}
 
@@ -1265,6 +1081,176 @@ export default function ProjectDetail() {
                           {updateMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Settings"}
                         </Button>
                       </form>
+                    </div>
+
+                    {/* Custom Domain Settings Card */}
+                    <div className="bg-card border rounded-2xl p-5 space-y-6 shadow-2xs">
+                      <div className="flex items-center justify-between border-b pb-4">
+                        <div className="space-y-1">
+                          <h3 className="text-sm font-bold flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-primary" />
+                            Custom Domain Settings
+                          </h3>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Point your own domain name (e.g. yourshop.dz) to Algeria Web Studio isolated Docker proxies.
+                          </p>
+                        </div>
+                        {proj?.customDomain && (
+                          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${
+                            proj.customDomainStatus === "active" ? "bg-green-500/10 text-green-500 border-green-500/20" :
+                            proj.customDomainStatus === "failed" ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                            "bg-amber-500/10 text-amber-500 border-amber-500/20 animate-pulse"
+                          }`}>
+                            {proj.customDomainStatus === "active" ? (
+                              <><ShieldCheck className="w-3 h-3 inline mr-1" /> Active</>
+                            ) : proj.customDomainStatus === "failed" ? (
+                              <><ShieldAlert className="w-3 h-3 inline mr-1" /> DNS Error</>
+                            ) : (
+                              <><Clock className="w-3 h-3 inline mr-1 animate-spin" /> Resolving</>
+                            )}
+                          </span>
+                        )}
+                      </div>
+
+                      {errorMsg && (
+                        <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs rounded-xl p-3 flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                          <div>{errorMsg}</div>
+                        </div>
+                      )}
+
+                      {!proj?.customDomain ? (
+                        <div className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="settings-domain-input" className="text-xs font-bold">Connect domain name</Label>
+                            <div className="flex gap-2 max-w-md">
+                              <Input
+                                id="settings-domain-input"
+                                placeholder="my-algerian-brand.dz"
+                                value={domainInput}
+                                onChange={(e) => setDomainInput(e.target.value)}
+                                disabled={binding}
+                                className="h-10 rounded-xl"
+                              />
+                              <Button onClick={handleBindDomain} disabled={binding || !domainInput} className="h-10 rounded-xl">
+                                {binding ? <Loader2 className="w-4 h-4 animate-spin" /> : "Connect"}
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <Info className="w-3.5 h-3.5 text-primary shrink-0" />
+                            You will configure DNS records with your domain registrar after binding.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-5">
+                          <div className="bg-muted/30 border rounded-2xl p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-foreground uppercase tracking-wider">Bound Domain:</span>
+                              <span className="font-mono text-sm font-extrabold text-primary">{proj.customDomain}</span>
+                            </div>
+                            {proj.customDomainStatus === "active" ? (
+                              <div className="bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 text-xs rounded-xl p-3 flex gap-2.5 items-center">
+                                <ShieldCheck className="w-5 h-5 text-green-500 shrink-0" />
+                                <div className="space-y-0.5 text-left">
+                                  <p className="font-bold">SSL Certificate & Routing Enabled</p>
+                                  <p className="text-muted-foreground text-[10px]">Secured with Let's Encrypt TLS. Dynamically served via Caddy dynamic proxy.</p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-400 text-xs rounded-xl p-3 flex gap-2.5 items-start">
+                                <Info className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+                                <div className="space-y-0.5 text-left">
+                                  <p className="font-bold">Verification Pending</p>
+                                  <p className="text-muted-foreground text-[10px]">Please configure the DNS records shown below at your domain registrar.</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Configure DNS records</h4>
+                              <Button variant="ghost" size="sm"
+                                onClick={() => setShowIp(!showIp)}
+                                className="h-7 text-xs flex items-center gap-1 text-primary hover:bg-primary/5"
+                              >
+                                {showIp ? <><EyeOff className="w-3.5 h-3.5" /> Hide IP</> : <><Eye className="w-3.5 h-3.5" /> Show IP</>}
+                              </Button>
+                            </div>
+                            <div className="border rounded-2xl overflow-hidden bg-card">
+                              <table className="w-full text-left border-collapse text-xs">
+                                <thead>
+                                  <tr className="bg-muted/40 border-b text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                    <th className="p-3">Type</th>
+                                    <th className="p-3">Host</th>
+                                    <th className="p-3">Target Value</th>
+                                    <th className="p-3 text-right">Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr className="border-b hover:bg-muted/10 font-medium">
+                                    <td className="p-3 font-bold text-foreground">A</td>
+                                    <td className="p-3 font-mono">@</td>
+                                    <td className="p-3 font-mono">
+                                      {showIp ? (proj?.dockerBridgeIp || "172.18.0.15") : <span className="bg-muted px-2 py-0.5 rounded text-[10px] font-semibold text-muted-foreground">•••••••••••••</span>}
+                                    </td>
+                                    <td className="p-3 text-right">
+                                      <Button variant="ghost" size="sm"
+                                        onClick={() => copyToClipboard(proj?.dockerBridgeIp || "172.18.0.15")}
+                                        disabled={!showIp}
+                                        className="h-7 w-7 p-0 rounded-lg hover:bg-primary/5"
+                                      >
+                                        <Copy className="w-3.5 h-3.5 text-primary" />
+                                      </Button>
+                                    </td>
+                                  </tr>
+                                  <tr className="hover:bg-muted/10 font-medium">
+                                    <td className="p-3 font-bold text-foreground">CNAME</td>
+                                    <td className="p-3 font-mono">www</td>
+                                    <td className="p-3 font-mono">{proj.customDomain}</td>
+                                    <td className="p-3 text-right">
+                                      <Button variant="ghost" size="sm"
+                                        onClick={() => copyToClipboard(proj.customDomain)}
+                                        className="h-7 w-7 p-0 rounded-lg hover:bg-primary/5"
+                                      >
+                                        <Copy className="w-3.5 h-3.5 text-primary" />
+                                      </Button>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="border border-amber-500/20 bg-amber-500/5 rounded-2xl p-4 flex gap-3 items-start">
+                            <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+                            <div className="space-y-1 text-left">
+                              <p className="text-xs font-bold text-foreground">Cloudflare DNS CDN Proxy Configuration</p>
+                              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                                If using Cloudflare, use <b>DNS Only</b> (gray cloud) for Let's Encrypt. Switch to <b>Proxied</b> (orange cloud) after SSL is active.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <Button onClick={handleVerifyDomain} disabled={verifying} className="h-10 flex items-center gap-2 rounded-xl">
+                              {verifying ? <><Loader2 className="w-4 h-4 animate-spin" /> Verifying DNS...</> : <><RefreshCw className="w-4 h-4" /> Verify DNS</>}
+                            </Button>
+                          </div>
+
+                          <div className="border-t pt-4 flex justify-end">
+                            <Button variant="ghost"
+                              onClick={handleUnbindDomain}
+                              disabled={unbinding}
+                              className="text-destructive hover:bg-destructive/10 hover:text-destructive flex items-center gap-1.5 rounded-xl"
+                            >
+                              {unbinding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                              Disconnect Custom Domain
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Danger Zone */}

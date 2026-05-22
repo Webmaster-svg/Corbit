@@ -4,11 +4,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TEMPLATES } from "../../templates";
 import {
   ArrowLeft, Layers, Type, Image, Square, LayoutGrid,
-  Undo2, Redo2, Monitor, Tablet, Smartphone,
+  Undo2, Redo2, Monitor, Smartphone,
   Globe, Sun, Moon, GripVertical, Plus, Trash2, Copy,
-  ChevronRight, ChevronDown, ChevronUp, Settings, Eye, EyeOff, Pencil, Minus
+  ChevronRight, ChevronDown, ChevronUp, Settings, Eye, EyeOff, Pencil, Minus,
+  Save, Loader2, Check
 } from "lucide-react";
 import type { ColorScheme, Language } from "../../templates/types";
+import { useUpdateProject, useGetProject } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { getGetProjectQueryKey } from "@workspace/api-client-react";
 
 const defaultScheme = (): ColorScheme => ({
   name: "Custom", swatch: "#3b82f6", bg: "#ffffff", surface: "#f8fafc",
@@ -71,6 +75,27 @@ function makeLabel(type: string, el: HTMLElement, index: number): string {
 export default function Editor() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const projectId = queryParams.get("projectId") ? Number(queryParams.get("projectId")) : null;
+
+  const { data: project } = useGetProject(projectId || 0, { query: { enabled: !!projectId } });
+  const updateMutation = useUpdateProject({
+    mutation: {
+      onSuccess: () => {
+        if (projectId) queryClient.invalidateQueries({ queryKey: getGetProjectQueryKey(projectId) });
+        lastSavedRef.current = {
+          language, scheme, dark,
+          hiddenIds: Array.from(hiddenIds),
+          addedBlocks,
+        };
+        setSaveStatus("idle");
+      },
+    },
+  });
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving">("idle");
+  const lastSavedRef = useRef<Record<string, any> | null>(null);
 
   const template = TEMPLATES.find(
     (tmpl) => tmpl.id === parseInt(id || "") || tmpl.slug.toLowerCase() === id?.toLowerCase()
@@ -78,15 +103,35 @@ export default function Editor() {
 
   useEffect(() => { if (!template) setLocation("/templates"); }, [template, setLocation]);
 
-  const [language, setLanguage] = useState<Language>("en");
-  const [scheme, setScheme] = useState<ColorScheme>(template?.schemes[0] || defaultScheme());
-  const [dark, setDark] = useState(false);
+  const savedConfig = project?.templateConfig as Record<string, any> | undefined;
+
+  useEffect(() => {
+    if (!savedConfig) return;
+    setLanguage(savedConfig.language || "en");
+    setScheme(savedConfig.scheme || template?.schemes[0] || defaultScheme());
+    setDark(savedConfig.dark ?? false);
+    setHiddenIds(new Set(savedConfig.hiddenIds || []));
+    setAddedBlocks(savedConfig.addedBlocks || []);
+    lastSavedRef.current = {
+      language: savedConfig.language || "en",
+      scheme: savedConfig.scheme,
+      dark: savedConfig.dark ?? false,
+      hiddenIds: savedConfig.hiddenIds || [],
+      addedBlocks: savedConfig.addedBlocks || [],
+    };
+  }, [savedConfig]);
+
+  const [language, setLanguage] = useState<Language>(savedConfig?.language || "en");
+  const [scheme, setScheme] = useState<ColorScheme>(
+    savedConfig?.scheme || template?.schemes[0] || defaultScheme()
+  );
+  const [dark, setDark] = useState(savedConfig?.dark ?? false);
   const [activePage, setActivePage] = useState("home");
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [showLeftPanel, setShowLeftPanel] = useState(true);
   const [showRightPanel, setShowRightPanel] = useState(true);
   const [leftTab, setLeftTab] = useState<"pages" | "elements" | "layers">("layers");
-  const [deviceMode, setDeviceMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [deviceMode, setDeviceMode] = useState<"desktop" | "mobile">("desktop");
   const [editMode, setEditMode] = useState(true);
 
   /* ── Layer tree state ── */
@@ -94,10 +139,21 @@ export default function Editor() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(
+    new Set(savedConfig?.hiddenIds || [])
+  );
   const editCanvasRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const [addedBlocks, setAddedBlocks] = useState<{ id: string; type: string; label: string }[]>([]);
+  const [addedBlocks, setAddedBlocks] = useState<{ id: string; type: string; label: string }[]>(
+    savedConfig?.addedBlocks || []
+  );
+
+  const isDirty = (() => {
+    const cur = { language, scheme, dark, hiddenIds: Array.from(hiddenIds), addedBlocks };
+    const saved = lastSavedRef.current;
+    if (!saved) return false;
+    return JSON.stringify(cur) !== JSON.stringify(saved);
+  })();
 
   useEffect(() => {
     if (editMode) { setShowLeftPanel(true); setShowRightPanel(true) }
@@ -260,7 +316,7 @@ export default function Editor() {
 
   if (!template) return null;
   const ActiveComponent = template.component;
-  const deviceWidth = deviceMode === "desktop" ? "100%" : deviceMode === "tablet" ? "768px" : "375px";
+  const deviceWidth = deviceMode === "desktop" ? "100%" : "352px";
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans select-none">
@@ -276,7 +332,15 @@ export default function Editor() {
           </button>
           <span className="h-5 w-px bg-zinc-700/60 shrink-0" />
           <span className="text-sm font-semibold text-zinc-100 truncate max-w-[140px]">{template.name}</span>
-          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700/50 shrink-0">Draft</span>
+          {project && (
+            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border shrink-0 ${
+              project.status === "published"
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                : "bg-zinc-800 text-zinc-400 border-zinc-700/50"
+            }`}>
+              {project.status === "published" ? "Published" : "Draft"}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-1 bg-zinc-800/50 rounded-lg p-0.5 shrink-0">
@@ -285,12 +349,6 @@ export default function Editor() {
             className={`p-1.5 rounded-md transition-colors ${deviceMode === "desktop" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:text-white"}`}
           >
             <Monitor className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => setDeviceMode("tablet")}
-            className={`p-1.5 rounded-md transition-colors ${deviceMode === "tablet" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:text-white"}`}
-          >
-            <Tablet className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setDeviceMode("mobile")}
@@ -348,9 +406,35 @@ export default function Editor() {
           >
             {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          <button className="px-3 h-8 flex items-center gap-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors shrink-0">
-            <Eye className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Publish</span>
+          <button
+            onClick={() => {
+              if (!projectId || !project || saveStatus === "saving") return;
+              setSaveStatus("saving");
+              updateMutation.mutate({
+                id: projectId,
+                data: {
+                  templateConfig: {
+                    language,
+                    scheme,
+                    dark,
+                    hiddenIds: Array.from(hiddenIds),
+                    addedBlocks,
+                  },
+                },
+              });
+            }}
+            disabled={!projectId || saveStatus === "saving"}
+            className={`px-3 h-8 flex items-center gap-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+              isDirty
+                ? "bg-blue-600 hover:bg-blue-500 text-white"
+                : "bg-zinc-700 text-zinc-400"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {saveStatus === "saving" ? (
+              <><Loader2 className="w-3.5 h-3.5 animate-spin" /> <span className="hidden sm:inline">Saving...</span></>
+            ) : (
+              <><Save className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Save</span></>
+            )}
           </button>
         </div>
       </header>

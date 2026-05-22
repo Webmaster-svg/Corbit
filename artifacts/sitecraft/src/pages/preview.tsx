@@ -11,9 +11,12 @@ import {
   Sun, 
   Moon,
   PanelRightClose,
-  PanelRightOpen
+  PanelRightOpen,
+  Loader2
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { usePublishProject, useGetProject, getGetProjectQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Preview() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +27,17 @@ export default function Preview() {
   const queryParams = new URLSearchParams(window.location.search);
   const projectParam = queryParams.get("project");
   const cleanPreview = queryParams.get("clean") === "true";
+  const queryClient = useQueryClient();
+  const projectId = projectParam ? Number(projectParam) : null;
+
+  const { data: project } = useGetProject(projectId || 0, { query: { enabled: !!projectId } });
+  const publishMutation = usePublishProject({
+    mutation: {
+      onSuccess: () => {
+        if (projectId) queryClient.invalidateQueries({ queryKey: getGetProjectQueryKey(projectId) });
+      },
+    },
+  });
 
   const template = TEMPLATES.find(
     (tmpl) => tmpl.id === parseInt(id || "") || tmpl.slug.toLowerCase() === id?.toLowerCase()
@@ -37,9 +51,13 @@ export default function Preview() {
 
   if (!template) return null;
 
-  const [language, setLanguage] = useState<"en" | "fr" | "ar">("en");
-  const [selectedScheme, setSelectedScheme] = useState(template.schemes[0]);
-  const [isDark, setIsDark] = useState(false);
+  const savedConfig = project?.templateConfig as Record<string, any> | undefined;
+
+  const [language, setLanguage] = useState<"en" | "fr" | "ar">(savedConfig?.language || "en");
+  const [selectedScheme, setSelectedScheme] = useState(
+    savedConfig?.scheme || template.schemes[0]
+  );
+  const [isDark, setIsDark] = useState(savedConfig?.dark ?? false);
   const [isAppearanceOpen, setIsAppearanceOpen] = useState(true);
   const [customBrandName, setCustomBrandName] = useState(template.name.toLowerCase());
   const [isCustomColor, setIsCustomColor] = useState(false);
@@ -285,13 +303,22 @@ export default function Preview() {
             <label className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition-colors cursor-pointer">
               Publish
               <div className="relative w-7 h-3.5">
-                <input type="checkbox" checked={isDark} onChange={() => setIsDark(!isDark)} className="peer sr-only" />
+                <input
+                  type="checkbox"
+                  checked={project?.status === "published"}
+                  onChange={() => {
+                    if (projectId) publishMutation.mutate({ id: projectId });
+                  }}
+                  disabled={!projectId || publishMutation.isPending}
+                  className="peer sr-only"
+                />
                 <div className="absolute inset-0 rounded-full bg-zinc-700 peer-checked:bg-blue-600 transition-colors" />
                 <div className="absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white peer-checked:translate-x-3.5 transition-transform" />
               </div>
+              {publishMutation.isPending && <Loader2 className="w-3 h-3 animate-spin text-zinc-400" />}
             </label>
             <span className="h-4 w-px bg-zinc-700/60 mx-0.5" />
-            <button onClick={() => setLocation(`/editor/${id}`)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">Edit</button>
+            <button onClick={() => setLocation(`/editor/${id}${projectId ? `?projectId=${projectId}` : ""}`)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">Edit</button>
           </div>
         </nav>}
 

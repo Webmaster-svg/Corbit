@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, timestamp, pgEnum, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -10,6 +10,7 @@ export const projectsTable = pgTable("projects", {
   description: text("description"),
   status: projectStatusEnum("status").notNull().default("draft"),
   templateId: integer("template_id"),
+  templateConfig: jsonb("template_config"),
   thumbnailUrl: text("thumbnail_url"),
   domain: text("domain"),
   userId: integer("user_id").notNull(),
