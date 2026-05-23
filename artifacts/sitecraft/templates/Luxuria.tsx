@@ -62,7 +62,7 @@ export default function Luxuria({ language, scheme, dark }: TemplateProps) {
   const brd = dark ? "#333" : scheme.border;
 
   const navBar = (
-    <nav style={{ borderBottom: `1px solid ${brd}`, padding: "1.25rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, background: bg, zIndex: 50 }}>
+    <nav className={`border-b border-[${brd}] p-5 flex items-center justify-between sticky top-0 bg-[${bg}] z-50`}>
       <button onClick={() => setPage("home")} style={{ fontSize: "1.5rem", fontWeight: 300, letterSpacing: "0.3em", textTransform: "uppercase", background: "none", border: "none", color: txt, cursor: "pointer" }}>LUXURIA</button>
       <div style={{ display: "flex", gap: "2rem", fontSize: "0.8rem", letterSpacing: "0.15em", textTransform: "uppercase" }}>
         {(["home", "products", "about", "contact"] as Page[]).map((p, i) => (
@@ -94,7 +94,7 @@ export default function Luxuria({ language, scheme, dark }: TemplateProps) {
           <h2 style={{ fontSize: "0.8rem", letterSpacing: "0.25em", textTransform: "uppercase" }}>{t.featured}</h2>
           <button onClick={() => setPage("products")} style={{ fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", color: scheme.accent, cursor: "pointer", background: "none", border: "none" }}>{t.viewAll} →</button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1.5rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {PRODUCTS.slice(0, 4).map(p => (
             <div key={p.id}>
               <div style={{ overflow: "hidden", aspectRatio: "4/5", marginBottom: "1rem", background: surf, position: "relative" }}>
@@ -107,7 +107,7 @@ export default function Luxuria({ language, scheme, dark }: TemplateProps) {
           ))}
         </div>
       </section>
-      <div style={{ background: scheme.accent, color: scheme.accentText, padding: "2rem", display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center" }}>
+      <div className={`bg-[${scheme.accent}] text-[${scheme.accentText}] p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 text-center`}>
         {["Free worldwide shipping", "Authenticity guaranteed", "14-day returns", "Exclusive members access"].map((tr, i) => (
           <div key={i} style={{ fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{tr}</div>
         ))}
@@ -115,7 +115,7 @@ export default function Luxuria({ language, scheme, dark }: TemplateProps) {
           {/* Testimonials */}
           <section style={{ padding: "4rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
             <h2 style={{ textAlign: "center", fontWeight: 300, fontSize: "1.4rem", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
                 { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },

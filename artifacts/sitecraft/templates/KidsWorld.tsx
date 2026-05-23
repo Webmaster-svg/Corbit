@@ -161,7 +161,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
   const brd = dark ? "#2c2a3a" : "#e2e0ec";
 
   const navBar = (
-    <nav style={{ background: bg, borderBottom: `1px solid ${brd}`, padding: "1rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
+    <nav className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 sticky top-0 z-50 border-b" style={{ background: bg, borderColor: brd }}>
       <button onClick={() => setPage("home")} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}>
         <Icon name="teddy" size={24} style={{ color: ac }} />
         <span style={{ fontSize: "1.35rem", fontWeight: 700, color: txt, letterSpacing: "-0.02em" }}>KidsWorld</span>
@@ -182,7 +182,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
   const homePage = (
     <>
       <div style={{ background: heroBg }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "4rem 2rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center", minHeight: "480px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center min-h-[480px] max-w-[1100px] mx-auto py-16 px-6">
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: `${ac}15`, color: ac, padding: "0.3rem 1rem", fontSize: "0.75rem", fontWeight: 600, marginBottom: "1.25rem" }}>
               <Icon name="sparkles" size={14} /> New Spring Collection
@@ -197,12 +197,12 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
         </div>
       </div>
 
-      <section style={{ padding: "4rem 2rem", maxWidth: "1100px", margin: "0 auto" }}>
+      <section className="py-16 px-6 max-w-[1100px] mx-auto">
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
           <h2 style={{ fontWeight: 700, fontSize: "1.5rem", marginBottom: "0.5rem", letterSpacing: "-0.02em" }}>{t.cats}</h2>
           <p style={{ color: mut, fontSize: "0.85rem" }}>Find the perfect toy for every stage</p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1rem" }}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {ageGroups.map(a => (
             <div key={a.label} style={{ background: surf, border: `1px solid ${brd}`, padding: "1.5rem 1rem", textAlign: "center", cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.06)"; }}
@@ -216,7 +216,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
         </div>
       </section>
 
-      <section style={{ padding: "2rem 2rem 5rem", maxWidth: "1100px", margin: "0 auto" }}>
+      <section className="py-8 px-6 max-w-[1100px] mx-auto pb-20">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
           <div>
             <h2 style={{ fontWeight: 700, fontSize: "1.5rem", letterSpacing: "-0.02em" }}>{t.featured}</h2>
@@ -226,7 +226,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
             {t.viewAll} <Icon name="chevronRight" size={16} />
           </button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1.25rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-5">
           {products.slice(0, 5).map(p => (
             <div key={p.id} style={{ background: surf, overflow: "hidden", border: `1px solid ${brd}`, transition: "transform 0.2s, box-shadow 0.2s" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)"; }}
@@ -251,7 +251,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
         </div>
       </section>
 
-      <div style={{ background: surf, borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, padding: "2rem", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1rem", textAlign: "center" }}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 text-center border-t border-b" style={{ background: surf, borderColor: brd }}>
         {[{ icon: "shield", text: "Safety Tested" }, { icon: "package", text: "Free Shipping $50+" }, { icon: "rotate", text: "30-Day Returns" }, { icon: "heart", text: "Parent Loved" }].map((tr, i) => (
           <div key={i}>
             <div style={{ marginBottom: "0.5rem" }}><Icon name={tr.icon} size={22} style={{ color: ac }} /></div>
@@ -260,9 +260,9 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
         ))}
       </div>
 
-      <section style={{ padding: "4rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="py-16 px-6 max-w-[900px] mx-auto">
         <h2 style={{ textAlign: "center", fontWeight: 700, fontSize: "1.3rem", marginBottom: "2.5rem", letterSpacing: "-0.02em" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
@@ -282,7 +282,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
   );
 
   const productsPage = (
-    <section style={{ padding: "3rem 2rem 5rem", maxWidth: "1100px", margin: "0 auto" }}>
+    <section className="py-12 px-6 max-w-[1100px] mx-auto pb-20">
       <h1 style={{ fontWeight: 700, fontSize: "2rem", letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>{t.allProd}</h1>
       <p style={{ color: mut, marginBottom: "2rem", fontSize: "0.875rem" }}>{filtered.length} products</p>
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem", flexWrap: "wrap" }}>
@@ -290,7 +290,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
           <button key={c} onClick={() => setActiveCat(c)} style={{ background: activeCat === c ? ac : surf, color: activeCat === c ? "#fff" : mut, border: `1px solid ${activeCat === c ? ac : brd}`, padding: "0.5rem 1rem", cursor: "pointer", fontWeight: activeCat === c ? 600 : 500, fontSize: "0.8rem" }}>{c}</button>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1.25rem" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-5">
         {filtered.map(p => (
           <div key={p.id} style={{ background: surf, overflow: "hidden", border: `1px solid ${brd}` }}>
             <div style={{ aspectRatio: "1", overflow: "hidden" }}>
@@ -313,7 +313,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
   );
 
   const aboutPage = (
-    <div style={{ padding: "4rem 2rem 6rem", maxWidth: "800px", margin: "0 auto" }}>
+    <div className="py-16 px-6 max-w-[800px] mx-auto pb-24">
       <div style={{ position: "relative", height: "320px", overflow: "hidden", marginBottom: "3rem" }}>
         <img src="https://picsum.photos/seed/kidabout/1200/500" alt="about" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.35)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -321,7 +321,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
         </div>
       </div>
       <p style={{ color: mut, lineHeight: 1.9, fontSize: "0.95rem", marginBottom: "3rem" }}>{t.aboutText}</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[{ n: "500+", l: "Toys Curated" }, { n: "50K+", l: "Happy Kids" }, { n: "4.9", l: "Safety Rating" }].map(s => (
           <div key={s.l} style={{ background: surf, border: `1px solid ${brd}`, padding: "2rem", textAlign: "center" }}>
             <div style={{ fontSize: "2.5rem", fontWeight: 700, color: ac, marginBottom: "0.5rem" }}>{s.n}</div>
@@ -333,7 +333,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
   );
 
   const contactPage = (
-    <div style={{ padding: "4rem 2rem 6rem", maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem" }}>
+    <div className="py-16 px-6 max-w-[900px] mx-auto pb-24 grid grid-cols-1 md:grid-cols-2 gap-16">
       <div>
         <h1 style={{ fontWeight: 700, fontSize: "2rem", letterSpacing: "-0.02em", marginBottom: "2rem" }}>{t.contactTitle}</h1>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -374,7 +374,7 @@ export default function KidsWorld({ language, scheme, dark }: TemplateProps) {
       {page === "about" && aboutPage}
       {page === "contact" && contactPage}
       <footer style={{ background: surf, borderTop: `1px solid ${brd}` }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "2rem" }}>
+        <div className="max-w-[1000px] mx-auto py-12 px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
               <Icon name="teddy" size={22} style={{ color: ac }} />

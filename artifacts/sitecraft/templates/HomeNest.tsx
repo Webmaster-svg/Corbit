@@ -162,14 +162,14 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
   const navBar = (
     <>
       <div style={{ background: scheme.accent, color: scheme.accentText, textAlign: "center", padding: "0.5rem 1rem", fontSize: "0.78rem" }}>{t.deal}</div>
-      <nav style={{ background: bg, borderBottom: `1px solid ${brd}`, padding: "1rem 2.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
+      <nav className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 sticky top-0 z-50 border-b" style={{ background: bg, borderColor: brd }}>
         <button onClick={() => setPage("home")} style={{ fontWeight: 400, fontSize: "1.4rem", letterSpacing: "0.18em", textTransform: "uppercase", background: "none", border: "none", cursor: "pointer", color: txt }}>HomeNest</button>
-        <div style={{ display: "flex", gap: "2.5rem" }}>
+        <div className="flex gap-4 sm:gap-8 flex-wrap justify-center">
           {(["home", "products", "about", "contact"] as Page[]).map((p, i) => (
             <button key={p} onClick={() => setPage(p)} style={{ background: "none", border: "none", cursor: "pointer", color: page === p ? scheme.accent : mut, fontWeight: page === p ? 600 : 400, fontSize: "0.8rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{t.nav[i]}</button>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
+        <div className="flex gap-5 items-center">
           <Icon name="heart" size={18} style={{ color: mut, cursor: "pointer" }} />
           <button onClick={() => setCartOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", color: txt, display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.85rem" }}>
             <Icon name="bag" size={18} /> {cartCount > 0 && <span style={{ background: scheme.accent, color: scheme.accentText, width: "1.2rem", height: "1.2rem", fontSize: "0.65rem", fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
@@ -184,7 +184,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
       <div style={{ position: "relative", height: "85vh", overflow: "hidden" }}>
         <img src="https://picsum.photos/seed/homenest/1400/900" alt="home" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(0,0,0,0.55) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 5rem", color: "#fff" }}>
+        <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-20 text-white">
           <p style={{ fontSize: "0.72rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "1rem", opacity: 0.7 }}>New Collection Available</p>
           <h1 style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)", fontWeight: 400, lineHeight: 1.1, marginBottom: "1.25rem", whiteSpace: "pre-line" }}>{t.hero}</h1>
           <p style={{ opacity: 0.8, maxWidth: "420px", lineHeight: 1.8, marginBottom: "2.5rem", fontSize: "0.95rem" }}>{t.sub}</p>
@@ -197,7 +197,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
           <h2 style={{ fontWeight: 300, fontSize: "1.6rem", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.5rem" }}>{t.cats}</h2>
           <p style={{ color: mut, fontSize: "0.85rem" }}>Find the perfect pieces for every space in your home</p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {rooms.map(r => (
             <div key={r.name} style={{ position: "relative", overflow: "hidden", cursor: "pointer", aspectRatio: "6/5", transition: "transform 0.3s, box-shadow 0.3s" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.12)"; }}
@@ -222,7 +222,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
           <h2 style={{ fontWeight: 400, fontSize: "1.3rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>{t.featured}</h2>
           <button onClick={() => setPage("products")} style={{ color: scheme.accent, cursor: "pointer", fontSize: "0.78rem", letterSpacing: "0.1em", textTransform: "uppercase", background: "none", border: "none" }}>{t.viewAll} \u2192</button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {products.slice(0, 6).map(p => (
             <div key={p.id} style={{ cursor: "pointer" }}>
               <div style={{ overflow: "hidden", aspectRatio: "5/4", marginBottom: "1rem", background: surf }}>
@@ -243,7 +243,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
 
       <section style={{ padding: "4rem 2rem", background: surf }}>
         <h2 style={{ textAlign: "center", fontWeight: 400, fontSize: "1.2rem", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[900px] mx-auto">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
@@ -271,7 +271,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
           <button key={c} onClick={() => setActiveCat(c)} style={{ background: activeCat === c ? scheme.accent : "transparent", color: activeCat === c ? scheme.accentText : mut, border: `1px solid ${activeCat === c ? scheme.accent : brd}`, padding: "0.5rem 1.25rem", cursor: "pointer", fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: activeCat === c ? 600 : 400 }}>{c}</button>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {filtered.map(p => (
           <div key={p.id}>
             <div style={{ overflow: "hidden", aspectRatio: "5/4", marginBottom: "1rem", background: surf }}>
@@ -295,7 +295,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
     <div style={{ padding: "4rem 2.5rem 6rem", maxWidth: "800px", margin: "0 auto" }}>
       <h1 style={{ fontWeight: 400, fontSize: "2.5rem", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1.5rem" }}>{t.aboutTitle}</h1>
       <p style={{ color: mut, lineHeight: 1.9, fontSize: "0.95rem", marginBottom: "3rem" }}>{t.aboutText}</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "2rem" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[{ n: "200+", l: "Designs Curated" }, { n: "15K+", l: "Happy Homes" }, { n: "4.9", l: "Average Rating" }].map(s => (
           <div key={s.l} style={{ background: surf, border: `1px solid ${brd}`, padding: "2rem", textAlign: "center" }}>
             <div style={{ fontSize: "2.5rem", fontWeight: 400, color: scheme.accent, marginBottom: "0.5rem" }}>{s.n}</div>
@@ -307,7 +307,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
   );
 
   const contactPage = (
-    <div style={{ padding: "4rem 2.5rem 6rem", maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem" }}>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-[900px] mx-auto py-16 px-6">
       <div>
         <h1 style={{ fontWeight: 400, fontSize: "1.8rem", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "2rem" }}>{t.contactTitle}</h1>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -339,7 +339,7 @@ export default function HomeNest({ language, scheme, dark }: TemplateProps) {
       {page === "about" && aboutPage}
       {page === "contact" && contactPage}
       <footer style={{ background: dark ? "#0e0d0b" : "#f8f5f0", borderTop: `1px solid ${brd}` }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "2rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 max-w-[1000px] mx-auto py-12 px-6">
           <div>
             <div style={{ fontWeight: 400, fontSize: "1.3rem", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem", color: txt }}>HomeNest</div>
             <p style={{ color: mut, fontSize: "0.85rem", lineHeight: 1.8, margin: "0 0 1rem" }}>Curated furniture and home decor designed to transform your space.</p>

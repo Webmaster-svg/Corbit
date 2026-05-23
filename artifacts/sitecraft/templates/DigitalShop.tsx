@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { TemplateProps } from "./types";
 import { Icon } from "./shared/Icons";
 
@@ -31,6 +32,7 @@ const categories = [
 ];
 
 export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = T[language];
   const dir = language === "ar" ? "rtl" : "ltr";
   const bg = dark ? "#06050f" : scheme.bg;
@@ -40,91 +42,100 @@ export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
   const brd = dark ? "#1e1c3a" : scheme.border;
 
   return (
-    <div dir={dir} style={{ background: bg, color: txt, fontFamily: "'Inter', sans-serif", minHeight: "100vh" }}>
+    <div dir={dir} className="min-h-screen font-sans" style={{ background: bg, color: txt }}>
       {/* Banner */}
-      <div style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, color: "#fff", textAlign: "center", padding: "0.625rem", fontSize: "0.8rem", fontWeight: 600 }}>{t.deal}</div>
+      <div className="text-center py-2.5 text-xs font-semibold text-white" style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>{t.deal}</div>
 
       {/* Nav */}
-      <nav style={{ background: `${bg}ee`, backdropFilter: "blur(12px)", borderBottom: `1px solid ${brd}`, padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1.5rem", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ fontWeight: 900, fontSize: "1.4rem", background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>DigitalShop</div>
-        <div style={{ flex: 1, display: "flex", gap: "1.5rem", fontSize: "0.875rem" }}>
+      <nav className="flex items-center justify-between px-6 py-4 md:px-8 sticky top-0 z-50 border-b backdrop-blur-md" style={{ background: `${bg}ee`, borderColor: brd }}>
+        <div className="font-black text-[1.4rem] bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>DigitalShop</div>
+        <div className="hidden md:flex flex-1 justify-center gap-6 text-sm">
           {["Marketplace", "Bundles", "Free", "Blog", "Creators"].map(item => (
-            <span key={item} style={{ cursor: "pointer", color: mut }}>{item}</span>
+            <span key={item} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{item}</span>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          <div style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "0.5rem", padding: "0.5rem 1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div className="flex gap-3 items-center">
+          <div className="hidden sm:flex items-center gap-2 border rounded-lg px-4 py-2" style={{ background: surf, borderColor: brd }}>
             <Icon name="search" size={16} style={{ color: mut }} />
-            <input placeholder="Search products..." style={{ background: "transparent", border: "none", outline: "none", color: txt, fontSize: "0.8rem", width: "160px" }} />
+            <input placeholder="Search products..." className="bg-transparent border-none outline-none text-xs w-40" style={{ color: txt }} />
           </div>
-          <button style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, color: "#fff", border: "none", borderRadius: "0.5rem", padding: "0.625rem 1.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem" }}>Sign In</button>
+          <button className="hidden sm:block text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-bold text-sm" style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>Sign In</button>
+          <button className="md:hidden p-2 rounded-md" style={{ color: txt }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <Icon name={mobileMenuOpen ? "x" : "menu"} size={24} />
+          </button>
         </div>
       </nav>
+      {mobileMenuOpen && (
+        <div className="md:hidden flex flex-col border-b px-4 py-2" style={{ background: bg, borderColor: brd }}>
+          {["Marketplace", "Bundles", "Free", "Blog", "Creators"].map(item => (
+            <span key={item} className="py-3 text-sm font-medium border-b last:border-0 cursor-pointer" style={{ color: txt, borderColor: brd }}>{item}</span>
+          ))}
+          <button className="text-white border-none rounded-lg px-6 py-3 mt-4 cursor-pointer font-bold text-sm" style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>Sign In</button>
+        </div>
+      )}
 
       {/* Hero */}
-      <div style={{ position: "relative", padding: "6rem 2rem 4rem", textAlign: "center", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 0%, ${scheme.accent}22 0%, transparent 70%)`, pointerEvents: "none" }} />
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: `${scheme.accent}22`, color: scheme.accent, border: `1px solid ${scheme.accent}44`, borderRadius: "2rem", padding: "0.375rem 1rem", fontSize: "0.8rem", fontWeight: 600, marginBottom: "2rem" }}>
+      <div className="relative px-6 py-24 md:px-8 md:py-24 text-center overflow-hidden flex flex-col items-center">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 50% 0%, ${scheme.accent}22 0%, transparent 70%)` }} />
+        <div className="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-xs font-semibold mb-8" style={{ background: `${scheme.accent}22`, color: scheme.accent, borderColor: `${scheme.accent}44` }}>
           <Icon name="sparkles" size={16} /> Over 1,200 Digital Products
         </div>
-        <h1 style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, lineHeight: 1.05, marginBottom: "1.5rem", whiteSpace: "pre-line" }}>
+        <h1 className="text-4xl md:text-5xl lg:text-[5rem] font-black leading-[1.05] mb-6 whitespace-pre-line">
           {t.hero.split('\n').map((line, i) => (
-            <span key={i} style={{ display: "block", background: i === 0 ? `linear-gradient(90deg, ${txt}, ${txt})` : `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{line}</span>
+            <span key={i} className="block bg-clip-text text-transparent" style={{ backgroundImage: i === 0 ? `linear-gradient(90deg, ${txt}, ${txt})` : `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>{line}</span>
           ))}
         </h1>
-        <p style={{ color: mut, maxWidth: "520px", margin: "0 auto 2.5rem", lineHeight: 1.7, fontSize: "1rem" }}>{t.sub}</p>
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
-          <button style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, color: "#fff", border: "none", borderRadius: "0.625rem", padding: "1rem 2.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.95rem", boxShadow: `0 4px 20px ${scheme.accent}44` }}>{t.shop}</button>
-          <button style={{ background: "transparent", color: txt, border: `1px solid ${brd}`, borderRadius: "0.625rem", padding: "1rem 2.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.95rem" }}>View Free</button>
+        <p className="max-w-xl mx-auto mb-10 leading-[1.7] text-[0.95rem] md:text-base" style={{ color: mut }}>{t.sub}</p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
+          <button className="text-white border-none rounded-xl px-10 py-4 cursor-pointer font-bold text-sm" style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, boxShadow: `0 4px 20px ${scheme.accent}44` }}>{t.shop}</button>
+          <button className="bg-transparent border rounded-xl px-10 py-4 cursor-pointer font-semibold text-sm" style={{ color: txt, borderColor: brd }}>View Free</button>
         </div>
         {/* Stats */}
-        <div style={{ display: "flex", gap: "3rem", justifyContent: "center", marginTop: "3.5rem", paddingTop: "3rem", borderTop: `1px solid ${brd}` }}>
+        <div className="flex flex-col sm:flex-row gap-8 sm:gap-12 justify-center mt-14 pt-12 border-t w-full max-w-4xl" style={{ borderColor: brd }}>
           {[{ val: "50K+", label: "Creators" }, { val: "1.2M+", label: "Downloads" }, { val: "4.9★", label: "Avg Rating" }, { val: "100%", label: "Secure" }].map(s => (
-            <div key={s.label} style={{ textAlign: "center" }}>
-              <div style={{ fontWeight: 900, fontSize: "1.75rem", background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{s.val}</div>
-              <div style={{ color: mut, fontSize: "0.8rem", marginTop: "0.25rem" }}>{s.label}</div>
+            <div key={s.label} className="text-center">
+              <div className="font-black text-3xl bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>{s.val}</div>
+              <div className="text-xs mt-1" style={{ color: mut }}>{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Categories */}
-      <section style={{ padding: "3rem 2rem" }}>
-        <h2 style={{ fontWeight: 800, fontSize: "1.25rem", marginBottom: "1.25rem" }}>{t.cats}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: "0.75rem" }}>
+      <section className="px-6 py-12 md:px-8 md:py-12">
+        <h2 className="font-extrabold text-xl mb-5">{t.cats}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
           {categories.map(c => (
-            <div key={c.name} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "0.75rem", padding: "1rem 0.5rem", textAlign: "center", cursor: "pointer" }}>
-              <div style={{ marginBottom: "0.5rem" }}><Icon name={c.icon} size={24} /></div>
-              <div style={{ fontSize: "0.7rem", fontWeight: 700, marginBottom: "0.2rem" }}>{c.name}</div>
-              <div style={{ fontSize: "0.65rem", color: mut }}>{c.count}</div>
+            <div key={c.name} className="border rounded-xl p-4 text-center cursor-pointer flex flex-col items-center hover:opacity-80 transition-opacity" style={{ background: surf, borderColor: brd }}>
+              <div className="mb-2"><Icon name={c.icon} size={24} /></div>
+              <div className="text-[0.7rem] font-bold mb-1">{c.name}</div>
+              <div className="text-[0.65rem]" style={{ color: mut }}>{c.count}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* Products */}
-      <section style={{ padding: "2rem 2rem 4rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-          <h2 style={{ fontWeight: 800, fontSize: "1.4rem" }}>{t.featured}</h2>
-          <span style={{ color: scheme.accent, cursor: "pointer", fontWeight: 600, fontSize: "0.875rem" }}>{t.viewAll} →</span>
+      <section className="px-6 py-8 md:px-8 md:py-16">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="font-extrabold text-[1.4rem]">{t.featured}</h2>
+          <span className="cursor-pointer font-semibold text-sm" style={{ color: scheme.accent }}>{t.viewAll} →</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {products.map(p => (
-            <div key={p.id} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", overflow: "hidden", cursor: "pointer" }}>
-              <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
-                <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s" }}
-                  onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.06)")}
-                  onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
+            <div key={p.id} className="border rounded-2xl overflow-hidden cursor-pointer group" style={{ background: surf, borderColor: brd }}>
+              <div className="aspect-video overflow-hidden">
+                <img src={p.img} alt={p.name} className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-[1.06]" />
               </div>
-              <div style={{ padding: "1.25rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                  <span style={{ background: `${scheme.accent}22`, color: scheme.accent, fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.6rem", borderRadius: "1rem" }}>{p.cat}</span>
-                  <span style={{ fontSize: "0.75rem", color: mut }}>⭐ {p.rating} · {p.sales} sales</span>
+              <div className="p-5">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[0.7rem] font-bold py-1 px-2.5 rounded-full" style={{ background: `${scheme.accent}22`, color: scheme.accent }}>{p.cat}</span>
+                  <span className="text-xs" style={{ color: mut }}>⭐ {p.rating} · {p.sales} sales</span>
                 </div>
-                <div style={{ fontWeight: 700, fontSize: "0.95rem", marginBottom: "1rem" }}>{p.name}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontWeight: 900, fontSize: "1.25rem", background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{p.price}</span>
-                  <button style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, color: "#fff", border: "none", borderRadius: "0.5rem", padding: "0.5rem 1.25rem", cursor: "pointer", fontWeight: 700, fontSize: "0.8rem" }}>{t.addCart}</button>
+                <div className="font-bold text-[0.95rem] mb-4">{p.name}</div>
+                <div className="flex justify-between items-center">
+                  <span className="font-black text-xl bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>{p.price}</span>
+                  <button className="text-white border-none rounded-lg px-5 py-2 cursor-pointer font-bold text-xs" style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>{t.addCart}</button>
                 </div>
               </div>
             </div>
@@ -133,22 +144,22 @@ export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
       </section>
 
       {/* Testimonials */}
-      <section style={{ padding: "4rem 2rem" }}>
-        <h2 style={{ textAlign: "center", fontWeight: 800, fontSize: "1.25rem", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="px-6 py-16 md:p-16">
+        <h2 className="text-center font-extrabold text-xl md:text-2xl mb-10">{t.testimonialTitle}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
             { text: t.testimonial3, name: t.testimonialName3, role: t.testimonialRole3 },
           ].map((item, i) => (
-            <div key={i} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", padding: "1.5rem", display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", gap: "0.25rem", marginBottom: "0.75rem" }}>
+            <div key={i} className="border rounded-2xl p-6 flex flex-col" style={{ background: surf, borderColor: brd }}>
+              <div className="flex gap-1 mb-3">
                 {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={14} style={{ color: "#f59e0b", fill: "#f59e0b" }} />)}
               </div>
-              <p style={{ color: txt, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem", flex: 1, fontStyle: "italic" }}>"{item.text}"</p>
+              <p className="text-[0.85rem] leading-[1.7] m-0 mb-4 flex-1 italic" style={{ color: txt }}>"{item.text}"</p>
               <div>
-                <div style={{ fontWeight: 600, fontSize: "0.8rem" }}>{item.name}</div>
-                <div style={{ color: mut, fontSize: "0.7rem" }}>{item.role}</div>
+                <div className="font-semibold text-sm">{item.name}</div>
+                <div className="text-xs" style={{ color: mut }}>{item.role}</div>
               </div>
             </div>
           ))}
@@ -156,51 +167,51 @@ export default function DigitalShop({ language, scheme, dark }: TemplateProps) {
       </section>
 
       {/* Trust */}
-      <div style={{ background: surf, borderTop: `1px solid ${brd}`, padding: "2.5rem 2rem", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", textAlign: "center", gap: "1rem" }}>
+      <div className="border-t py-10 px-6 grid grid-cols-2 md:grid-cols-4 text-center gap-6" style={{ background: surf, borderColor: brd }}>
         {[{ icon: "zap", text: t.trust1 }, { icon: "infinity", text: t.trust2 }, { icon: "wallet", text: t.trust3 }, { icon: "check", text: t.trust4 }].map((tr, i) => (
-          <div key={i}>
-            <div style={{ marginBottom: "0.5rem" }}><Icon name={tr.icon} size={28} /></div>
-            <div style={{ fontWeight: 600, fontSize: "0.8rem", color: mut }}>{tr.text}</div>
+          <div key={i} className="flex flex-col items-center">
+            <div className="mb-2"><Icon name={tr.icon} size={28} /></div>
+            <div className="font-semibold text-xs" style={{ color: mut }}>{tr.text}</div>
           </div>
         ))}
       </div>
 
       {/* Newsletter */}
-      <div style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, color: "#fff", padding: "3.5rem 2rem", textAlign: "center" }}>
-        <h2 style={{ fontWeight: 800, fontSize: "1.5rem", marginBottom: "0.75rem" }}>{t.newsletterTitle}</h2>
-        <p style={{ opacity: 0.9, marginBottom: "1.5rem", fontSize: "0.9rem", maxWidth: "450px", marginLeft: "auto", marginRight: "auto" }}>{t.newsletterText}</p>
-        <div style={{ display: "flex", gap: "0.5rem", maxWidth: "400px", margin: "0 auto" }}>
-          <input type="email" placeholder={t.newsletterPlaceholder} style={{ flex: 1, background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: "0.5rem", padding: "0.75rem 1.25rem", color: "#fff", fontSize: "0.85rem", outline: "none" }} />
-          <button style={{ background: "#fff", color: scheme.accent, border: "none", borderRadius: "0.5rem", padding: "0.75rem 1.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.85rem", whiteSpace: "nowrap" }}>{t.newsletterButton}</button>
+      <div className="py-14 px-6 md:p-14 text-center text-white" style={{ background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>
+        <h2 className="font-extrabold text-2xl md:text-3xl mb-3">{t.newsletterTitle}</h2>
+        <p className="opacity-90 mb-6 text-sm md:text-[0.9rem] max-w-md mx-auto">{t.newsletterText}</p>
+        <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+          <input type="email" placeholder={t.newsletterPlaceholder} className="flex-1 rounded-lg py-3 px-5 text-sm outline-none w-full" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "#fff" }} />
+          <button className="bg-white border-none rounded-lg py-3 px-6 cursor-pointer font-bold text-sm whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0" style={{ color: scheme.accent }}>{t.newsletterButton}</button>
         </div>
       </div>
 
-      <footer style={{ background: dark ? "#08071a" : "#f8f7ff", borderTop: `1px solid ${brd}`, marginTop: "2rem" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "2.5rem" }}>
-          <div>
-            <div style={{ fontSize: "1.25rem", fontWeight: 900, marginBottom: "0.5rem", background: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>DigitalShop</div>
-            <p style={{ color: mut, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem" }}>The leading marketplace for digital products. Thousands of creators trust us to deliver high-quality design assets, templates, and tools.</p>
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-              <Icon name="twitter" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="instagram" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="youtube" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="message" size={18} style={{ color: mut, cursor: "pointer" }} />
+      <footer className="border-t mt-8" style={{ background: dark ? "#08071a" : "#f8f7ff", borderColor: brd }}>
+        <div className="max-w-5xl mx-auto px-6 py-12 md:p-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+          <div className="sm:col-span-2">
+            <div className="text-xl font-black mb-2 bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(90deg, ${scheme.accent}, #8b5cf6)` }}>DigitalShop</div>
+            <p className="text-[0.85rem] leading-[1.7] mb-4 max-w-sm" style={{ color: mut }}>The leading marketplace for digital products. Thousands of creators trust us to deliver high-quality design assets, templates, and tools.</p>
+            <div className="flex gap-3">
+              <Icon name="twitter" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="instagram" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="youtube" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="message" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
             </div>
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem", color: txt }}>Explore</div>
+            <div className="font-bold text-[0.8rem] uppercase tracking-[0.08em] mb-4" style={{ color: txt }}>Explore</div>
             {["Marketplace", "Bundles", "Free Assets", "Blog", "Creators"].map(l => (
-              <div key={l} style={{ color: mut, fontSize: "0.82rem", marginBottom: "0.5rem", cursor: "pointer" }}>{l}</div>
+              <div key={l} className="text-[0.82rem] mb-2 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{l}</div>
             ))}
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem", color: txt }}>Company</div>
+            <div className="font-bold text-[0.8rem] uppercase tracking-[0.08em] mb-4" style={{ color: txt }}>Company</div>
             {["About", "Careers", "Terms of Service", "Privacy Policy", "Support"].map(l => (
-              <div key={l} style={{ color: mut, fontSize: "0.82rem", marginBottom: "0.5rem", cursor: "pointer" }}>{l}</div>
+              <div key={l} className="text-[0.82rem] mb-2 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{l}</div>
             ))}
           </div>
         </div>
-        <div style={{ borderTop: `1px solid ${brd}`, padding: "1.25rem 2rem", textAlign: "center", color: mut, fontSize: "0.8rem" }}>{t.footer}</div>
+        <div className="border-t px-6 py-5 text-center text-[0.8rem]" style={{ borderColor: brd, color: mut }}>{t.footer}</div>
       </footer>
     </div>
   );

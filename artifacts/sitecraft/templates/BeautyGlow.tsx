@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { TemplateProps } from "./types";
 import { Icon } from "./shared/Icons";
 
@@ -21,6 +22,7 @@ const products = [
 const concerns = ["Anti-Aging", "Hydration", "Brightening", "Acne", "Sensitive", "Dark Spots"];
 
 export default function BeautyGlow({ language, scheme, dark }: TemplateProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = T[language];
   const dir = language === "ar" ? "rtl" : "ltr";
   const bg = dark ? "#120a10" : scheme.bg;
@@ -30,47 +32,57 @@ export default function BeautyGlow({ language, scheme, dark }: TemplateProps) {
   const brd = dark ? "#3d1f33" : scheme.border;
 
   return (
-    <div dir={dir} style={{ background: bg, color: txt, fontFamily: "'Georgia', 'Times New Roman', serif", minHeight: "100vh" }}>
+    <div dir={dir} className="min-h-screen" style={{ background: bg, color: txt, fontFamily: "'Georgia', 'Times New Roman', serif" }}>
       {/* Promo */}
-      <div style={{ background: scheme.accent, color: scheme.accentText, textAlign: "center", padding: "0.625rem", fontSize: "0.8rem", fontWeight: 500, letterSpacing: "0.05em" }}>{t.deal}</div>
+      <div className="text-center py-2.5 text-xs font-medium tracking-[0.05em]" style={{ background: scheme.accent, color: scheme.accentText }}>{t.deal}</div>
 
       {/* Nav */}
-      <nav style={{ background: bg, borderBottom: `1px solid ${brd}`, padding: "1.25rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ fontWeight: 400, fontSize: "1.6rem", letterSpacing: "0.15em" }}>beautyGlow</div>
-        <div style={{ display: "flex", gap: "2rem", fontSize: "0.8rem", letterSpacing: "0.1em" }}>
+      <nav className="flex items-center justify-between px-6 py-5 md:px-8 sticky top-0 z-50 border-b" style={{ background: bg, borderColor: brd }}>
+        <div className="font-normal text-2xl tracking-[0.15em]">beautyGlow</div>
+        <div className="hidden md:flex gap-8 text-xs tracking-[0.1em]">
           {["Skincare", "Makeup", "Body", "Sets", "Journal"].map(item => (
-            <span key={item} style={{ cursor: "pointer", color: mut }}>{item}</span>
+            <span key={item} className="cursor-pointer transition-opacity hover:opacity-80" style={{ color: mut }}>{item}</span>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "1rem", fontSize: "0.8rem", alignItems: "center" }}>
-          <Icon name="search" size={16} style={{ cursor: "pointer", color: mut }} />
-          <Icon name="user" size={16} style={{ cursor: "pointer", color: mut }} />
-          <button style={{ background: scheme.accent, color: scheme.accentText, border: "none", borderRadius: "2rem", padding: "0.5rem 1.25rem", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.35rem" }}><Icon name="bag" size={16} /> Bag</button>
+        <div className="flex items-center gap-4 text-xs">
+          <Icon name="search" size={16} className="cursor-pointer hidden sm:block hover:opacity-80 transition-opacity" style={{ color: mut }} />
+          <Icon name="user" size={16} className="cursor-pointer hidden sm:block hover:opacity-80 transition-opacity" style={{ color: mut }} />
+          <button className="border-none rounded-full py-2 px-5 cursor-pointer text-xs font-semibold flex items-center gap-1.5" style={{ background: scheme.accent, color: scheme.accentText }}><Icon name="bag" size={16} /> Bag</button>
+          <button className="md:hidden p-2 rounded-md" style={{ color: txt }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <Icon name={mobileMenuOpen ? "x" : "menu"} size={24} />
+          </button>
         </div>
       </nav>
+      {mobileMenuOpen && (
+        <div className="md:hidden flex flex-col border-b px-4 py-2" style={{ background: bg, borderColor: brd }}>
+          {["Skincare", "Makeup", "Body", "Sets", "Journal"].map(item => (
+            <span key={item} className="py-3 text-sm font-medium border-b last:border-0 cursor-pointer" style={{ color: txt, borderColor: brd }}>{item}</span>
+          ))}
+        </div>
+      )}
 
       {/* Hero */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "550px", alignItems: "stretch" }}>
-        <div style={{ overflow: "hidden" }}>
-          <img src="https://picsum.photos/seed/beautyhero/700/600" alt="hero" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      <div className="grid grid-cols-1 md:grid-cols-2 min-h-[550px] items-stretch">
+        <div className="overflow-hidden h-[300px] md:h-auto order-1 md:order-none">
+          <img src="https://picsum.photos/seed/beautyhero/700/600" alt="hero" className="w-full h-full object-cover" />
         </div>
-        <div style={{ padding: "4rem 4rem", display: "flex", flexDirection: "column", justifyContent: "center", background: surf }}>
-          <div style={{ fontSize: "0.75rem", letterSpacing: "0.2em", color: scheme.accent, textTransform: "uppercase", marginBottom: "1.5rem" }}>The New Ritual</div>
-          <h1 style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 400, lineHeight: 1.15, marginBottom: "1.5rem", whiteSpace: "pre-line" }}>{t.hero}</h1>
-          <p style={{ color: mut, lineHeight: 1.8, marginBottom: "2rem", fontSize: "0.95rem" }}>{t.sub}</p>
-          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-            <button style={{ background: scheme.accent, color: scheme.accentText, border: "none", borderRadius: "2rem", padding: "1rem 2rem", cursor: "pointer", fontSize: "0.875rem", fontWeight: 600 }}>{t.shop}</button>
-            <span style={{ color: scheme.accent, cursor: "pointer", fontSize: "0.875rem", fontWeight: 600 }}>{t.quiz}</span>
+        <div className="p-8 md:p-16 flex flex-col justify-center order-2 md:order-none" style={{ background: surf }}>
+          <div className="text-xs tracking-[0.2em] uppercase mb-6" style={{ color: scheme.accent }}>The New Ritual</div>
+          <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-normal leading-[1.15] mb-6 whitespace-pre-line">{t.hero}</h1>
+          <p className="leading-[1.8] mb-8 text-[0.95rem]" style={{ color: mut }}>{t.sub}</p>
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+            <button className="border-none rounded-full py-4 px-8 cursor-pointer text-sm font-semibold" style={{ background: scheme.accent, color: scheme.accentText }}>{t.shop}</button>
+            <span className="cursor-pointer text-sm font-semibold text-center sm:text-left" style={{ color: scheme.accent }}>{t.quiz}</span>
           </div>
         </div>
       </div>
 
       {/* Shop by concern */}
-      <section style={{ padding: "4rem 2rem" }}>
-        <h2 style={{ textAlign: "center", fontWeight: 400, fontSize: "1.75rem", marginBottom: "2rem", letterSpacing: "0.05em" }}>{t.cats}</h2>
-        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
+      <section className="px-6 py-16 md:p-16">
+        <h2 className="text-center font-normal text-2xl md:text-3xl mb-8 tracking-[0.05em]">{t.cats}</h2>
+        <div className="flex gap-3 justify-center flex-wrap">
           {concerns.map(c => (
-            <button key={c} style={{ background: "transparent", border: `1px solid ${brd}`, borderRadius: "2rem", padding: "0.625rem 1.5rem", cursor: "pointer", fontSize: "0.875rem", color: txt, transition: "all 0.2s" }}
+            <button key={c} className="bg-transparent border rounded-full py-2.5 px-6 cursor-pointer text-sm transition-all duration-200" style={{ borderColor: brd, color: txt }}
               onMouseEnter={e => { (e.target as HTMLElement).style.background = scheme.accent; (e.target as HTMLElement).style.color = scheme.accentText; }}
               onMouseLeave={e => { (e.target as HTMLElement).style.background = "transparent"; (e.target as HTMLElement).style.color = txt; }}>
               {c}
@@ -80,25 +92,23 @@ export default function BeautyGlow({ language, scheme, dark }: TemplateProps) {
       </section>
 
       {/* Products */}
-      <section style={{ padding: "0 2rem 4rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-          <h2 style={{ fontWeight: 400, fontSize: "1.75rem", letterSpacing: "0.03em" }}>{t.featured}</h2>
-          <span style={{ color: scheme.accent, cursor: "pointer", fontSize: "0.875rem" }}>{t.viewAll} →</span>
+      <section className="px-6 pb-16 md:px-8 md:pb-16">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="font-normal text-2xl md:text-3xl tracking-[0.03em]">{t.featured}</h2>
+          <span className="cursor-pointer text-sm" style={{ color: scheme.accent }}>{t.viewAll} →</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map(p => (
-            <div key={p.id} style={{ cursor: "pointer" }}>
-              <div style={{ position: "relative", marginBottom: "1rem", overflow: "hidden", aspectRatio: "4/5", background: surf }}>
-                <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s" }}
-                  onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.04)")}
-                  onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
-                <div style={{ position: "absolute", top: "0.75rem", left: "0.75rem", background: scheme.accent, color: scheme.accentText, fontSize: "0.7rem", fontWeight: 600, padding: "0.25rem 0.75rem", borderRadius: "2rem" }}>{p.tag}</div>
-                <div style={{ position: "absolute", top: "0.75rem", right: "0.75rem", background: `${bg}cc`, color: txt, fontSize: "0.65rem", padding: "0.25rem 0.5rem", borderRadius: "0.25rem" }}>{p.steps}</div>
+            <div key={p.id} className="cursor-pointer group">
+              <div className="relative mb-4 overflow-hidden aspect-[4/5]" style={{ background: surf }}>
+                <img src={p.img} alt={p.name} className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-[1.04]" />
+                <div className="absolute top-3 left-3 text-[0.7rem] font-semibold py-1 px-3 rounded-full" style={{ background: scheme.accent, color: scheme.accentText }}>{p.tag}</div>
+                <div className="absolute top-3 right-3 text-[0.65rem] py-1 px-2 rounded-sm" style={{ background: `${bg}cc`, color: txt }}>{p.steps}</div>
               </div>
-              <div style={{ fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.25rem" }}>{p.name}</div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: scheme.accent, fontWeight: 700 }}>{p.price}</span>
-                <button style={{ background: scheme.accent, color: scheme.accentText, border: "none", borderRadius: "2rem", padding: "0.375rem 1rem", cursor: "pointer", fontSize: "0.75rem", fontWeight: 600 }}>{t.addCart}</button>
+              <div className="font-semibold text-sm md:text-[0.9rem] mb-1">{p.name}</div>
+              <div className="flex justify-between items-center">
+                <span className="font-bold" style={{ color: scheme.accent }}>{p.price}</span>
+                <button className="border-none rounded-full py-1.5 px-4 cursor-pointer text-xs font-semibold" style={{ background: scheme.accent, color: scheme.accentText }}>{t.addCart}</button>
               </div>
             </div>
           ))}
@@ -106,22 +116,22 @@ export default function BeautyGlow({ language, scheme, dark }: TemplateProps) {
       </section>
 
       {/* Testimonials */}
-      <section style={{ padding: "4rem 2rem" }}>
-        <h2 style={{ textAlign: "center", fontWeight: 400, fontSize: "1.4rem", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="px-6 py-16 md:p-16">
+        <h2 className="text-center font-normal text-xl md:text-2xl tracking-[0.08em] uppercase mb-10">{t.testimonialTitle}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
             { text: t.testimonial3, name: t.testimonialName3, role: t.testimonialRole3 },
           ].map((item, i) => (
-            <div key={i} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", padding: "1.5rem", display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", gap: "0.25rem", marginBottom: "0.75rem" }}>
+            <div key={i} className="border rounded-2xl p-6 flex flex-col" style={{ background: surf, borderColor: brd }}>
+              <div className="flex gap-1 mb-3">
                 {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={14} style={{ color: "#f59e0b", fill: "#f59e0b" }} />)}
               </div>
-              <p style={{ color: txt, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem", flex: 1, fontStyle: "italic" }}>"{item.text}"</p>
+              <p className="text-[0.85rem] leading-[1.7] m-0 mb-4 flex-1 italic" style={{ color: txt }}>"{item.text}"</p>
               <div>
-                <div style={{ fontWeight: 600, fontSize: "0.8rem" }}>{item.name}</div>
-                <div style={{ color: mut, fontSize: "0.7rem" }}>{item.role}</div>
+                <div className="font-semibold text-sm">{item.name}</div>
+                <div className="text-xs" style={{ color: mut }}>{item.role}</div>
               </div>
             </div>
           ))}
@@ -129,52 +139,52 @@ export default function BeautyGlow({ language, scheme, dark }: TemplateProps) {
       </section>
 
       {/* Trust */}
-      <div style={{ background: surf, borderTop: `1px solid ${brd}`, padding: "2.5rem 2rem", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", textAlign: "center", gap: "1rem" }}>
+      <div className="border-t py-10 px-6 grid grid-cols-2 md:grid-cols-4 text-center gap-6" style={{ background: surf, borderColor: brd }}>
         {[{ icon: "flask", text: t.trust1 }, { icon: "rabbit", text: t.trust2 }, { icon: "leaf", text: t.trust3 }, { icon: "gift", text: t.trust4 }].map((tr, i) => (
-          <div key={i}>
-            <div style={{ marginBottom: "0.5rem" }}><Icon name={tr.icon} size={28} /></div>
-            <div style={{ fontSize: "0.8rem", color: mut }}>{tr.text}</div>
+          <div key={i} className="flex flex-col items-center">
+            <div className="mb-2"><Icon name={tr.icon} size={28} /></div>
+            <div className="text-xs" style={{ color: mut }}>{tr.text}</div>
           </div>
         ))}
       </div>
 
       {/* Newsletter */}
-      <div style={{ background: scheme.accent, color: scheme.accentText, padding: "3.5rem 2rem", textAlign: "center" }}>
-        <h2 style={{ fontWeight: 400, fontSize: "1.6rem", marginBottom: "0.75rem", letterSpacing: "0.04em" }}>{t.newsletterTitle}</h2>
-        <p style={{ opacity: 0.85, marginBottom: "1.5rem", fontSize: "0.9rem", maxWidth: "450px", marginLeft: "auto", marginRight: "auto" }}>{t.newsletterText}</p>
-        <div style={{ display: "flex", gap: "0.5rem", maxWidth: "400px", margin: "0 auto" }}>
-          <input type="email" placeholder={t.newsletterPlaceholder} style={{ flex: 1, background: `${scheme.accentText}22`, border: `1px solid ${scheme.accentText}44`, borderRadius: "2rem", padding: "0.75rem 1.25rem", color: scheme.accentText, fontSize: "0.85rem", outline: "none" }} />
-          <button style={{ background: scheme.accentText, color: scheme.accent, border: "none", borderRadius: "2rem", padding: "0.75rem 1.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.85rem", whiteSpace: "nowrap" }}>{t.newsletterButton}</button>
+      <div className="py-14 px-6 md:p-14 text-center" style={{ background: scheme.accent, color: scheme.accentText }}>
+        <h2 className="font-normal text-2xl md:text-3xl mb-3 tracking-[0.04em]">{t.newsletterTitle}</h2>
+        <p className="opacity-85 mb-6 text-sm md:text-[0.9rem] max-w-md mx-auto">{t.newsletterText}</p>
+        <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+          <input type="email" placeholder={t.newsletterPlaceholder} className="flex-1 border rounded-full py-3 px-5 text-sm outline-none w-full" style={{ background: `${scheme.accentText}22`, borderColor: `${scheme.accentText}44`, color: scheme.accentText }} />
+          <button className="border-none rounded-full py-3 px-6 cursor-pointer font-bold text-sm whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0" style={{ background: scheme.accentText, color: scheme.accent }}>{t.newsletterButton}</button>
         </div>
       </div>
 
-      <footer style={{ background: surf, borderTop: `1px solid ${brd}`, marginTop: "2rem" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "1.8fr 1fr 1fr", gap: "2.5rem" }}>
-          <div>
-            <div style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "0.5rem", color: txt, fontFamily: "'Georgia',serif" }}>BeautyGlow</div>
-            <div style={{ color: scheme.accent, fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "0.75rem" }}>Clean Beauty, Real Results</div>
-            <p style={{ color: mut, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem" }}>Cruelty-free, dermatologist-tested skincare crafted with clean ingredients for every skin type.</p>
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-              <Icon name="instagram" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="facebook" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="twitter" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="youtube" size={18} style={{ color: mut, cursor: "pointer" }} />
+      <footer className="border-t mt-12" style={{ background: surf, borderColor: brd }}>
+        <div className="max-w-5xl mx-auto px-6 py-12 md:p-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+          <div className="sm:col-span-2">
+            <div className="text-xl font-semibold mb-2 font-serif" style={{ color: txt }}>BeautyGlow</div>
+            <div className="text-[0.75rem] tracking-[0.2em] uppercase mb-3" style={{ color: scheme.accent }}>Clean Beauty, Real Results</div>
+            <p className="text-[0.85rem] leading-[1.7] mb-4 max-w-sm" style={{ color: mut }}>Cruelty-free, dermatologist-tested skincare crafted with clean ingredients for every skin type.</p>
+            <div className="flex gap-3">
+              <Icon name="instagram" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="facebook" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="twitter" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="youtube" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
             </div>
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "1rem", color: txt }}>Shop</div>
+            <div className="font-semibold text-[0.8rem] uppercase tracking-[0.1em] mb-4" style={{ color: txt }}>Shop</div>
             {["Skincare", "Makeup", "Body Care", "Sets & Kits", "Gift Cards"].map(l => (
-              <div key={l} style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.5rem", cursor: "pointer" }}>{l}</div>
+              <div key={l} className="text-[0.8rem] mb-2 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{l}</div>
             ))}
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "1rem", color: txt }}>Connect</div>
-            <div style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.5rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.4rem" }}><Icon name="mail" size={14} /> hello@beautyglow.com</div>
-            <div style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.5rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.4rem" }}><Icon name="phone" size={14} /> +1 (800) 555-GLOW</div>
-            <div style={{ color: mut, fontSize: "0.8rem", marginBottom: "0.5rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.4rem" }}><Icon name="clock" size={14} /> Mon–Fri 9am–6pm</div>
+            <div className="font-semibold text-[0.8rem] uppercase tracking-[0.1em] mb-4" style={{ color: txt }}>Connect</div>
+            <div className="text-[0.8rem] mb-2 cursor-pointer flex items-center gap-1.5 hover:opacity-80 transition-opacity" style={{ color: mut }}><Icon name="mail" size={14} /> hello@beautyglow.com</div>
+            <div className="text-[0.8rem] mb-2 cursor-pointer flex items-center gap-1.5 hover:opacity-80 transition-opacity" style={{ color: mut }}><Icon name="phone" size={14} /> +1 (800) 555-GLOW</div>
+            <div className="text-[0.8rem] mb-2 cursor-pointer flex items-center gap-1.5 hover:opacity-80 transition-opacity" style={{ color: mut }}><Icon name="clock" size={14} /> Mon–Fri 9am–6pm</div>
           </div>
         </div>
-        <div style={{ borderTop: `1px solid ${brd}`, padding: "1.25rem 2rem", textAlign: "center", color: mut, fontSize: "0.75rem", letterSpacing: "0.08em" }}>{t.footer}</div>
+        <div className="border-t px-6 py-5 text-center text-[0.75rem] tracking-[0.08em]" style={{ borderColor: brd, color: mut }}>{t.footer}</div>
       </footer>
     </div>
   );

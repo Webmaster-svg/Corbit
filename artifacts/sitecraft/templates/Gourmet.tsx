@@ -35,20 +35,26 @@ export default function Gourmet({ language, scheme, dark }: TemplateProps) {
       <div style={{ background: scheme.accent, color: scheme.accentText, textAlign: "center", padding: "0.625rem", fontSize: "0.8rem", letterSpacing: "0.1em" }}>{t.deal}</div>
 
       {/* Nav */}
-      <nav style={{ background: bg, borderBottom: `1px solid ${brd}`, padding: "1.5rem 2.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
-        <div>
+      <nav className="flex flex-col md:flex-row items-center justify-between gap-4 px-6 py-4 sticky top-0 z-50 border-b" style={{ background: bg, borderColor: brd }}>
+        <div className="text-center md:text-left">
           <div style={{ fontSize: "1.75rem", fontWeight: 400, letterSpacing: "0.2em", textTransform: "uppercase" }}>GOURMET</div>
           <div style={{ fontSize: "0.6rem", letterSpacing: "0.35em", textTransform: "uppercase", color: scheme.accent, marginTop: "-2px" }}>Fine Foods & Wines</div>
         </div>
-        <div style={{ display: "flex", gap: "2.5rem", fontSize: "0.8rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+        <div className="flex flex-wrap justify-center gap-4 md:gap-10" style={{ fontSize: "0.8rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>
           {["Wines", "Foods", "Gifts", "Membership"].map(item => (
             <span key={item} style={{ cursor: "pointer", color: mut }}>{item}</span>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "1rem", fontSize: "0.8rem", color: mut }}>
-          <Icon name="search" size={16} style={{ cursor: "pointer", color: mut }} />
-          <span style={{ cursor: "pointer", color: mut, display: "flex", alignItems: "center", gap: "0.35rem" }}><Icon name="user" size={16} /> Account</span>
-          <span style={{ cursor: "pointer", color: mut, display: "flex", alignItems: "center", gap: "0.35rem" }}><Icon name="bag" size={16} /> (0)</span>
+        <div className="flex items-center gap-5 md:gap-8" style={{ fontSize: "0.8rem", color: mut }}>
+          <Icon name="search" size={16} className="shrink-0" style={{ cursor: "pointer", color: mut }} />
+          <span className="flex items-center gap-2 shrink-0" style={{ cursor: "pointer", color: mut }}>
+            <Icon name="user" size={16} className="shrink-0" />
+            <span>Account</span>
+          </span>
+          <span className="flex items-center gap-2 shrink-0" style={{ cursor: "pointer", color: mut }}>
+            <Icon name="bag" size={16} className="shrink-0" />
+            <span>(0)</span>
+          </span>
         </div>
       </nav>
 
@@ -65,7 +71,7 @@ export default function Gourmet({ language, scheme, dark }: TemplateProps) {
       </div>
 
       {/* Categories strip */}
-      <div style={{ background: surf, borderBottom: `1px solid ${brd}`, padding: "1.25rem 2.5rem", display: "flex", gap: "2.5rem", justifyContent: "center" }}>
+      <div className="flex flex-wrap gap-4 md:gap-10 justify-center py-4 px-6 border-b" style={{ background: surf, borderColor: brd }}>
         {categories.map(c => (
           <span key={c} style={{ fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", color: mut }}>{c}</span>
         ))}
@@ -80,7 +86,7 @@ export default function Gourmet({ language, scheme, dark }: TemplateProps) {
           </div>
           <span style={{ color: scheme.accent, cursor: "pointer", fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase" }}>{t.viewAll} →</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "2rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {products.map(p => (
             <div key={p.id} style={{ cursor: "pointer" }}>
               <div style={{ overflow: "hidden", aspectRatio: "4/5", marginBottom: "1.25rem", background: surf }}>
@@ -102,7 +108,7 @@ export default function Gourmet({ language, scheme, dark }: TemplateProps) {
       {/* Testimonials */}
       <section style={{ padding: "4rem 2rem" }}>
         <h2 style={{ textAlign: "center", fontWeight: 400, fontSize: "1.4rem", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
@@ -123,7 +129,7 @@ export default function Gourmet({ language, scheme, dark }: TemplateProps) {
       </section>
 
       {/* Trust */}
-      <div style={{ background: scheme.accent, color: scheme.accentText, padding: "3rem 2.5rem", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", textAlign: "center", gap: "1.5rem" }}>
+      <div className="grid grid-cols-2 md:grid-cols-4 text-center gap-6 px-6 py-12" style={{ background: scheme.accent, color: scheme.accentText }}>
         {[t.trust1, t.trust2, t.trust3, t.trust4].map((tr, i) => (
           <div key={i} style={{ fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", lineHeight: 1.6 }}>{tr}</div>
         ))}
@@ -140,7 +146,7 @@ export default function Gourmet({ language, scheme, dark }: TemplateProps) {
       </div>
 
       <footer style={{ background: dark ? "#0a0506" : "#1a1410", borderTop: `1px solid ${scheme.accent}33`, color: "#c8b8a8" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3.5rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "2.5rem" }}>
+        <div className="max-w-[1000px] mx-auto py-14 px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
           <div>
             <div style={{ fontSize: "1.5rem", fontWeight: 400, letterSpacing: "0.15em", marginBottom: "0.5rem", fontFamily: "'Palatino',serif", color: "#f5ece0" }}>GOURMET</div>
             <div style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", color: scheme.accent, marginBottom: "0.75rem" }}>Exceptional Flavors Since 1998</div>

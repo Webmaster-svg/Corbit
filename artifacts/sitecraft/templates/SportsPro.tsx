@@ -79,11 +79,11 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
       <div style={{ background: `linear-gradient(90deg,${ac},#ef4444)`, color: "#fff", textAlign: "center", padding: "0.5rem", fontSize: "0.8rem", fontWeight: 700 }}>
         {t.deal}
       </div>
-      <nav style={{ background: bg, borderBottom: `1px solid ${brd}`, padding: "1rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
+      <nav className="sticky top-0 z-50 flex flex-col md:flex-row items-center justify-between p-4 md:px-8 border-b gap-4" style={{ background: bg, borderColor: brd }}>
         <button onClick={() => setPage("home")} style={{ background: "none", border: "none", cursor: "pointer", fontWeight: 900, fontSize: "1.5rem", color: txt, letterSpacing: "-0.03em", display: "flex", alignItems: "center", gap: "0.35rem" }}>
           <Icon name="trophy" size={22} style={{ color: ac }} />SPORTS<span style={{ color: ac }}>PRO</span>
         </button>
-        <div style={{ display: "flex", gap: "2rem" }}>
+        <div className="flex gap-4 md:gap-8 flex-wrap justify-center">
           {(["home", "products", "about", "contact"] as Page[]).map((p, i) => (
             <button key={p} onClick={() => setPage(p)} style={{ background: "none", border: "none", cursor: "pointer", color: page === p ? ac : mut, fontWeight: page === p ? 800 : 600, fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.05em", borderBottom: page === p ? `2px solid ${ac}` : "2px solid transparent", paddingBottom: "0.25rem" }}>
               {t.nav[i]}
@@ -102,8 +102,8 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
       <div style={{ position: "relative", overflow: "hidden", minHeight: "560px" }}>
         <div style={{ display: "flex", transition: "transform 0.5s ease", transform: `translateX(-${slide * 100}%)`, width: `${slides.length * 100}%` }}>
           {slides.map((s, i) => (
-            <div key={i} style={{ width: `${100 / slides.length}%`, display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center", minHeight: "560px", flexShrink: 0 }}>
-              <div style={{ padding: "4rem", zIndex: 2, position: "relative" }}>
+            <div key={i} style={{ width: `${100 / slides.length}%` }} className="grid grid-cols-1 md:grid-cols-2 items-center min-h-[560px] shrink-0">
+              <div className="p-8 md:p-16 z-10 relative">
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: `${ac}22`, color: ac, border: `1px solid ${ac}44`, padding: "0.375rem 1.125rem", fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1.5rem" }}>
                   <Icon name="flame" size={14} /> {i === 0 ? "New Arrivals" : i === 1 ? "Pro Series" : "Elite Gear"}
                 </div>
@@ -120,9 +120,10 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
                   <button onClick={() => setPage("about")} style={{ background: "transparent", color: txt, border: `1px solid ${brd}`, padding: "0.875rem 2rem", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Our Story</button>
                 </div>
               </div>
-              <div style={{ position: "relative", height: "560px", overflow: "hidden" }}>
+              <div style={{ position: "relative" }} className="overflow-hidden h-[300px] md:h-[560px]">
                 <img src={s.img} alt="hero" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to right, ${bg}, transparent)` }} />
+                <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to right, ${bg}, transparent)` }} className="hidden md:block" />
+                <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to top, ${bg}, transparent)` }} className="block md:hidden" />
               </div>
             </div>
           ))}
@@ -139,7 +140,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
           ))}
         </div>
       </div>
-      <div style={{ background: surf, borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, padding: "1.25rem 2rem", display: "flex", gap: "2rem", flexWrap: "wrap", justifyContent: "center" }}>
+      <div style={{ background: surf, borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, padding: "1.25rem 2rem" }} className="flex gap-8 flex-wrap justify-center">
         {CATS.filter(c => c !== "All").map(s => (
           <button key={s} onClick={() => { setPage("products"); setActiveCat(s); }} style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", cursor: "pointer", whiteSpace: "nowrap", background: "none", border: "none", color: mut, display: "flex", alignItems: "center", gap: "0.35rem" }}>
             <Icon name="shoe" size={14} style={{ color: ac }} />{s}
@@ -153,7 +154,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
             {t.viewAll} <Icon name="chevronRight" size={14} />
           </button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1.25rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
           {PRODUCTS.slice(0, 4).map(p => (
             <div key={p.id} style={{ background: surf, overflow: "hidden", border: `1px solid ${brd}`, position: "relative", transition: "transform 0.2s" }}>
               {p.hot && <div style={{ position: "absolute", top: "0.75rem", left: "0.75rem", background: ac, color: "#fff", fontSize: "0.6rem", fontWeight: 800, padding: "0.2rem 0.6rem", textTransform: "uppercase", letterSpacing: "0.05em", zIndex: 1 }}>HOT</div>}
@@ -174,7 +175,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
           ))}
         </div>
       </section>
-      <div style={{ borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, padding: "2.5rem 2rem", display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center", gap: "1rem", background: surf }}>
+      <div style={{ borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, background: surf }} className="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 text-center">
         {[{ icon: "trophy", text: "Pro-Grade Materials" }, { icon: "package", text: "Free Shipping $50+" }, { icon: "rotate", text: "Easy Returns" }, { icon: "shoe", text: "Expert Athletes" }].map((tr, i) => (
           <div key={i}>
             <div style={{ width: "3rem", height: "3rem", background: `${ac}15`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 0.75rem" }}>
@@ -186,7 +187,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
       </div>
       <section style={{ padding: "4rem 2rem" }}>
         <h2 style={{ textAlign: "center", fontWeight: 900, fontSize: "1.25rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", maxWidth: "900px", margin: "0 auto" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
@@ -217,7 +218,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
           <button key={c} onClick={() => setActiveCat(c)} style={{ background: activeCat === c ? ac : surf, color: activeCat === c ? "#fff" : txt, border: `1px solid ${activeCat === c ? ac : brd}`, padding: "0.5rem 1rem", cursor: "pointer", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase" }}>{c}</button>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1.25rem" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
         {filtered.map(p => (
           <div key={p.id} style={{ background: surf, overflow: "hidden", border: `1px solid ${brd}`, position: "relative" }}>
             {p.hot && <div style={{ position: "absolute", top: "0.75rem", left: "0.75rem", background: ac, color: "#fff", fontSize: "0.6rem", fontWeight: 800, padding: "0.2rem 0.6rem", textTransform: "uppercase", zIndex: 1 }}>HOT</div>}
@@ -249,7 +250,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
           </div>
         </div>
         <p style={{ color: mut, lineHeight: 1.9, fontSize: "0.95rem", marginBottom: "3rem" }}>{t.aboutText}</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem", marginBottom: "3rem" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[{ n: "12+", l: "Years Experience" }, { n: "500K+", l: "Athletes Served" }, { n: "40+", l: "Countries" }].map(s => (
             <div key={s.l} style={{ background: surf, border: `1px solid ${brd}`, padding: "2rem", textAlign: "center" }}>
               <div style={{ fontSize: "2.5rem", fontWeight: 900, color: ac, marginBottom: "0.5rem" }}>{s.n}</div>
@@ -257,7 +258,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
             </div>
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {["Performance Driven", "Pro Athlete Tested", "Sustainable Materials", "Community Focused"].map(v => (
             <div key={v} style={{ padding: "1.5rem", border: `1px solid ${brd}` }}>
               <h3 style={{ fontWeight: 800, fontSize: "1rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>{v}</h3>
@@ -270,7 +271,7 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
   );
 
   const contactPage = (
-    <div style={{ padding: "4rem 2rem 6rem", maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem" }}>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto py-16 px-4 md:px-8">
       <div>
         <h1 style={{ fontWeight: 900, fontSize: "2rem", textTransform: "uppercase", marginBottom: "2rem" }}>{t.contactTitle}</h1>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -304,15 +305,15 @@ export default function SportsPro({ language, scheme, dark }: TemplateProps) {
   );
 
   return (
-    <div dir={dir} style={{ background: bg, color: txt, fontFamily: "'Inter', sans-serif", minHeight: "100vh" }}>
+    <div dir={dir} className="min-h-screen font-sans w-full" style={{ background: bg, color: txt }}>
       {navBar}
       {page === "home" && homePage}
       {page === "products" && productsPage}
       {page === "about" && aboutPage}
       {page === "contact" && contactPage}
       <footer style={{ background: surf, borderTop: `1px solid ${brd}`, marginTop: "2rem" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "2rem" }}>
-          <div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-8 max-w-5xl mx-auto py-12 px-4 md:px-8">
+          <div className="md:col-span-2">
             <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontWeight: 900, fontSize: "1.5rem", marginBottom: "0.5rem", color: txt }}>
               <Icon name="trophy" size={22} style={{ color: ac }} />SPORTS<span style={{ color: ac }}>PRO</span>
             </div>

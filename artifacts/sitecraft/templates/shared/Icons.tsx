@@ -61,6 +61,8 @@ const paths: Record<string, string> = {
   mail: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm16 4l-8 5-8-5",
   chevronLeft: "M15 18l-6-6 6-6",
   chevronRight: "M9 18l6-6-6-6",
+  menu: "M3 12h18M3 6h18M3 18h18",
+  x: "M18 6L6 18M6 6l12 12",
 };
 
 interface IconProps extends SVGProps<SVGSVGElement> {

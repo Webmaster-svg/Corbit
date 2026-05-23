@@ -37,6 +37,7 @@ export default function TechZone({ language, scheme, dark }: TemplateProps) {
   const [activeCat, setActiveCat] = useState("All");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const addToCart = (p: typeof PRODUCTS[0]) => {
     setCart(prev => {
@@ -63,83 +64,106 @@ export default function TechZone({ language, scheme, dark }: TemplateProps) {
 
   const navBar = (
     <>
-      <div style={{ background: `linear-gradient(90deg,${scheme.accent},#8b5cf6)`, color: "#fff", textAlign: "center", padding: "0.5rem", fontSize: "0.8rem", fontWeight: 700 }}>{t.flash}</div>
-      <nav style={{ background: bg, borderBottom: `1px solid ${brd}`, padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1.5rem", position: "sticky", top: 0, zIndex: 50 }}>
-        <button onClick={() => setPage("home")} style={{ fontWeight: 900, fontSize: "1.4rem", color: scheme.accent, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.35rem" }}>TechZone<Icon name="zap" size={22} /></button>
-        <div style={{ flex: 1, display: "flex", gap: "1.5rem" }}>
+      <div className="text-center py-2 text-xs font-bold text-white" style={{ background: `linear-gradient(90deg,${scheme.accent},#8b5cf6)` }}>{t.flash}</div>
+      <nav className="flex items-center justify-between px-4 md:px-8 py-4 sticky top-0 z-50 border-b" style={{ background: bg, borderColor: brd }}>
+        <button onClick={() => setPage("home")} className="font-black text-xl md:text-2xl flex items-center gap-1.5" style={{ color: scheme.accent }}>
+          TechZone<Icon name="zap" size={22} />
+        </button>
+        <div className="hidden md:flex flex-1 justify-center gap-6">
           {(["home", "products", "about", "contact"] as Page[]).map((p, i) => (
-            <button key={p} onClick={() => setPage(p)} style={{ background: "none", border: "none", cursor: "pointer", color: page === p ? scheme.accent : mut, fontWeight: page === p ? 700 : 400, fontSize: "0.875rem" }}>{t.nav[i]}</button>
+            <button key={p} onClick={() => setPage(p)} className="text-sm transition-colors" style={{ color: page === p ? scheme.accent : mut, fontWeight: page === p ? 700 : 400 }}>{t.nav[i]}</button>
           ))}
         </div>
-        <button onClick={() => setCartOpen(true)} style={{ background: scheme.accent, color: "#fff", border: "none", borderRadius: "0.5rem", padding: "0.5rem 1.25rem", cursor: "pointer", fontWeight: 700, fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-          <Icon name="bag" size={18} /> {cartCount > 0 && <span style={{ background: "#fff", color: scheme.accent, borderRadius: "50%", width: "1.2rem", height: "1.2rem", fontSize: "0.65rem", fontWeight: 900, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => setCartOpen(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg font-bold text-sm text-white" style={{ background: scheme.accent }}>
+            <Icon name="bag" size={18} /> {cartCount > 0 && <span className="bg-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center font-black" style={{ color: scheme.accent }}>{cartCount}</span>}
+          </button>
+          <button className="md:hidden p-2 rounded-md" style={{ color: txt }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <Icon name={mobileMenuOpen ? "x" : "menu"} size={24} />
+          </button>
+        </div>
       </nav>
+      {mobileMenuOpen && (
+        <div className="md:hidden flex flex-col border-b px-4 py-2" style={{ background: bg, borderColor: brd }}>
+          {(["home", "products", "about", "contact"] as Page[]).map((p, i) => (
+            <button key={p} onClick={() => { setPage(p); setMobileMenuOpen(false); }} className="text-left py-3 text-sm font-medium border-b last:border-0" style={{ color: page === p ? scheme.accent : txt, borderColor: brd }}>{t.nav[i]}</button>
+          ))}
+        </div>
+      )}
     </>
   );
 
   const homePage = (
     <>
-      <div style={{ position: "relative", overflow: "hidden", minHeight: "520px", display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center" }}>
-        <div style={{ padding: "4rem", zIndex: 1 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: `${scheme.accent}22`, color: scheme.accent, border: `1px solid ${scheme.accent}44`, borderRadius: "2rem", padding: "0.375rem 1rem", fontSize: "0.8rem", fontWeight: 600, marginBottom: "1.5rem" }}><Icon name="flame" size={16} /> Best Sellers 2024</div>
-          <h1 style={{ fontSize: "clamp(2rem,4.5vw,3.5rem)", fontWeight: 900, lineHeight: 1.05, marginBottom: "1.25rem", whiteSpace: "pre-line" }}>
-            {t.hero.split('\n').map((line, i) => <span key={i} style={{ display: "block", color: i === 1 ? scheme.accent : txt }}>{line}</span>)}
+      <div className="relative overflow-hidden min-h-[520px] grid grid-cols-1 md:grid-cols-2 items-center">
+        <div className="p-6 md:p-16 z-10 order-2 md:order-1">
+          <div className="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-xs font-semibold mb-6" style={{ background: `${scheme.accent}22`, color: scheme.accent, borderColor: `${scheme.accent}44` }}>
+            <Icon name="flame" size={16} /> Best Sellers 2024
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] mb-5 whitespace-pre-line">
+            {t.hero.split('\n').map((line, i) => <span key={i} className="block" style={{ color: i === 1 ? scheme.accent : txt }}>{line}</span>)}
           </h1>
-          <p style={{ color: mut, lineHeight: 1.7, marginBottom: "2rem", maxWidth: "400px" }}>{t.sub}</p>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <button onClick={() => setPage("products")} style={{ background: scheme.accent, color: "#fff", border: "none", borderRadius: "0.625rem", padding: "0.875rem 2rem", cursor: "pointer", fontWeight: 700 }}>{t.shop}</button>
+          <p className="leading-relaxed mb-8 max-w-sm" style={{ color: mut }}>{t.sub}</p>
+          <div className="flex gap-4">
+            <button onClick={() => setPage("products")} className="text-white px-8 py-3.5 rounded-xl font-bold transition-transform hover:scale-105" style={{ background: scheme.accent }}>{t.shop}</button>
           </div>
         </div>
-        <div style={{ position: "relative", height: "520px", overflow: "hidden" }}>
-          <img src="https://picsum.photos/seed/techhero/700/600" alt="tech" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to right, ${bg}, transparent)` }} />
+        <div className="relative h-[300px] md:h-[520px] overflow-hidden order-1 md:order-2">
+          <img src="https://picsum.photos/seed/techhero/700/600" alt="tech" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 hidden md:block" style={{ background: `linear-gradient(to right, ${bg}, transparent)` }} />
+          <div className="absolute inset-0 md:hidden" style={{ background: `linear-gradient(to bottom, transparent, ${bg})` }} />
         </div>
       </div>
-      <section style={{ padding: "3rem 2rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-          <h2 style={{ fontWeight: 800, fontSize: "1.4rem" }}>Trending Now</h2>
-          <button onClick={() => setPage("products")} style={{ color: scheme.accent, cursor: "pointer", fontWeight: 600, fontSize: "0.875rem", background: "none", border: "none" }}>{t.viewAll} →</button>
+      
+      <section className="px-6 py-12 md:p-12">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="font-extrabold text-xl md:text-2xl">Trending Now</h2>
+          <button onClick={() => setPage("products")} className="font-semibold text-sm transition-opacity hover:opacity-80" style={{ color: scheme.accent }}>{t.viewAll} →</button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1.25rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {PRODUCTS.slice(0, 4).map(p => (
-            <div key={p.id} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", overflow: "hidden" }}>
-              <div style={{ aspectRatio: "1", overflow: "hidden" }}><img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>
-              <div style={{ padding: "1rem" }}>
-                <div style={{ fontWeight: 700, marginBottom: "0.5rem", fontSize: "0.9rem" }}>{p.name}</div>
-                <div style={{ fontSize: "0.75rem", color: mut, marginBottom: "0.75rem" }}>⭐ {p.rating}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                  <span style={{ fontWeight: 800, color: scheme.accent }}>{p.price}</span>
-                  <span style={{ color: mut, fontSize: "0.8rem", textDecoration: "line-through" }}>{p.old}</span>
+            <div key={p.id} className="border rounded-2xl overflow-hidden transition-transform hover:-translate-y-1" style={{ background: surf, borderColor: brd }}>
+              <div className="aspect-square overflow-hidden"><img src={p.img} alt={p.name} className="w-full h-full object-cover" /></div>
+              <div className="p-4">
+                <div className="font-bold mb-2 text-sm">{p.name}</div>
+                <div className="text-xs mb-3" style={{ color: mut }}>⭐ {p.rating}</div>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-extrabold" style={{ color: scheme.accent }}>{p.price}</span>
+                  <span className="text-xs line-through" style={{ color: mut }}>{p.old}</span>
                 </div>
-                <button onClick={() => addToCart(p)} style={{ width: "100%", background: scheme.accent, color: "#fff", border: "none", borderRadius: "0.5rem", padding: "0.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem" }}>{t.addCart}</button>
+                <button onClick={() => addToCart(p)} className="w-full text-white py-2 rounded-lg font-bold text-sm" style={{ background: scheme.accent }}>{t.addCart}</button>
               </div>
             </div>
           ))}
         </div>
       </section>
-      <div style={{ background: surf, borderTop: `1px solid ${brd}`, borderBottom: `1px solid ${brd}`, padding: "2rem", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1rem", textAlign: "center" }}>
+
+      <div className="border-y py-8 px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center" style={{ background: surf, borderColor: brd }}>
         {[{ icon: "shield", text: "2-Year Warranty" }, { icon: "rocket", text: "Free Express Shipping" }, { icon: "rotate", text: "30-Day Returns" }, { icon: "message", text: "Expert Support 24/7" }].map((tr, i) => (
-          <div key={i}><div style={{ marginBottom: "0.5rem" }}><Icon name={tr.icon} size={24} /></div><div style={{ fontWeight: 600, fontSize: "0.8rem", color: mut }}>{tr.text}</div></div>
+          <div key={i} className="flex flex-col items-center">
+            <div className="mb-2"><Icon name={tr.icon} size={24} /></div>
+            <div className="font-semibold text-xs md:text-sm" style={{ color: mut }}>{tr.text}</div>
+          </div>
         ))}
       </div>
+
       {/* Testimonials */}
-      <section style={{ padding: "3rem 2rem" }}>
-        <h2 style={{ textAlign: "center", fontWeight: 800, fontSize: "1.4rem", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="px-6 py-12 md:p-12">
+        <h2 className="text-center font-extrabold text-xl md:text-2xl mb-10">{t.testimonialTitle}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
             { text: t.testimonial3, name: t.testimonialName3, role: t.testimonialRole3 },
           ].map((item, i) => (
-            <div key={i} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", padding: "1.5rem", display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", gap: "0.25rem", marginBottom: "0.75rem" }}>
-                {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={14} style={{ color: "#3b82f6", fill: "#3b82f6" }} />)}
+            <div key={i} className="border rounded-2xl p-6 flex flex-col" style={{ background: surf, borderColor: brd }}>
+              <div className="flex gap-1 mb-3">
+                {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={14} className="text-blue-500 fill-blue-500" />)}
               </div>
-              <p style={{ color: txt, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem", flex: 1 }}>"{item.text}"</p>
+              <p className="text-sm leading-relaxed mb-4 flex-1" style={{ color: txt }}>"{item.text}"</p>
               <div>
-                <div style={{ fontWeight: 700, fontSize: "0.8rem" }}>{item.name}</div>
-                <div style={{ color: mut, fontSize: "0.7rem" }}>{item.role}</div>
+                <div className="font-bold text-sm">{item.name}</div>
+                <div className="text-xs" style={{ color: mut }}>{item.role}</div>
               </div>
             </div>
           ))}
@@ -149,27 +173,27 @@ export default function TechZone({ language, scheme, dark }: TemplateProps) {
   );
 
   const productsPage = (
-    <section style={{ padding: "3rem 2rem 5rem" }}>
-      <h1 style={{ fontWeight: 800, fontSize: "2rem", marginBottom: "0.5rem" }}>{t.allProd}</h1>
-      <p style={{ color: mut, marginBottom: "2rem", fontSize: "0.875rem" }}>{filtered.length} products</p>
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem", flexWrap: "wrap" }}>
+    <section className="px-6 py-12 md:p-12 pb-20">
+      <h1 className="font-extrabold text-3xl mb-2">{t.allProd}</h1>
+      <p className="text-sm mb-8" style={{ color: mut }}>{filtered.length} products</p>
+      <div className="flex gap-2 mb-8 flex-wrap">
         {CATS.map(c => (
-          <button key={c} onClick={() => setActiveCat(c)} style={{ background: activeCat === c ? scheme.accent : surf, color: activeCat === c ? "#fff" : mut, border: `1px solid ${activeCat === c ? scheme.accent : brd}`, borderRadius: "0.5rem", padding: "0.5rem 1rem", cursor: "pointer", fontWeight: 600, fontSize: "0.75rem" }}>{c}</button>
+          <button key={c} onClick={() => setActiveCat(c)} className="border rounded-lg px-4 py-2 font-semibold text-xs transition-colors" style={{ background: activeCat === c ? scheme.accent : surf, color: activeCat === c ? "#fff" : mut, borderColor: activeCat === c ? scheme.accent : brd }}>{c}</button>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1.25rem" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {filtered.map(p => (
-          <div key={p.id} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", overflow: "hidden" }}>
-            <div style={{ aspectRatio: "1", overflow: "hidden" }}><img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>
-            <div style={{ padding: "1rem" }}>
-              <div style={{ fontSize: "0.65rem", color: scheme.accent, fontWeight: 700, textTransform: "uppercase", marginBottom: "0.25rem" }}>{p.cat}</div>
-              <div style={{ fontWeight: 700, marginBottom: "0.5rem", fontSize: "0.9rem" }}>{p.name}</div>
-              <div style={{ fontSize: "0.75rem", color: mut, marginBottom: "0.75rem" }}>⭐ {p.rating}</div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-                <span style={{ fontWeight: 800, color: scheme.accent }}>{p.price}</span>
-                <span style={{ color: mut, fontSize: "0.8rem", textDecoration: "line-through" }}>{p.old}</span>
+          <div key={p.id} className="border rounded-2xl overflow-hidden" style={{ background: surf, borderColor: brd }}>
+            <div className="aspect-square overflow-hidden"><img src={p.img} alt={p.name} className="w-full h-full object-cover" /></div>
+            <div className="p-4">
+              <div className="text-[10px] font-bold uppercase mb-1" style={{ color: scheme.accent }}>{p.cat}</div>
+              <div className="font-bold mb-2 text-sm">{p.name}</div>
+              <div className="text-xs mb-3" style={{ color: mut }}>⭐ {p.rating}</div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="font-extrabold" style={{ color: scheme.accent }}>{p.price}</span>
+                <span className="text-xs line-through" style={{ color: mut }}>{p.old}</span>
               </div>
-              <button onClick={() => addToCart(p)} style={{ width: "100%", background: scheme.accent, color: "#fff", border: "none", borderRadius: "0.5rem", padding: "0.5rem", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem" }}>{t.addCart}</button>
+              <button onClick={() => addToCart(p)} className="w-full text-white py-2 rounded-lg font-bold text-sm" style={{ background: scheme.accent }}>{t.addCart}</button>
             </div>
           </div>
         ))}
@@ -178,14 +202,14 @@ export default function TechZone({ language, scheme, dark }: TemplateProps) {
   );
 
   const aboutPage = (
-    <div style={{ padding: "4rem 2rem 6rem", maxWidth: "800px", margin: "0 auto" }}>
-      <h1 style={{ fontWeight: 900, fontSize: "2.5rem", marginBottom: "1.5rem" }}>{t.aboutTitle}</h1>
-      <p style={{ color: mut, lineHeight: 1.8, fontSize: "0.95rem", marginBottom: "3rem" }}>{t.aboutText}</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem", marginBottom: "3rem" }}>
+    <div className="px-6 py-16 md:py-24 max-w-4xl mx-auto">
+      <h1 className="font-black text-4xl md:text-5xl mb-6">{t.aboutTitle}</h1>
+      <p className="leading-relaxed text-base md:text-lg mb-12" style={{ color: mut }}>{t.aboutText}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
         {[{ n: "2M+", l: "Products Sold" }, { n: "4.9★", l: "Average Rating" }, { n: "50+", l: "Countries" }].map(s => (
-          <div key={s.l} style={{ background: surf, border: `1px solid ${brd}`, borderRadius: "1rem", padding: "2rem", textAlign: "center" }}>
-            <div style={{ fontSize: "2rem", fontWeight: 900, color: scheme.accent, marginBottom: "0.5rem" }}>{s.n}</div>
-            <div style={{ color: mut, fontSize: "0.875rem" }}>{s.l}</div>
+          <div key={s.l} className="border rounded-2xl p-8 text-center" style={{ background: surf, borderColor: brd }}>
+            <div className="text-3xl md:text-4xl font-black mb-2" style={{ color: scheme.accent }}>{s.n}</div>
+            <div className="text-sm" style={{ color: mut }}>{s.l}</div>
           </div>
         ))}
       </div>
@@ -193,23 +217,23 @@ export default function TechZone({ language, scheme, dark }: TemplateProps) {
   );
 
   const contactPage = (
-    <div style={{ padding: "4rem 2rem 6rem", maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem" }}>
+    <div className="px-6 py-16 md:py-24 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
       <div>
-        <h1 style={{ fontWeight: 900, fontSize: "2rem", marginBottom: "2rem" }}>{t.contactTitle}</h1>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <h1 className="font-black text-3xl md:text-4xl mb-8">{t.contactTitle}</h1>
+        <div className="flex flex-col gap-4">
           {[{ label: t.name, type: "text" }, { label: t.email, type: "email" }].map(f => (
-            <input key={f.label} type={f.type} placeholder={f.label} style={{ background: surf, border: `1px solid ${brd}`, color: txt, padding: "0.875rem 1rem", borderRadius: "0.5rem", fontSize: "0.875rem", outline: "none" }} />
+            <input key={f.label} type={f.type} placeholder={f.label} className="border p-3.5 rounded-lg text-sm outline-none" style={{ background: surf, borderColor: brd, color: txt }} />
           ))}
-          <textarea placeholder={t.message} rows={5} style={{ background: surf, border: `1px solid ${brd}`, color: txt, padding: "0.875rem 1rem", borderRadius: "0.5rem", fontSize: "0.875rem", outline: "none", resize: "vertical" }} />
-          <button style={{ background: scheme.accent, color: "#fff", border: "none", borderRadius: "0.5rem", padding: "1rem", cursor: "pointer", fontWeight: 700 }}>{t.send}</button>
+          <textarea placeholder={t.message} rows={5} className="border p-3.5 rounded-lg text-sm outline-none resize-y" style={{ background: surf, borderColor: brd, color: txt }} />
+          <button className="text-white p-4 rounded-lg font-bold" style={{ background: scheme.accent }}>{t.send}</button>
         </div>
       </div>
       <div>
-        <h2 style={{ fontWeight: 700, fontSize: "1.25rem", marginBottom: "2rem" }}>Support Info</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <h2 className="font-bold text-xl md:text-2xl mb-8">Support Info</h2>
+        <div className="flex flex-col gap-6">
           {[{ icon: "pin", text: t.address }, { icon: "phone", text: t.phone }, { icon: "clock", text: t.hours }].map(i => (
-            <div key={i.icon} style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-              <Icon name={i.icon} size={20} /><span style={{ color: mut, fontSize: "0.9rem", lineHeight: 1.6 }}>{i.text}</span>
+            <div key={i.icon} className="flex gap-4 items-center">
+              <Icon name={i.icon} size={24} /><span className="text-sm md:text-base leading-relaxed" style={{ color: mut }}>{i.text}</span>
             </div>
           ))}
         </div>
@@ -218,47 +242,47 @@ export default function TechZone({ language, scheme, dark }: TemplateProps) {
   );
 
   return (
-    <div dir={dir} style={{ background: bg, color: txt, fontFamily: "'Inter', sans-serif", minHeight: "100vh" }}>
+    <div dir={dir} className="font-sans min-h-screen" style={{ background: bg, color: txt, fontFamily: "'Inter', sans-serif" }}>
       {navBar}
       {page === "home" && homePage}
       {page === "products" && productsPage}
       {page === "about" && aboutPage}
       {page === "contact" && contactPage}
-      <footer style={{ background: surf, borderTop: `1px solid ${brd}`, borderTopLeftRadius: "1.5rem", borderTopRightRadius: "1.5rem", marginTop: "2rem" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "2rem" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.5rem" }}>
-              <span style={{ fontWeight: 900, fontSize: "1.3rem", color: scheme.accent }}>TechZone</span>
+      <footer className="border-t rounded-t-[24px] mt-8" style={{ background: surf, borderColor: brd }}>
+        <div className="max-w-6xl mx-auto px-6 py-12 md:p-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="sm:col-span-2 md:col-span-1">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="font-black text-xl" style={{ color: scheme.accent }}>TechZone</span>
               <Icon name="zap" size={20} style={{ color: scheme.accent }} />
             </div>
-            <p style={{ color: mut, fontSize: "0.85rem", lineHeight: 1.7, margin: "0 0 1rem" }}>Your destination for cutting-edge technology. Curated gadgets, expert reviews, and unbeatable prices on top brands.</p>
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-              <Icon name="twitter" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="instagram" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="youtube" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="message" size={18} style={{ color: mut, cursor: "pointer" }} />
+            <p className="text-sm leading-relaxed mb-4" style={{ color: mut }}>Your destination for cutting-edge technology. Curated gadgets, expert reviews, and unbeatable prices on top brands.</p>
+            <div className="flex gap-3">
+              <Icon name="twitter" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="instagram" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="youtube" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="message" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
             </div>
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem", color: txt }}>Shop</div>
+            <div className="font-bold text-xs uppercase tracking-widest mb-4" style={{ color: txt }}>Shop</div>
             {["Phones", "Laptops", "Audio", "Gaming", "Smart Home"].map(l => (
-              <div key={l} style={{ color: mut, fontSize: "0.85rem", marginBottom: "0.5rem", cursor: "pointer" }}>{l}</div>
+              <div key={l} className="text-sm mb-2 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{l}</div>
             ))}
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem", color: txt }}>Support</div>
+            <div className="font-bold text-xs uppercase tracking-widest mb-4" style={{ color: txt }}>Support</div>
             {["Warranty", "Returns", "Shipping", "Product Support", "Contact"].map(l => (
-              <div key={l} style={{ color: mut, fontSize: "0.85rem", marginBottom: "0.5rem", cursor: "pointer" }}>{l}</div>
+              <div key={l} className="text-sm mb-2 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{l}</div>
             ))}
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem", color: txt }}>Contact</div>
-            <div style={{ color: mut, fontSize: "0.82rem", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.35rem" }}><Icon name="mail" size={14} /> support@techzone.com</div>
-            <div style={{ color: mut, fontSize: "0.82rem", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.35rem" }}><Icon name="phone" size={14} /> +1 (888) 555-TECH</div>
-            <div style={{ color: mut, fontSize: "0.82rem", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.35rem" }}><Icon name="pin" size={14} /> 1 Infinite Loop, Cupertino</div>
+            <div className="font-bold text-xs uppercase tracking-widest mb-4" style={{ color: txt }}>Contact</div>
+            <div className="text-xs mb-2 flex items-center gap-1.5" style={{ color: mut }}><Icon name="mail" size={14} /> support@techzone.com</div>
+            <div className="text-xs mb-2 flex items-center gap-1.5" style={{ color: mut }}><Icon name="phone" size={14} /> +1 (888) 555-TECH</div>
+            <div className="text-xs mb-2 flex items-center gap-1.5" style={{ color: mut }}><Icon name="pin" size={14} /> 1 Infinite Loop, Cupertino</div>
           </div>
         </div>
-        <div style={{ borderTop: `1px solid ${brd}`, padding: "1.25rem 2rem", textAlign: "center", color: mut, fontSize: "0.8rem" }}>{t.footer}</div>
+        <div className="border-t px-6 py-5 text-center text-xs" style={{ borderColor: brd, color: mut }}>{t.footer}</div>
       </footer>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cart} onRemove={removeFromCart} onUpdate={updateQty} scheme={scheme} dark={dark} lang={language} />
     </div>

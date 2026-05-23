@@ -37,6 +37,7 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
   const [activeCat, setActiveCat] = useState("All");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const addToCart = (p: typeof PRODUCTS[0]) => {
     setCart(prev => {
@@ -63,78 +64,90 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
 
   const navBar = (
     <>
-      <div style={{ background: scheme.accent, color: scheme.accentText, textAlign: "center", padding: "0.625rem", fontSize: "0.8rem" }}>{t.deal}</div>
-      <nav style={{ background: bg, borderBottom: `1px solid ${brd}`, padding: "1.25rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
-        <button onClick={() => setPage("home")} style={{ background: "none", border: "none", cursor: "pointer" }}>
-          <div style={{ fontSize: "1.6rem", fontWeight: 400, letterSpacing: "0.15em", color: txt }}>ARTISAN</div>
-          <div style={{ fontSize: "0.6rem", color: mut, letterSpacing: "0.2em", textTransform: "uppercase" }}>Handcrafted Marketplace</div>
+      <div className="text-center py-2.5 text-xs" style={{ background: scheme.accent, color: scheme.accentText }}>{t.deal}</div>
+      <nav className="flex items-center justify-between px-6 py-5 md:px-8 sticky top-0 z-50 border-b" style={{ background: bg, borderColor: brd }}>
+        <button onClick={() => setPage("home")} className="bg-none border-none cursor-pointer text-left">
+          <div className="text-2xl font-normal tracking-[0.15em]" style={{ color: txt }}>ARTISAN</div>
+          <div className="text-[0.6rem] tracking-[0.2em] uppercase" style={{ color: mut }}>Handcrafted Marketplace</div>
         </button>
-        <div style={{ display: "flex", gap: "2rem" }}>
+        <div className="hidden md:flex gap-8">
           {(["home", "products", "about", "contact"] as Page[]).map((p, i) => (
-            <button key={p} onClick={() => setPage(p)} style={{ background: "none", border: "none", cursor: "pointer", color: page === p ? scheme.accent : mut, fontWeight: page === p ? 700 : 400, fontSize: "0.8rem", letterSpacing: "0.08em" }}>{t.nav[i]}</button>
+            <button key={p} onClick={() => setPage(p)} className="bg-none border-none cursor-pointer text-xs tracking-[0.08em]" style={{ color: page === p ? scheme.accent : mut, fontWeight: page === p ? 700 : 400 }}>{t.nav[i]}</button>
           ))}
         </div>
-        <button onClick={() => setCartOpen(true)} style={{ background: scheme.accent, color: scheme.accentText, border: "none", padding: "0.625rem 1.5rem", cursor: "pointer", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-<Icon name="bag" size={18} /> {cartCount > 0 && <span style={{ background: "#fff", color: scheme.accent, borderRadius: "50%", width: "1.2rem", height: "1.2rem", fontSize: "0.65rem", fontWeight: 900, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => setCartOpen(true)} className="border-none py-2.5 px-6 cursor-pointer text-xs flex items-center gap-1.5" style={{ background: scheme.accent, color: scheme.accentText }}>
+            <Icon name="bag" size={18} /> {cartCount > 0 && <span className="bg-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center font-black" style={{ color: scheme.accent }}>{cartCount}</span>}
+          </button>
+          <button className="md:hidden p-2 rounded-md" style={{ color: txt }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <Icon name={mobileMenuOpen ? "x" : "menu"} size={24} />
+          </button>
+        </div>
       </nav>
+      {mobileMenuOpen && (
+        <div className="md:hidden flex flex-col border-b px-4 py-2" style={{ background: bg, borderColor: brd }}>
+          {(["home", "products", "about", "contact"] as Page[]).map((p, i) => (
+            <button key={p} onClick={() => { setPage(p); setMobileMenuOpen(false); }} className="text-left py-3 text-sm font-medium border-b last:border-0" style={{ color: page === p ? scheme.accent : txt, borderColor: brd }}>{t.nav[i]}</button>
+          ))}
+        </div>
+      )}
     </>
   );
 
   const homePage = (
     <>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "550px" }}>
-        <div style={{ overflow: "hidden" }}><img src="https://picsum.photos/seed/arthero/700/600" alt="artisan" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>
-        <div style={{ padding: "4rem 3.5rem", display: "flex", flexDirection: "column", justifyContent: "center", background: surf }}>
-          <div style={{ fontSize: "0.7rem", letterSpacing: "0.25em", color: scheme.accent, textTransform: "uppercase", marginBottom: "1.25rem" }}>Handcrafted with ❤️</div>
-          <h1 style={{ fontSize: "clamp(2rem,4vw,3.5rem)", fontWeight: 400, lineHeight: 1.2, marginBottom: "1.5rem", whiteSpace: "pre-line", color: txt }}>{t.hero}</h1>
-          <p style={{ color: mut, lineHeight: 1.9, marginBottom: "2rem", fontSize: "0.95rem" }}>{t.sub}</p>
-          <button onClick={() => setPage("products")} style={{ background: scheme.accent, color: scheme.accentText, border: "none", padding: "1rem 2.5rem", cursor: "pointer", fontSize: "0.875rem", letterSpacing: "0.08em", width: "fit-content" }}>{t.shop}</button>
+      <div className="grid grid-cols-1 md:grid-cols-2 min-h-[550px]">
+        <div className="overflow-hidden order-1 md:order-none h-[300px] md:h-auto"><img src="https://picsum.photos/seed/arthero/700/600" alt="artisan" className="w-full h-full object-cover" /></div>
+        <div className="p-8 md:p-14 flex flex-col justify-center order-2 md:order-none" style={{ background: surf }}>
+          <div className="text-xs tracking-[0.25em] uppercase mb-5" style={{ color: scheme.accent }}>Handcrafted with ❤️</div>
+          <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-normal leading-[1.2] mb-6 whitespace-pre-line" style={{ color: txt }}>{t.hero}</h1>
+          <p className="leading-[1.9] mb-8 text-[0.95rem]" style={{ color: mut }}>{t.sub}</p>
+          <button onClick={() => setPage("products")} className="border-none py-4 px-10 cursor-pointer text-sm tracking-[0.08em] w-fit" style={{ background: scheme.accent, color: scheme.accentText }}>{t.shop}</button>
         </div>
       </div>
-      <section style={{ padding: "4rem 2rem 5rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${brd}`, paddingBottom: "1rem", marginBottom: "2.5rem" }}>
-          <h2 style={{ fontWeight: 400, fontSize: "1.4rem", letterSpacing: "0.08em", textTransform: "uppercase", color: txt }}>Maker's Picks</h2>
-          <button onClick={() => setPage("products")} style={{ color: scheme.accent, cursor: "pointer", fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", background: "none", border: "none" }}>{t.viewAll} →</button>
+      <section className="px-6 py-16 md:p-16 md:pb-20">
+        <div className="flex justify-between items-center border-b pb-4 mb-10" style={{ borderColor: brd }}>
+          <h2 className="font-normal text-xl md:text-2xl tracking-[0.08em] uppercase" style={{ color: txt }}>Maker's Picks</h2>
+          <button onClick={() => setPage("products")} className="cursor-pointer text-xs tracking-[0.12em] uppercase bg-none border-none" style={{ color: scheme.accent }}>{t.viewAll} →</button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "2rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {PRODUCTS.slice(0, 4).map(p => (
-            <div key={p.id} style={{ cursor: "pointer" }}>
-              <div style={{ overflow: "hidden", aspectRatio: "4/5", marginBottom: "1rem" }}>
-                <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s" }} onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.04)")} onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
+            <div key={p.id} className="cursor-pointer group">
+              <div className="overflow-hidden aspect-[4/5] mb-4">
+                <img src={p.img} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
               </div>
-              <div style={{ fontSize: "0.65rem", color: scheme.accent, letterSpacing: "0.1em", marginBottom: "0.3rem" }}>by {p.maker}</div>
-              <div style={{ fontSize: "0.9rem", marginBottom: "0.75rem", color: txt }}>{p.name}</div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontWeight: 600, color: txt }}>{p.price}</span>
-                <button onClick={() => addToCart(p)} style={{ background: "transparent", border: `1px solid ${brd}`, color: txt, padding: "0.35rem 0.875rem", cursor: "pointer", fontSize: "0.7rem" }}>{t.addCart}</button>
+              <div className="text-[0.65rem] tracking-[0.1em] mb-1" style={{ color: scheme.accent }}>by {p.maker}</div>
+              <div className="text-[0.9rem] mb-3" style={{ color: txt }}>{p.name}</div>
+              <div className="flex justify-between items-center">
+                <span className="font-semibold" style={{ color: txt }}>{p.price}</span>
+                <button onClick={() => addToCart(p)} className="bg-transparent border py-1.5 px-3.5 cursor-pointer text-[0.7rem]" style={{ borderColor: brd, color: txt }}>{t.addCart}</button>
               </div>
             </div>
           ))}
         </div>
       </section>
-      <div style={{ background: scheme.accent, color: scheme.accentText, padding: "2rem", display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center", gap: "1rem" }}>
+      <div className="p-8 grid grid-cols-2 md:grid-cols-4 text-center gap-4" style={{ background: scheme.accent, color: scheme.accentText }}>
         {["Handmade Guarantee", "Support Artisans", "Eco Packaging", "Free Returns"].map((tr, i) => (
-          <div key={i} style={{ fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{tr}</div>
+          <div key={i} className="text-xs tracking-[0.12em] uppercase">{tr}</div>
         ))}
       </div>
       {/* Testimonials */}
-      <section style={{ padding: "4rem 2rem" }}>
-        <h2 style={{ textAlign: "center", fontWeight: 400, fontSize: "1.4rem", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "2.5rem" }}>{t.testimonialTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="px-6 py-16 md:p-16">
+        <h2 className="text-center font-normal text-xl md:text-2xl tracking-[0.1em] uppercase mb-10" style={{ color: txt }}>{t.testimonialTitle}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {[
             { text: t.testimonial1, name: t.testimonialName1, role: t.testimonialRole1 },
             { text: t.testimonial2, name: t.testimonialName2, role: t.testimonialRole2 },
             { text: t.testimonial3, name: t.testimonialName3, role: t.testimonialRole3 },
           ].map((item, i) => (
-            <div key={i} style={{ background: surf, border: `1px solid ${brd}`, padding: "1.75rem", display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", gap: "0.2rem", marginBottom: "0.75rem" }}>
+            <div key={i} className="border p-7 flex flex-col" style={{ background: surf, borderColor: brd }}>
+              <div className="flex gap-1 mb-3">
                 {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={14} style={{ color: "#d97706", fill: "#d97706" }} />)}
               </div>
-              <p style={{ color: txt, fontSize: "0.85rem", lineHeight: 1.8, margin: "0 0 1.25rem", flex: 1, fontStyle: "italic" }}>"{item.text}"</p>
-              <div style={{ borderTop: `1px solid ${brd}`, paddingTop: "0.75rem" }}>
-                <div style={{ fontWeight: 600, fontSize: "0.8rem", fontFamily: "'Georgia',serif" }}>{item.name}</div>
-                <div style={{ color: mut, fontSize: "0.7rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>{item.role}</div>
+              <p className="text-[0.85rem] leading-[1.8] m-0 mb-5 flex-1 italic" style={{ color: txt }}>"{item.text}"</p>
+              <div className="border-t pt-3" style={{ borderColor: brd }}>
+                <div className="font-semibold text-sm" style={{ fontFamily: "'Georgia',serif", color: txt }}>{item.name}</div>
+                <div className="text-[0.7rem] tracking-[0.08em] uppercase" style={{ color: mut }}>{item.role}</div>
               </div>
             </div>
           ))}
@@ -144,26 +157,26 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
   );
 
   const productsPage = (
-    <section style={{ padding: "3rem 2rem 5rem" }}>
-      <h1 style={{ fontWeight: 400, fontSize: "2rem", letterSpacing: "0.05em", marginBottom: "0.5rem", color: txt }}>{t.allProd}</h1>
-      <p style={{ color: mut, marginBottom: "2rem", fontSize: "0.875rem" }}>{filtered.length} items</p>
-      <div style={{ display: "flex", gap: "0.75rem", marginBottom: "2.5rem", flexWrap: "wrap" }}>
+    <section className="px-6 py-12 md:p-12 md:pb-20">
+      <h1 className="font-normal text-3xl md:text-4xl tracking-[0.05em] mb-2" style={{ color: txt }}>{t.allProd}</h1>
+      <p className="mb-8 text-sm" style={{ color: mut }}>{filtered.length} items</p>
+      <div className="flex gap-3 mb-10 flex-wrap">
         {CATS.map(c => (
-          <button key={c} onClick={() => setActiveCat(c)} style={{ background: activeCat === c ? scheme.accent : "transparent", color: activeCat === c ? scheme.accentText : txt, border: `1px solid ${activeCat === c ? scheme.accent : brd}`, padding: "0.5rem 1.25rem", cursor: "pointer", fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>{c}</button>
+          <button key={c} onClick={() => setActiveCat(c)} className="border px-5 py-2 cursor-pointer text-xs tracking-[0.1em] uppercase transition-colors" style={{ background: activeCat === c ? scheme.accent : "transparent", color: activeCat === c ? scheme.accentText : txt, borderColor: activeCat === c ? scheme.accent : brd }}>{c}</button>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "2rem" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {filtered.map(p => (
-          <div key={p.id}>
-            <div style={{ overflow: "hidden", aspectRatio: "4/5", marginBottom: "1rem" }}>
-              <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s" }} onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.04)")} onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
+          <div key={p.id} className="group">
+            <div className="overflow-hidden aspect-[4/5] mb-4">
+              <img src={p.img} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
             </div>
-            <div style={{ fontSize: "0.65rem", color: scheme.accent, letterSpacing: "0.1em", marginBottom: "0.3rem" }}>by {p.maker}</div>
-            <div style={{ fontSize: "0.65rem", color: mut, marginBottom: "0.3rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>{p.cat}</div>
-            <div style={{ fontSize: "0.9rem", marginBottom: "0.75rem", color: txt }}>{p.name}</div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontWeight: 600, color: txt }}>{p.price}</span>
-              <button onClick={() => addToCart(p)} style={{ background: scheme.accent, color: scheme.accentText, border: "none", padding: "0.4rem 0.875rem", cursor: "pointer", fontSize: "0.7rem", letterSpacing: "0.08em" }}>{t.addCart}</button>
+            <div className="text-[0.65rem] tracking-[0.1em] mb-1" style={{ color: scheme.accent }}>by {p.maker}</div>
+            <div className="text-[0.65rem] mb-1 tracking-[0.08em] uppercase" style={{ color: mut }}>{p.cat}</div>
+            <div className="text-[0.9rem] mb-3" style={{ color: txt }}>{p.name}</div>
+            <div className="flex justify-between items-center">
+              <span className="font-semibold" style={{ color: txt }}>{p.price}</span>
+              <button onClick={() => addToCart(p)} className="border-none py-1.5 px-3.5 cursor-pointer text-[0.7rem] tracking-[0.08em]" style={{ background: scheme.accent, color: scheme.accentText }}>{t.addCart}</button>
             </div>
           </div>
         ))}
@@ -172,19 +185,19 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
   );
 
   const aboutPage = (
-    <div style={{ padding: "4rem 2rem 6rem", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center", marginBottom: "4rem" }}>
+    <div className="px-6 py-16 md:py-24 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
         <div>
-          <h1 style={{ fontWeight: 400, fontSize: "2.5rem", marginBottom: "1.5rem", lineHeight: 1.1, color: txt }}>{t.aboutTitle}</h1>
-          <p style={{ color: mut, lineHeight: 1.9, fontSize: "0.95rem" }}>{t.aboutText}</p>
+          <h1 className="font-normal text-4xl md:text-[2.5rem] mb-6 leading-[1.1]" style={{ color: txt }}>{t.aboutTitle}</h1>
+          <p className="leading-[1.9] text-[0.95rem]" style={{ color: mut }}>{t.aboutText}</p>
         </div>
-        <img src="https://picsum.photos/seed/artabout/600/500" alt="artisans" style={{ width: "100%", objectFit: "cover" }} />
+        <img src="https://picsum.photos/seed/artabout/600/500" alt="artisans" className="w-full object-cover" />
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {[{ n: "500+", l: "Makers Worldwide" }, { n: "12K+", l: "Handmade Products" }, { n: "98%", l: "Happy Customers" }].map(s => (
-          <div key={s.l} style={{ background: surf, border: `1px solid ${brd}`, padding: "2rem", textAlign: "center" }}>
-            <div style={{ fontSize: "2rem", fontWeight: 700, color: scheme.accent, marginBottom: "0.5rem" }}>{s.n}</div>
-            <div style={{ color: mut, fontSize: "0.875rem" }}>{s.l}</div>
+          <div key={s.l} className="border p-8 text-center" style={{ background: surf, borderColor: brd }}>
+            <div className="text-3xl md:text-4xl font-bold mb-2" style={{ color: scheme.accent }}>{s.n}</div>
+            <div className="text-sm" style={{ color: mut }}>{s.l}</div>
           </div>
         ))}
       </div>
@@ -192,23 +205,23 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
   );
 
   const contactPage = (
-    <div style={{ padding: "4rem 2rem 6rem", maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem" }}>
+    <div className="px-6 py-16 md:py-24 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
       <div>
-        <h1 style={{ fontWeight: 400, fontSize: "2rem", marginBottom: "2rem", color: txt }}>{t.contactTitle}</h1>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <h1 className="font-normal text-3xl md:text-4xl mb-8" style={{ color: txt }}>{t.contactTitle}</h1>
+        <div className="flex flex-col gap-4">
           {[{ label: t.name, type: "text" }, { label: t.email, type: "email" }].map(f => (
-            <input key={f.label} type={f.type} placeholder={f.label} style={{ background: surf, border: `1px solid ${brd}`, color: txt, padding: "0.875rem 1rem", fontSize: "0.875rem", outline: "none" }} />
+            <input key={f.label} type={f.type} placeholder={f.label} className="border p-3.5 text-sm outline-none" style={{ background: surf, borderColor: brd, color: txt }} />
           ))}
-          <textarea placeholder={t.message} rows={5} style={{ background: surf, border: `1px solid ${brd}`, color: txt, padding: "0.875rem 1rem", fontSize: "0.875rem", outline: "none", resize: "vertical" }} />
-          <button style={{ background: scheme.accent, color: scheme.accentText, border: "none", padding: "1rem", cursor: "pointer", fontSize: "0.8rem", letterSpacing: "0.1em" }}>{t.send}</button>
+          <textarea placeholder={t.message} rows={5} className="border p-3.5 text-sm outline-none resize-y" style={{ background: surf, borderColor: brd, color: txt }} />
+          <button className="border-none p-4 cursor-pointer text-sm tracking-[0.1em]" style={{ background: scheme.accent, color: scheme.accentText }}>{t.send}</button>
         </div>
       </div>
       <div>
-        <h2 style={{ fontWeight: 400, fontSize: "1.25rem", marginBottom: "2rem", letterSpacing: "0.08em", textTransform: "uppercase", color: txt }}>Find Us</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <h2 className="font-normal text-xl md:text-2xl mb-8 tracking-[0.08em] uppercase" style={{ color: txt }}>Find Us</h2>
+        <div className="flex flex-col gap-6">
           {[{ icon: "pin", text: t.address }, { icon: "phone", text: t.phone }, { icon: "clock", text: t.hours }].map(i => (
-            <div key={i.icon} style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-              <Icon name={i.icon} size={20} /><span style={{ color: mut, fontSize: "0.9rem", lineHeight: 1.6 }}>{i.text}</span>
+            <div key={i.icon} className="flex gap-4 items-center">
+              <Icon name={i.icon} size={24} /><span className="text-sm md:text-base leading-[1.6]" style={{ color: mut }}>{i.text}</span>
             </div>
           ))}
         </div>
@@ -217,38 +230,38 @@ export default function Artisan({ language, scheme, dark }: TemplateProps) {
   );
 
   return (
-    <div dir={dir} style={{ background: bg, color: txt, fontFamily: "'Georgia','Times New Roman',serif", minHeight: "100vh" }}>
+    <div dir={dir} className="min-h-screen" style={{ background: bg, color: txt, fontFamily: "'Georgia','Times New Roman',serif" }}>
       {navBar}
       {page === "home" && homePage}
       {page === "products" && productsPage}
       {page === "about" && aboutPage}
       {page === "contact" && contactPage}
-      <footer style={{ background: surf, borderTop: `1px solid ${brd}`, marginTop: "3rem" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 2rem 2rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "2.5rem" }}>
-          <div>
-            <div style={{ fontFamily: "'Georgia',serif", fontSize: "1.2rem", fontWeight: 700, marginBottom: "0.75rem", color: txt }}>Artisan</div>
-            <p style={{ color: mut, fontSize: "0.85rem", lineHeight: 1.7, fontFamily: "'Georgia',serif", fontStyle: "italic", margin: "0 0 1rem" }}>A marketplace for handmade goods crafted with care by skilled artisans from around the world.</p>
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-              <Icon name="twitter" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="instagram" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="facebook" size={18} style={{ color: mut, cursor: "pointer" }} />
-              <Icon name="pinterest" size={18} style={{ color: mut, cursor: "pointer" }} />
+      <footer className="border-t mt-12" style={{ background: surf, borderColor: brd }}>
+        <div className="max-w-5xl mx-auto px-6 py-12 md:p-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+          <div className="sm:col-span-2">
+            <div className="font-bold text-xl mb-3 font-serif" style={{ color: txt }}>Artisan</div>
+            <p className="text-sm leading-relaxed italic mb-4 max-w-sm" style={{ color: mut }}>A marketplace for handmade goods crafted with care by skilled artisans from around the world.</p>
+            <div className="flex gap-3">
+              <Icon name="twitter" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="instagram" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="facebook" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
+              <Icon name="pinterest" size={18} className="cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }} />
             </div>
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "1rem", color: txt }}>Links</div>
+            <div className="font-semibold text-xs uppercase tracking-widest mb-4" style={{ color: txt }}>Links</div>
             {["Shop All", "About Us", "Our Makers", "Contact", "FAQs"].map(l => (
-              <div key={l} style={{ color: mut, fontSize: "0.85rem", marginBottom: "0.5rem", cursor: "pointer", fontFamily: "'Georgia',serif" }}>{l}</div>
+              <div key={l} className="text-sm mb-2 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{l}</div>
             ))}
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "1rem", color: txt }}>Support</div>
+            <div className="font-semibold text-xs uppercase tracking-widest mb-4" style={{ color: txt }}>Support</div>
             {["Shipping Info", "Returns", "Care Guide", "Bulk Orders", "Gift Cards"].map(l => (
-              <div key={l} style={{ color: mut, fontSize: "0.85rem", marginBottom: "0.5rem", cursor: "pointer", fontFamily: "'Georgia',serif" }}>{l}</div>
+              <div key={l} className="text-sm mb-2 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: mut }}>{l}</div>
             ))}
           </div>
         </div>
-        <div style={{ borderTop: `1px solid ${brd}`, padding: "1.25rem 2rem", textAlign: "center", color: mut, fontSize: "0.75rem", letterSpacing: "0.08em" }}>{t.footer}</div>
+        <div className="border-t px-6 py-5 text-center text-xs tracking-widest" style={{ borderColor: brd, color: mut }}>{t.footer}</div>
       </footer>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cart} onRemove={removeFromCart} onUpdate={updateQty} scheme={scheme} dark={dark} lang={language} />
     </div>
