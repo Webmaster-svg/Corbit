@@ -6,6 +6,7 @@ import templatesRouter from "./templates";
 import dashboardRouter from "./dashboard";
 import communityRouter from "./community";
 import paymentsRouter from "./payments";
+import localStorageRouter from "./local-storage";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(templatesRouter);
 router.use(dashboardRouter);
 router.use(communityRouter);
 router.use(paymentsRouter);
+router.use(localStorageRouter);
 
 export default router;
