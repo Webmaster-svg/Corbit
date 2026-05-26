@@ -18,5 +18,6 @@ router.use(dashboardRouter);
 router.use(communityRouter);
 router.use(paymentsRouter);
 router.use(localStorageRouter);
+// workspace routes are mounted directly in app.ts
 
 export default router;

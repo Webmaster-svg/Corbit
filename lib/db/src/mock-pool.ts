@@ -1,6 +1,23 @@
 import fs from "fs";
 import path from "path";
 
+function snakeToCamel(s: string): string {
+  return s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+const MASTER_THEMES_SEED = [
+  { id: 1, name: "Luxuria", slug: "luxuria", description: "Editorial luxury fashion store with a minimal black-and-gold aesthetic.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/Luxuria.tsx", thumbnailUrl: "https://picsum.photos/seed/luxhero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+  { id: 2, name: "FreshMart", slug: "freshmart", description: "Vibrant organic grocery store with a clean, fresh green palette.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/FreshMart.tsx", thumbnailUrl: "https://picsum.photos/seed/freshhero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+  { id: 3, name: "TechZone", slug: "techzone", description: "Sleek dark electronics store with a tech-forward blue accent design.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/TechZone.tsx", thumbnailUrl: "https://picsum.photos/seed/techhero/600/400", isPro: true, createdAt: new Date(), updatedAt: new Date() },
+  { id: 4, name: "Artisan", slug: "artisan", description: "Warm, earthy handmade marketplace with a rustic artisanal feel.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/Artisan.tsx", thumbnailUrl: "https://picsum.photos/seed/arthero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+  { id: 5, name: "SportsPro", slug: "sportspro", description: "Bold, energetic sports gear store with high-impact typography.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/SportsPro.tsx", thumbnailUrl: "https://picsum.photos/seed/sporthero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+  { id: 6, name: "BeautyGlow", slug: "beautyglow", description: "Elegant skincare brand with a soft rose-gold and blush aesthetic.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/BeautyGlow.tsx", thumbnailUrl: "https://picsum.photos/seed/beautyhero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+  { id: 7, name: "HomeNest", slug: "homenest", description: "Warm Scandinavian home decor store with a minimal, timeless style.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/HomeNest.tsx", thumbnailUrl: "https://picsum.photos/seed/homehero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+  { id: 8, name: "KidsWorld", slug: "kidsworld", description: "Bright, playful children's toy and clothing store with a fun vibe.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/KidsWorld.tsx", thumbnailUrl: "https://picsum.photos/seed/kidhero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+  { id: 9, name: "Gourmet", slug: "gourmet", description: "Sophisticated premium food and fine wine boutique with deep burgundy tones.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/Gourmet.tsx", thumbnailUrl: "https://picsum.photos/seed/gourmethero/600/400", isPro: true, createdAt: new Date(), updatedAt: new Date() },
+  { id: 10, name: "DigitalShop", slug: "digitalshop", description: "Modern digital marketplace with vibrant gradients for creators and makers.", category: "ecommerce", sourceFolderPath: "artifacts/sitecraft/templates/DigitalShop.tsx", thumbnailUrl: "https://picsum.photos/seed/dighero/600/400", isPro: false, createdAt: new Date(), updatedAt: new Date() },
+];
+
 export class MockPool {
   private dbFile: string;
   private data: {
@@ -9,6 +26,8 @@ export class MockPool {
     projects: any[];
     templates: any[];
     activity: any[];
+    master_themes: any[];
+    user_workspaces: any[];
   };
 
   constructor() {
@@ -129,7 +148,9 @@ export class MockPool {
           created_at: new Date()
         }
       ],
-      activity: []
+      activity: [],
+      master_themes: [...MASTER_THEMES_SEED.map(t => ({ ...t }))],
+      user_workspaces: [],
     };
     this.load();
   }
@@ -141,7 +162,7 @@ export class MockPool {
         
         // Convert date strings back to Date objects
         const reviver = (key: string, val: any) => {
-          if (typeof val === "string" && (key === "created_at" || key === "updated_at" || key === "expires_at")) {
+          if (typeof val === "string" && (key === "created_at" || key === "updated_at" || key === "expires_at" || key === "createdAt" || key === "updatedAt")) {
             return new Date(val);
           }
           return val;
@@ -153,7 +174,9 @@ export class MockPool {
           ...this.data,
           ...converted,
           // Always ensure the default templates exist
-          templates: this.data.templates
+          templates: this.data.templates,
+          // Always ensure the default master themes exist
+          master_themes: this.data.master_themes
         };
       } else {
         this.save();
@@ -217,7 +240,10 @@ export class MockPool {
             if (col.includes(".")) {
               colKey = col.split(".")[1];
             }
-            return row[colKey] !== undefined ? row[colKey] : null;
+            const val = row[colKey];
+            if (val !== undefined) return val;
+            const camel = snakeToCamel(colKey);
+            return camel !== colKey ? (row[camel] ?? null) : null;
           });
         });
         return { rows: finalRows };
@@ -540,6 +566,139 @@ export class MockPool {
       const userId = Number(queryParams[0]);
       const activities = this.data.activity.filter(a => a.user_id === userId);
       return { rows: activities };
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // master_themes TABLE HANDLERS
+    // ══════════════════════════════════════════════════════════
+
+    // 13. SELECT FROM master_themes (all — no WHERE)
+    if (cleanSqlLower.startsWith('select ') && cleanSqlLower.includes('from "master_themes"') && !cleanSqlLower.includes('where')) {
+      return { rows: this.data.master_themes };
+    }
+
+    // SELECT FROM master_themes WHERE id = $1
+    if (cleanSqlLower.startsWith('select ') && cleanSqlLower.includes('from "master_themes"') && cleanSqlLower.includes('"master_themes"."id" = $1')) {
+      const id = Number(queryParams[0]);
+      const theme = this.data.master_themes.find(t => t.id === id);
+      return { rows: theme ? [theme] : [] };
+    }
+
+    // SELECT FROM master_themes WHERE slug = $1
+    if (cleanSqlLower.startsWith('select ') && cleanSqlLower.includes('from "master_themes"') && cleanSqlLower.includes('"master_themes"."slug" = $1')) {
+      const slug = queryParams[0];
+      const theme = this.data.master_themes.find(t => t.slug === slug);
+      return { rows: theme ? [theme] : [] };
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // user_workspaces TABLE HANDLERS
+    // ══════════════════════════════════════════════════════════
+
+    // 14. SELECT FROM user_workspaces WHERE user_id = $1
+    if (cleanSqlLower.startsWith('select ') && cleanSqlLower.includes('from "user_workspaces"') && cleanSqlLower.includes('"user_workspaces"."user_id" = $1')) {
+      const userId = Number(queryParams[0]);
+      const ws = this.data.user_workspaces.find(w => w.user_id === userId || w.userId === userId);
+      return { rows: ws ? [ws] : [] };
+    }
+
+    // SELECT FROM user_workspaces WHERE id = $1
+    if (cleanSqlLower.startsWith('select ') && cleanSqlLower.includes('from "user_workspaces"') && cleanSqlLower.includes('"user_workspaces"."id" = $1')) {
+      const id = Number(queryParams[0]);
+      const ws = this.data.user_workspaces.find(w => w.id === id);
+      return { rows: ws ? [ws] : [] };
+    }
+
+    // 15. INSERT INTO user_workspaces
+    if (cleanSqlLower.startsWith('insert into "user_workspaces"')) {
+      const colsMatch = cleanSql.match(/\((.*?)\)\s*values\s*\((.*?)\)/i);
+      let userId: number = 0;
+      let activeThemeId: number | null = null;
+      let dbFolderPath: string = "";
+      let pageJson: any = null;
+      if (colsMatch) {
+        const cols = colsMatch[1].split(',').map(c => c.trim().replace(/"/g, ''));
+        const vals = colsMatch[2].split(',').map(v => v.trim());
+        for (let i = 0; i < cols.length; i++) {
+          const col = cols[i];
+          const val = vals[i];
+          if (val.startsWith('$')) {
+            const paramIdx = Number(val.slice(1)) - 1;
+            const paramVal = queryParams[paramIdx];
+            if (col === 'user_id') userId = Number(paramVal);
+            else if (col === 'active_theme_id') activeThemeId = paramVal ? Number(paramVal) : null;
+            else if (col === 'db_folder_path') dbFolderPath = paramVal;
+            else if (col === 'page_json') {
+              try { pageJson = typeof paramVal === 'string' ? JSON.parse(paramVal) : paramVal; } catch { pageJson = paramVal; }
+            }
+          }
+        }
+      }
+      const newWs = {
+        id: this.data.user_workspaces.length + 1,
+        userId,
+        activeThemeId,
+        dbFolderPath,
+        pageJson,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.data.user_workspaces.push(newWs);
+      this.save();
+      return { rows: [newWs] };
+    }
+
+    // 16. UPDATE user_workspaces
+    if (cleanSqlLower.startsWith('update "user_workspaces"') || cleanSqlLower.startsWith('update user_workspaces')) {
+      const idMatch = cleanSqlLower.match(/where\s+.*?"?(?:user_workspaces\.)?(id|user_id)"?\s*=\s*\$(\d+)/i);
+      if (idMatch) {
+        const filterCol = idMatch[1];
+        const paramIdx = Number(idMatch[2]) - 1;
+        const filterVal = Number(queryParams[paramIdx]);
+        const idx = this.data.user_workspaces.findIndex(w => {
+          const camelCol = snakeToCamel(filterCol);
+          return String(w[filterCol]) === String(filterVal) || (camelCol !== filterCol && String(w[camelCol]) === String(filterVal));
+        });
+        if (idx !== -1) {
+          const setStartIndex = cleanSqlLower.indexOf('set ') + 4;
+          const setEndIndex = cleanSqlLower.indexOf(' where');
+          const setPart = cleanSql.substring(setStartIndex, setEndIndex);
+          const assignments = setPart.split(',').map(s => s.trim());
+          for (const assign of assignments) {
+            const parts = assign.split('=').map(p => p.trim());
+            const col = parts[0].replace(/"/g, '').replace(/.*?\./, '');
+            const val = parts[1];
+            if (val.startsWith('$')) {
+              const pIdx = Number(val.slice(1)) - 1;
+              const pVal = queryParams[pIdx];
+              if (col === 'active_theme_id') this.data.user_workspaces[idx].activeThemeId = pVal ? Number(pVal) : null;
+              else if (col === 'page_json') {
+                try { this.data.user_workspaces[idx].pageJson = typeof pVal === 'string' ? JSON.parse(pVal) : pVal; } catch { this.data.user_workspaces[idx].pageJson = pVal; }
+              }
+              else if (col === 'updated_at') this.data.user_workspaces[idx].updatedAt = new Date(pVal);
+            }
+          }
+          this.data.user_workspaces[idx].updatedAt = new Date();
+          this.save();
+          return { rows: [this.data.user_workspaces[idx]] };
+        }
+      }
+      return { rows: [] };
+    }
+
+    // 17. DELETE FROM user_workspaces (for wipe)
+    if (cleanSqlLower.startsWith('delete from "user_workspaces"') || cleanSqlLower.startsWith('delete from user_workspaces')) {
+      let filterUserId: number | null = null;
+      const match = cleanSqlLower.match(/(?:(?:"?user_workspaces"?\.)?"?user_id"?\s*=\s*\$(\d+))/i);
+      if (match) {
+        const pIdx = Number(match[1]) - 1;
+        filterUserId = Number(queryParams[pIdx]);
+      }
+      if (filterUserId !== null && !isNaN(filterUserId)) {
+        this.data.user_workspaces = this.data.user_workspaces.filter(w => w.user_id !== filterUserId && w.userId !== filterUserId);
+        this.save();
+      }
+      return { rows: [] };
     }
 
     console.warn(`[Mock DB Query] UNHANDLED QUERY: ${cleanSql} | Params:`, queryParams);

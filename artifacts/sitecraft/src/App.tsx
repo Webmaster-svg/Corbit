@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/lib/i18n";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { ThemeApplyProvider } from "@/lib/theme-context";
+import ApplyThemeOverlay from "@/components/theme/ApplyThemeOverlay";
 import { useEffect } from "react";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
@@ -103,13 +105,16 @@ function App() {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <LanguageProvider>
           <AuthProvider>
-            <TooltipProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <ScrollToTop />
-                <Router />
-              </WouterRouter>
-              <Toaster />
-            </TooltipProvider>
+            <ThemeApplyProvider>
+              <TooltipProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <ScrollToTop />
+                  <Router />
+                </WouterRouter>
+                <Toaster />
+                <ApplyThemeOverlay />
+              </TooltipProvider>
+            </ThemeApplyProvider>
           </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>

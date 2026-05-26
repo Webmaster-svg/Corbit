@@ -318,7 +318,7 @@ export default function Preview() {
               {publishMutation.isPending && <Loader2 className="w-3 h-3 animate-spin text-zinc-400" />}
             </label>
             <span className="h-4 w-px bg-zinc-700/60 mx-0.5" />
-            <button onClick={() => setLocation(`/editor/${id}${projectId ? `?projectId=${projectId}` : ""}`)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">Edit</button>
+            <button onClick={() => setLocation(`/editor/${(project as any)?.name?.toLowerCase().replace(/\s+/g, "-") || id}`)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">Edit</button>
           </div>
         </nav>}
 

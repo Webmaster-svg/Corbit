@@ -24,6 +24,7 @@ import { useAuth } from "@/lib/auth";
 import { useTranslation } from "@/lib/i18n";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import { 
   LayoutDashboard, Globe, FileText, TrendingUp, Plus, 
   FolderOpen, Clock, LogOut, Settings, Activity, 
@@ -108,6 +109,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      <LoadingOverlay loading={createMutation.isPending} message="Creating project..." />
       <Navbar />
       <div className="flex flex-1">
         {/* Main content split viewport */}

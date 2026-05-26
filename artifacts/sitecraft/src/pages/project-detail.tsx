@@ -28,6 +28,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "@/lib/i18n";
+import { useThemeApply } from "@/lib/theme-context";
+import { TEMPLATES } from "../../templates/index";
 import { Loader2, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import {
   AlertDialog,
@@ -39,6 +41,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { getWorkspace } from "@/lib/local-storage";
 
 export default function ProjectDetail() {
   const { id, tab } = useParams<{ id: string; tab?: string }>();
@@ -56,6 +59,12 @@ export default function ProjectDetail() {
     query: { enabled: !!projectId, queryKey: getGetProjectQueryKey(projectId) },
   });
 
+  const [workspaceData, setWorkspaceData] = useState<any | null>(null);
+  useEffect(() => {
+    if (!projectId) return;
+    getWorkspace().then(setWorkspaceData).catch(() => {});
+  }, [projectId]);
+
   const isLoading = listLoading || (!!projectId && projectLoading);
   const proj = project as any;
 
@@ -65,6 +74,7 @@ export default function ProjectDetail() {
   const [, setLocation] = useLocation();
   const { t } = useTranslation();
   const { token, setToken } = useAuth();
+  const { openApplyThemeFlow } = useThemeApply();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
@@ -409,7 +419,8 @@ export default function ProjectDetail() {
 
                 {/* TAB: THEME EXPLORER */}
                 {activeTab === "theme" && (() => {
-                  const activeTheme = Array.isArray(templates) ? templates.find((t: any) => t.id === project.templateId) : null;
+                  const effectiveThemeId = (workspaceData?.workspace as any)?.activeThemeId || project.templateId;
+                  const activeTheme = Array.isArray(templates) ? templates.find((t: any) => t.id === effectiveThemeId) : null;
                   
                   return (
                     <div className="space-y-6 animate-in fade-in-50 duration-200">
@@ -499,11 +510,15 @@ export default function ProjectDetail() {
                       {/* Theme Explorer Grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {Array.isArray(templates) && templates.map((t: any) => {
-                          const isActive = project.templateId === t.id;
+                          const localTmpl = TEMPLATES.find(tmpl => tmpl.id === t.id);
+                          const merged = localTmpl ? { ...t, ...localTmpl } : t;
+                          const effectiveId = (workspaceData?.workspace as any)?.activeThemeId || project.templateId;
+                          const isActive = effectiveId === merged.id;
+                          const isPro = merged.is_pro || merged.isPro;
                           
                           return (
                             <div 
-                              key={t.id} 
+                              key={merged.id} 
                               className={`group relative bg-card border rounded-2xl overflow-hidden transition-all duration-300 shadow-2xs hover:shadow-md flex flex-col ${
                                 isActive ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/30"
                               }`}
@@ -511,31 +526,10 @@ export default function ProjectDetail() {
                               {/* Thumbnail container */}
                               <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                                 <img 
-                                  src={t.thumbnail_url} 
-                                  alt={t.name}
+                                  src={merged.thumbnail_url || merged.thumbnailUrl || merged.thumbnail} 
+                                  alt={merged.name}
                                   className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                                 />
-                                
-                                {/* Overlay for tags and active badge */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex flex-col justify-between p-4">
-                                  <div className="flex justify-between items-start">
-                                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/40 text-white backdrop-blur-xs select-none">
-                                      {t.category}
-                                    </span>
-                                    {isActive && (
-                                      <span className="text-[10px] font-extrabold tracking-wider px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground shadow-sm animate-pulse">
-                                        ACTIVE THEME
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="flex gap-1.5 flex-wrap">
-                                    {t.tags && t.tags.map((tag: string) => (
-                                      <span key={tag} className="text-[9px] font-medium bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs">
-                                        #{tag}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
                               </div>
 
                               {/* Info */}
@@ -543,21 +537,21 @@ export default function ProjectDetail() {
                                 <div className="space-y-2">
                                   <div className="flex items-center justify-between">
                                     <h3 className="font-extrabold text-sm text-foreground leading-tight group-hover:text-primary transition-colors">
-                                      {t.name}
+                                      {merged.name}
                                     </h3>
-                                    {t.is_pro && (
+                                    {isPro && (
                                       <span className="text-[9px] font-extrabold bg-amber-500/10 text-amber-500 border border-amber-500/20 px-1.5 py-0.5 rounded">
                                         PRO
                                       </span>
                                     )}
                                   </div>
                                   <p className="text-xs text-muted-foreground leading-relaxed">
-                                    {t.description}
+                                    {merged.description}
                                   </p>
                                 </div>
 
                                 <div className="flex gap-3 pt-2">
-                                  <Link href={`/preview/${t.id}?project=${projectId}`} className="flex-1">
+                                  <Link href={`/preview/${merged.id}?project=${projectId}`} className="flex-1">
                                     <Button 
                                       variant="outline" 
                                       size="sm" 
@@ -570,7 +564,7 @@ export default function ProjectDetail() {
                                   <Button 
                                     size="sm" 
                                     disabled={isActive}
-                                    onClick={() => updateMutation.mutate({ id: projectId, data: { templateId: t.id } })}
+                                    onClick={() => openApplyThemeFlow(merged, () => setLocation(`/editor/${project?.name?.toLowerCase().replace(/\s+/g, "-")}`))}
                                     className={`flex-1 h-9 rounded-xl font-bold text-xs cursor-pointer ${
                                       isActive 
                                         ? "bg-muted text-muted-foreground border border-transparent" 
@@ -696,7 +690,7 @@ export default function ProjectDetail() {
                           </Button>
                         )}
                         {project.templateId && (
-                          <Button variant="default" onClick={() => setLocation(`/editor/${project.templateId}?projectId=${project.id}`)}>
+                          <Button variant="default" onClick={() => setLocation(`/editor/${project.name?.toLowerCase().replace(/\s+/g, "-")}`)}>
                             <FileEdit className="w-4 h-4 mr-2" />
                             Open Editor
                           </Button>

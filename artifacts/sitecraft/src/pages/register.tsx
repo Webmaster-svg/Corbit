@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Loader2, Globe, CheckCircle2 } from "lucide-react";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -66,6 +67,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex">
+      <LoadingOverlay loading={createProjectMutation.isPending} message="Creating project..." />
       <motion.div
         className="flex-1 flex items-center justify-center p-8 bg-background order-2 lg:order-1"
         initial={{ opacity: 0, x: -40 }}
